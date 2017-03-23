@@ -40,25 +40,48 @@ Requests and responses are serialised in JSON format and their content depends o
 
 Put requests have the following format
 
-`{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple >`
+`{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple > }`
 
 where 
 - `source` identifies the requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
-- `session` identifies the target space.
+- `target` identifies the target space.
 - `tuple` is the tuple that should be added.
 
 ### Put responses
 
-`{ "type": "PUT_RESPONSE", "source" : source, "session": session, "target": target, "response" : response >`
+`{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "success" : success > }`
 
 where 
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
-- `session` identifies the target space.
-- `response` is either `true` (the request succeeded) or `false` (the request failed).
+- `target` identifies the target space.
+- `success` is either `true` (the request succeeded) or `false` (the request failed).
 
-More instructions coming soon...
+### Get/Query requests
+
+Get requests have the following format
+
+`{ "type": request, "source" : source, "session": session, "target": target, "template" : template > }`
+
+where 
+- `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
+- `source` identifies the requester.
+- `session` is a unique session identifier used by the source to distinguish requests.
+- `target` identifies the target space.
+- `template` is the template to be considered.
+
+### Get/Query  responses
+
+`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result ,  > }`
+
+where 
+- `request` is one of the above listed types of requests.
+- `source` identifies the original requester.
+- `session` is a unique session identifier used by the source to distinguish requests.
+- `target` identifies the target space.
+- `success` is either `true` (the request succeeded) or `false` (the request failed).
+- `result` contains the result of the operation (if successful) as a list of tuples.
 
 ## Adhere to the following guidelines to structure your project
 Instructions coming soon...
