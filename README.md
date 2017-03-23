@@ -73,7 +73,7 @@ where
 
 ### Get/Query  responses
 
-`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result ,  > }`
+`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result }`
 
 where 
 - `request` is one of the above listed types of requests.
