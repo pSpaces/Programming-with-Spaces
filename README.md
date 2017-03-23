@@ -30,9 +30,9 @@ Detailed instructions will be included soon.
 
 The protocol to access remote spaces are based on a simple request/response pattern:
 
-  `A ---<request>--> B`
+  `A ---[request]--> B`
 
-  `A <--<response>-- B`
+  `A <--[response]-- B`
 
 Requests and responses are serialised in JSON format and their content depends on the kind of request.
 
