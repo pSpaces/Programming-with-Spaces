@@ -20,7 +20,8 @@ All spaces must implement the following operations:
 - `query` is the non-destructive version of `get`. Given a template, the operation blocks until a tuple is found in the space which matches the template. It then returns the matched `tuple` and removes it from the space. 
 - `queryp` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
 - `queryall` is the non-destructive version of `getAll`.
-All the above operations may fail and must return a value stating indicating success or failure.
+
+All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
 ## Adhere to the following protocol for operations on remote spaces
 
