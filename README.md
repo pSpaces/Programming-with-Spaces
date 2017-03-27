@@ -57,13 +57,13 @@ where
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
 - `target` identifies the target space.
-- `success` is either `true` (the request succeeded) or `false` (the request failed).
+- `success` is a return code (see below).
 
 ### Get/Query requests
 
 Get requests have the following format
 
-`{ "type": request, "source" : source, "session": session, "target": target, "template" : template > }`
+`{ "type": request, "source" : source, "session": session, "target": target, "template" : template }`
 
 where 
 - `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
@@ -81,8 +81,12 @@ where
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
 - `target` identifies the target space.
-- `success` is either `true` (the request succeeded) or `false` (the request failed).
+- `success` is a return code (see below).
 - `result` contains the result of the operation (if successful) as a list of tuples.
+
+### Return codes
+- `OK`: the operation was performed without problems.
+- `KO`: unspecified error, the operation may not have been carried out.
 
 ## Adhere to the following guidelines to structure your project
 Instructions coming soon...
