@@ -8,10 +8,10 @@ Yes, they can. Instructions coming soon...
 
 # I want to implement a new support for Spaces in language X
 Follow the below instructions.
-## Adhere to the following API for the tuple space
+## (1) Adhere to the following API for the tuple space
 Spaces should implement an interface supports several operations.
 
-### CORE Interfac
+### CORE Interface
 All spaces must implement the following operations:
 - `put` adds a tuple to a space. 
 - `get` blocks until a tuple is found in the space which matches a given template. It then returns the matched tuple and removes it from the space. 
@@ -24,12 +24,13 @@ All spaces must implement the following operations:
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
 
-## Remote spaces: Ports 
-Different communication protocols can be integrated in pSpaces. Indeed, the framework abstracts from the specific technology used to support interaction among component. The standard communication port integrated in pSpaces is the one based on sockets.
+## (2) Provide basic support for accessing remote spaces
 
-## Adhere to the following protocol for operations on remote spaces
+Access to remote spaces is done via ports. The default type of port that implementations should support are sockets. Other type of ports may be supported.
 
-Detailed instructions will be included soon. 
+Several spaces may be accessible through the same port. Spaces are hence uniquely identified by global space identifier, defined by a port and a space name.
+
+## (3) Adhere to the following protocol for operations on remote spaces
 
 ### CORE Protocol
 
@@ -39,7 +40,7 @@ The protocol to access remote spaces are based on a simple request/response patt
 
   `A <--[response]-- B`
 
-Requests and responses are serialised in JSON format and their content depends on the kind of request.
+Each message must be sent in a separate connection. The correlation between requests and response is based on session identifiers (see below). Requests and responses are messages serialised in JSON format and their content depends on the kind of request/response.
 
 ### Put requests
 
