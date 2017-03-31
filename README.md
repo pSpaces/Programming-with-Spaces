@@ -49,32 +49,33 @@ Put requests have the following format
 `{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple > }`
 
 where 
-- `source` identifies the requester.
-- `session` is a unique session identifier used by the source to distinguish requests.
-- `target` identifies the target space.
-- `tuple` is the tuple that should be added.
+- `source` is a port that identifies the requester.
+- `session` is an integer that uniquely identifies the request on the source side.
+- `target` identifies the target space with a global identifier.
+- `tuple` is the tuple, represent as a json list, that should be added.
 
 ### Put responses
 
-`{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "success" : success > }`
+`{ "type": "PUT_RESPONSE", "source" : source, "session": session, "target": target, "code" : code , "message": message> }`
 
 where 
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
-- `target` identifies the target space.
-- `success` is a return code (see below).
+- `target` is a global identifier that identifies the target space.
+- `code` is an HTTP return code.
+- `message` is a string providing additional information related to the return code.
 
-### Get/Query requests
+### Get[p/all]/Query[p/all] requests
 
 Get requests have the following format
 
-`{ "type": request, "source" : source, "session": session, "target": target, "template" : template }`
+`{ "type": response, "source" : source, "session": session, "target": target, "template" : template }`
 
 where 
-- `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
+- `response` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
 - `source` identifies the requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
-- `target` identifies the target space.
+- `target` is a global identifier that identifies the target space.
 - `template` is the template to be considered.
 
 ### Get/Query  responses
@@ -82,16 +83,12 @@ where
 `{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result }`
 
 where 
-- `request` is one of the above listed types of requests.
+- `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
 - `target` identifies the target space.
 - `success` is a return code (see below).
 - `result` contains the result of the operation (if successful) as a list of tuples.
-
-### Return codes
-- `OK`: the operation was performed without problems.
-- `KO`: unspecified error, the operation may not have been carried out.
 
 ## Adhere to the following guidelines to structure your project
 Instructions coming soon...
