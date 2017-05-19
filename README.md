@@ -40,15 +40,19 @@ The protocol to access remote spaces are based on a simple request/response patt
 
   `A <--[response]-- B`
 
-Each message must be sent in a separate connection. The correlation between requests and response is based on session identifiers (see below). Requests and responses are messages serialised in JSON format and their content depends on the kind of request/response.
+These messages can be exchanged within three kind of interactions that are identified by `CONN`, `PUSH` and `PULL`.
+
+When method `CONN` is used, request/responce are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged among two different connection: the first opened by the space performing the request, the second opened by the space sending the reply. Finally, in `PULL` mode, two connections are used both opened by the space performing the request.
+The correlation between requests and response is based on session identifiers (see below). Requests and responses are messages serialised in JSON format and their content depends on the kind of request/response.
 
 ### Put requests
 
 Put requests have the following format
 
-`{ "action": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple }`
+`{ "mode": mode_code, "action": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple }`
 
 where 
+- `mode' is the code identifying the kind of used interaction. 
 - `source` is a port that identifies the requester.
 - `session` is an integer that uniquely identifies the request on the source side.
 - `target` identifies the target space with a global identifier.
@@ -69,9 +73,10 @@ where
 
 Get requests have the following format
 
-`{ "action": response, "source" : source, "session": session, "target": target, "template" : template }`
+`{ "mode": mode_code, "action": response, "source" : source, "session": session, "target": target, "template" : template }`
 
 where 
+- `mode' is the code identifying the kind of used interaction. 
 - `response` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
 - `source` identifies the requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
@@ -80,7 +85,7 @@ where
 
 ### Get/Query  responses
 
-`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result , "code" : code , "message": message }`
+`{ "type": request, "source" : source, "session": session, "target": target, "result":result , "code" : code , "message": message }`
 
 where 
 - `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
