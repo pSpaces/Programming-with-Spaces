@@ -54,7 +54,7 @@ Put requests have the following format
 where 
 - `mode' is the code identifying the kind of used interaction. 
 - `source` is a port that identifies the requester.
-- `session` is an integer that uniquely identifies the request on the source side.
+- `session` is an integer that uniquely identifies the request on the source side (if mode is `CONN` this field is optional).
 - `target` identifies the target space with a global identifier.
 - `tuple` is the tuple, represent as a json list, that should be added.
 
@@ -79,7 +79,7 @@ where
 - `mode' is the code identifying the kind of used interaction. 
 - `response` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
 - `source` identifies the requester.
-- `session` is a unique session identifier used by the source to distinguish requests.
+- `session` is a unique session identifier used by the source to distinguish requests (if mode is `CONN` this field is optional).
 - `target` is a global identifier that identifies the target space.
 - `template` is the template to be considered.
 
