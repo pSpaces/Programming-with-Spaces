@@ -46,7 +46,7 @@ Each message must be sent in a separate connection. The correlation between requ
 
 Put requests have the following format
 
-`{ "type": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple > }`
+`{ "action": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple }`
 
 where 
 - `source` is a port that identifies the requester.
@@ -56,20 +56,20 @@ where
 
 ### Put responses
 
-`{ "type": "PUT_RESPONSE", "source" : source, "session": session, "target": target, "code" : code , "message": message> }`
+`{ "action": "PUT_RESPONSE", "source" : source, "session": session, "target": target, "code" : code , "message": message }`
 
 where 
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
 - `target` is a global identifier that identifies the target space.
-- `code` is an HTTP return code.
+- `code` is an HTTP like return code.
 - `message` is a string providing additional information related to the return code.
 
 ### Get[p/all]/Query[p/all] requests
 
 Get requests have the following format
 
-`{ "type": response, "source" : source, "session": session, "target": target, "template" : template }`
+`{ "action": response, "source" : source, "session": session, "target": target, "template" : template }`
 
 where 
 - `response` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
@@ -80,7 +80,7 @@ where
 
 ### Get/Query  responses
 
-`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result }`
+`{ "type": request, "source" : source, "session": session, "target": target, "success" : success, "result":result , "code" : code , "message": message }`
 
 where 
 - `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
@@ -89,6 +89,8 @@ where
 - `target` identifies the target space.
 - `success` is a return code (see below).
 - `result` contains the result of the operation (if successful) as a list of tuples.
+- `code` is an HTTP like return code.
+- `message` is a string providing additional information related to the return code.
 
 ## Adhere to the following guidelines to structure your project
 Instructions coming soon...
