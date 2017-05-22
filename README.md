@@ -34,15 +34,16 @@ Several spaces may be accessible through the same port. Spaces are hence uniquel
 
 ### CORE Protocol
 
-The protocol to access remote spaces are based on a simple request/response pattern:
+The protocols used to access remote spaces are based on a simple request/response pattern:
 
   `A ---[request]--> B`
 
   `A <--[response]-- B`
 
-These messages can be exchanged within three kind of interactions that are identified by `CONN`, `PUSH` and `PULL`.
+Party `A` is the one willing to perform the operation on `B`. `A` initiates the protocola and indicates which specific protocol it wants to use (see message format below). The options are `CONN`, `PUSH` and `PULL`.
 
-When method `CONN` is used, request/responce are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged among two different connection: the first opened by the space performing the request, the second opened by the space sending the reply. Finally, in `PULL` mode, two connections are used both opened by the space performing the request.
+When method `CONN` is used, only one connnection is used and the request and its response are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged in two separate connections: the first opened by `A` and the second opened by `B`. Finally, in `PULL` mode, a connection is used for each time party `A` tries to get a response from party `B`.
+
 The correlation between requests and response is based on session identifiers (see below). Requests and responses are messages serialised in JSON format and their content depends on the kind of request/response.
 
 ### Put requests
@@ -52,7 +53,7 @@ Put requests have the following format
 `{ "mode": mode_code, "action": "PUT_REQUEST", "source" : source, "session": session, "target": target, "tuple" : tuple }`
 
 where 
-- `mode' is the code identifying the kind of used interaction. 
+- `mode` is the code identifying the actual protocol.
 - `source` is a port that identifies the requester.
 - `session` is an integer that uniquely identifies the request on the source side (if mode is `CONN` this field is optional).
 - `target` identifies the target space with a global identifier.
@@ -76,7 +77,7 @@ Get requests have the following format
 `{ "mode": mode_code, "action": response, "source" : source, "session": session, "target": target, "template" : template }`
 
 where 
-- `mode' is the code identifying the kind of used interaction. 
+- `mode' is the code identifying the actual protocol.
 - `response` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
 - `source` identifies the requester.
 - `session` is a unique session identifier used by the source to distinguish requests (if mode is `CONN` this field is optional).
