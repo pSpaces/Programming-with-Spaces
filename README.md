@@ -86,10 +86,10 @@ where
 
 ### Get/Query  responses
 
-`{ "type": request, "source" : source, "session": session, "target": target, "result":result , "code" : code , "message": message }`
+`{ "action": request, "source" : source, "session": session, "target": target, "result":result , "code" : code , "message": message }`
 
 where 
-- `request` is one of `GET_REQUEST`, `GETP_REQUEST`, `GETALL_REQUEST`, `QUERY_REQUEST`, `QUERY_REQUEST`, `QUERYALL_REQUEST`.
+- `request` is one of `GET_RESPONSE`, `GETP_RESPONSE`, `GETALL_RESPONSE`, `QUERY_RESPONSE`, `QUERY_RESPONSE`, `QUERYALL_RESPONSE`.
 - `source` identifies the original requester.
 - `session` is a unique session identifier used by the source to distinguish requests.
 - `target` identifies the target space.
