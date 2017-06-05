@@ -40,7 +40,7 @@ The protocols used to access remote spaces are based on a simple request/respons
 
   `A <--[response]-- B`
 
-Party `A` is the one willing to perform the operation on `B`. `A` initiates the protocola and indicates which specific protocol it wants to use (see message format below). The options are `CONN`, `PUSH` and `PULL`.
+Party `A` is the one willing to perform the operation on `B`. `A` initiates the protocol and indicates which specific protocol it wants to use (see message format below). The options are `CONN`, `PUSH` and `PULL`.
 
 When method `CONN` is used, only one connnection is used and the request and its response are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged in two separate connections: the first opened by `A` and the second opened by `B`. Finally, in `PULL` mode, a connection is used for each time party `A` tries to get a response from party `B`.
 
