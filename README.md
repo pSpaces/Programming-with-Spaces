@@ -27,44 +27,44 @@ All spaces must implement the following operations:
 
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
-The core API underspecifies the behaviour of some operations that can be specialised. For example, the order of retrievals is underspecified, and different variants may include FIFO (return the oldest matching tuple), LIFO (return the newest matching tuple), or random (randomly return any matching tuple). The corresponding space structures can be called FifoSpace, LifoSpace, RandomSpace, etc.
+The core API underspecifies the behaviour of some operations. For example, the order of retrievals is underspecified, and different variants may include FIFO (return the oldest matching tuple), LIFO (return the newest matching tuple), or random (randomly return any matching tuple). The corresponding space structures can be called FifoSpace, LifoSpace, RandomSpace, etc.
  
 A space can be accessed locally as an ordinary data structure and can hence offer a local API. Spaces can be accessed remotely and should hence support a remote API. Whenever possible, a wrapper for remote spaces should be offered to support a uniform access to spaces. 
 
 ## Space repositories and space gates
-To make a space accessible remotely, the space must part of a space repository. Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
+To make a space accessible remotely, the space must be part of a space repository. Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
  
-`<protocol>://<host>[:<port>]][?<mode>]`
+`<protocol>://<host>[:<port>][?<mode>]`
  
 where
 - `protocol` is the protocol used for the communication. The default value is pspaces, which amounts to tcp sockets.
-- `host` is
-- `port` is . The default port is 31415 (pi)
+- `host` is the name or ip address of the device where the space is located.
+- `port` is a port number. The default value is 31415.
 - `mode` specifies an interaction protocol (described below). The options are `KEEP`, `CONN`, `PUSH` and `PULL`. The default value is `KEEP`.
  
-As an example, a user should be able to create a space repository with two spaces in an object-oriented language with code along the lines of:
+As an example, a user should be able to create a space repository at `coolspaces.com` with two spaces `data` and `messages` in an object-oriented language with code along the lines of:
  
-`
+```
 SpaceRepository repository = new SpaceRepository();
-repository.addGate("pspaces://123.123.123.123:8888?CONN");
+repository.addGate("pspaces://coolspaces.com:8888?CONN");
 repository.add(new Space(“data”));
 repository.add(new Space(“messages”));
-`
+```
 
 Remote spaces are addressed with a space address, which is an URI of the format
  
-`<protocol://]host[:port]]/<space_name>[?<connectiontype>]`
+`<protocol>://host[:port]/<space_name>[?<connectiontype>]`
  
 The format is very much like that of gates, but with name of the space.
  
 In our example, a programmer should be able to access the spaces created above with code along the lines of
 
-` 
-Space data= new RemoteSpace(“pspaces://123.123.123.123:8888/data?CONN”);
-Space messages= new RemoteSpace(“pspaces://localhost:8888/messages?CONN”);
-`
+```
+Space data= new RemoteSpace(“pspaces://coolspaces.com:8888/data?CONN”);
+Space messages= new RemoteSpace(“pspaces://coolspaces:8888/messages?CONN”);
+```
 
-Where `RemoteSpace` is a wrapper for spaces.
+assuming a wrapper `RemoteSpace` is supported.
  
 ## Agents
 Programs interacting with local or remote spaces are often called agents in this documentation. Agents need not be implemented as a first class concept in the host programming language and can correspond to any form of behaviour encapsulation provided by the host programming language (routines, threads, programs, activities, objects, ...). If you decide to implement agents as a first-class structure, the name `Agent` should be preferred.
