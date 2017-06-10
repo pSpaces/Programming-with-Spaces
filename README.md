@@ -12,7 +12,7 @@ You should adhere to the below guidelines. The key idea of the programming model
 ## Local Spaces
 A space is is a collection of tuples supporting a simple API described below. Whenever possible the interface or abstract data type used for specify the API of spaces should be called `Space`.
 
-## (1) Adhere to the following API for the tuple space
+## Space API
 Spaces should implement an interface that supports several operations. Every implementation must support the core API specified below. Other operations may be supported.
 
 ### Core Space API
