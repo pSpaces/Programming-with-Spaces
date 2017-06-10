@@ -1,17 +1,21 @@
 # Documentation
 
 # I want to program with Spaces in language X
-Just go to xSpaces and follow the instructions ;)
+You are in the wrong place :) Go to the the documentation of xSpaces follow the instructions.
 
 # Can a program written in X and another one written in Y interact through Spaces?
 Yes, they can. Instructions coming soon...
 
 # I want to implement a new support for Spaces in language X
-Follow the below instructions.
-## (1) Adhere to the following API for the tuple space
-Spaces should implement an interface supports several operations.
+You should adhere to the below guidelines. The key idea of the programming model is to support interaction by adding and retrieving tuples from local and remote spaces. Programs and spaces can be located in any device. All spaces support the same minimal API and interaction protocols.
+ 
+## Local Spaces
+A space is is a collection of tuples supporting a simple API described below. Whenever possible the interface or abstract data type used for specify the API of spaces should be called `Space`.
 
-### CORE Interface
+## (1) Adhere to the following API for the tuple space
+Spaces should implement an interface that supports several operations. Every implementation must support the core API specified below. Other operations may be supported.
+
+### Core Space API
 All spaces must implement the following operations:
 - `put` adds a tuple to a space. 
 - `get` blocks until a tuple is found in the space which matches a given template. It then returns the matched tuple and removes it from the space. 
@@ -23,14 +27,49 @@ All spaces must implement the following operations:
 
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
+The core API underspecifies the behaviour of some operations that can be specialised. For example, the order of retrievals is underspecified, and different variants may include FIFO (return the oldest matching tuple), LIFO (return the newest matching tuple), or random (randomly return any matching tuple). The corresponding space structures can be called FifoSpace, LifoSpace, RandomSpace, etc.
+ 
+A space can be accessed locally as an ordinary data structure and can hence offer a local API. Spaces can be accessed remotely and should hence support a remote API. Whenever possible, a wrapper for remote spaces should be offered to support a uniform access to spaces. 
 
-## (2) Provide basic support for accessing remote spaces
+## Space repositories and space gates
+To make a space accessible remotely, the space must part of a space repository. Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
+ 
+`<protocol>://<host>[:<port>]][?<mode>]`
+ 
+where
+- `protocol` is the protocol used for the communication. The default value is pspaces, which amounts to tcp sockets.
+- `host` is
+- `port` is . The default port is 31415 (pi)
+- `mode` specifies an interaction protocol (described below). The options are `KEEP`, `CONN`, `PUSH` and `PULL`. The default value is `KEEP`.
+ 
+As an example, a user should be able to create a space repository with two spaces in an object-oriented language with code along the lines of:
+ 
+`
+SpaceRepository repository = new SpaceRepository();
+repository.addGate("pspaces://123.123.123.123:8888?CONN");
+repository.add(new Space(“data”));
+repository.add(new Space(“messages”));
+`
 
-Access to remote spaces is done via ports. The default type of port that implementations should support are sockets. Other type of ports may be supported.
+Remote spaces are addressed with a space address, which is an URI of the format
+ 
+`<protocol://]host[:port]]/<space_name>[?<connectiontype>]`
+ 
+The format is very much like that of gates, but with name of the space.
+ 
+In our example, a programmer should be able to access the spaces created above with code along the lines of
 
-Several spaces may be accessible through the same port. Spaces are hence uniquely identified by global space identifier, defined by a port and a space name.
+` 
+Space data= new RemoteSpace(“pspaces://123.123.123.123:8888/data?CONN”);
+Space messages= new RemoteSpace(“pspaces://localhost:8888/messages?CONN”);
+`
 
-## (3) Adhere to the following protocol for operations on remote spaces
+Where `RemoteSpace` is a wrapper for spaces.
+ 
+## Agents
+Programs interacting with local or remote spaces are often called agents in this documentation. Agents need not be implemented as a first class concept in the host programming language and can correspond to any form of behaviour encapsulation provided by the host programming language (routines, threads, programs, activities, objects, ...). If you decide to implement agents as a first-class structure, the name `Agent` should be preferred.
+
+## Protocol for operations on remote spaces
 
 ### CORE Protocol
 
