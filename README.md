@@ -37,7 +37,7 @@ To make a space accessible remotely, the space must be part of a space repositor
 `<protocol>://<host>[:<port>][?<mode>]`
  
 where
-- `protocol` is the protocol used for the communication. The default value is pspaces, which amounts to tcp sockets.
+- `protocol` is the protocol used for the communication. The default value is `tcp`, and must be supported.
 - `host` is the name or ip address of the device where the space is located.
 - `port` is a port number. The default value is 31415.
 - `mode` specifies an interaction protocol (described below). The options are `KEEP`, `CONN`, `PUSH` and `PULL`. The default value is `KEEP`.
