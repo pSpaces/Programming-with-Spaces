@@ -46,7 +46,7 @@ As an example, a user should be able to create a space repository at `coolspaces
  
 ```
 SpaceRepository repository = new SpaceRepository();
-repository.addGate("pspaces://coolspaces.com:8888?CONN");
+repository.addGate("coolspaces.com:1234?CONN");
 repository.add(new Space(“data”));
 repository.add(new Space(“messages”));
 ```
@@ -60,8 +60,8 @@ The format is very much like that of gates, but with name of the space.
 In our example, a programmer should be able to access the spaces created above with code along the lines of
 
 ```
-Space data= new RemoteSpace(“pspaces://coolspaces.com:8888/data?CONN”);
-Space messages= new RemoteSpace(“pspaces://coolspaces:8888/messages?CONN”);
+Space data= new RemoteSpace(“coolspaces.com:1234/data?CONN”);
+Space messages= new RemoteSpace(“coolspaces:1234/messages?CONN”);
 ```
 
 assuming a wrapper `RemoteSpace` is supported.
@@ -79,9 +79,9 @@ The protocols used to access remote spaces are based on a simple request/respons
 
   `A <--[response]-- B`
 
-Party `A` is the one willing to perform the operation on `B`. `A` initiates the protocol and indicates which specific protocol it wants to use (see message format below). The options are `CONN`, `PUSH` and `PULL`.
+Party `A` is the one willing to perform the operation on `B`. `A` initiates the protocol and indicates which specific protocol it wants to use (see message format below). The options are `KEEP`, `CONN`, `PUSH` and `PULL`.
 
-When method `CONN` is used, only one connnection is used and the request and its response are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged in two separate connections: the first opened by `A` and the second opened by `B`. Finally, in `PULL` mode, a connection is used for each time party `A` tries to get a response from party `B`.
+When `KEEP` is used the connection is persistent. When method `CONN` is used, only one connnection is used and the request and its response are exchanged in the same connection. When `PUSH` is used, the two messages are exchanged in two separate connections: the first opened by `A` and the second opened by `B`. Finally, in `PULL` mode, a connection is used for each time party `A` tries to get a response from party `B`.
 
 The correlation between requests and response is based on session identifiers (see below). Requests and responses are messages serialised in JSON format and their content depends on the kind of request/response.
 
