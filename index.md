@@ -1,4 +1,3 @@
 language_tabs:
-  - shell
-  - ruby
-  - python
+  - Java
+  - C#
