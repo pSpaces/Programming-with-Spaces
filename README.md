@@ -44,12 +44,19 @@ where
  
 As an example, a user should be able to create a space repository at `coolspaces.com` with two spaces `data` and `messages` in an object-oriented language with code along the lines of:
  
-```
+```Java
 SpaceRepository repository = new SpaceRepository();
 repository.addGate("coolspaces.com:1234?CONN");
 repository.add(new Space(“data”));
 repository.add(new Space(“messages”));
 ```
+```C#
+SpaceRepository repository = new SpaceRepository();
+repository.addGate("coolspaces.com:1234?CONN");
+repository.add(new Space(“data”));
+repository.add(new Space(“messages”));
+```
+
 
 Remote spaces are addressed with a space address, which is an URI of the format
  
