@@ -44,7 +44,7 @@ where
  
 As an example, a user should be able to create a space repository at `coolspaces.com` with two spaces `data` and `messages` in an object-oriented language with code along the lines of:
  
-```Java
+```java
 SpaceRepository repository = new SpaceRepository();
 repository.addGate("coolspaces.com:1234?CONN");
 repository.add(new Space(“data”));
