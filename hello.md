@@ -13,14 +13,12 @@ We will go through it step by step.
 
 Go
 ```go
-	inbox := goSpace.NewSpace("8080")
+inbox := goSpace.NewSpace("8080")
 ```
 C#
 ```
-            FifoSpace dtu = new FifoSpace();
+FifoSpace dtu = new FifoSpace();
 ```
-
-
 
 2. Put a simple tuple in the space
 
@@ -32,7 +30,6 @@ C#
 ```
 dtu.Put("Hello world!");
 ```
-
 
 3. Retreive the tuple from the space
 
