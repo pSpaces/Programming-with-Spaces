@@ -7,22 +7,36 @@ We will create a simple program that illustrates the most basic features of spac
 - [Hello World in Java]
 - [Hello World in C#]
 
-We will go through it step by step
+We will go through it step by step.
+
+1. Create a space `inbox` at port 8080
 
 Go
-```Go
-func main(){
+```go
+	inbox := goSpace.NewSpace("8080")
+```
+
+2. Put a simple tuple in the space
+
+Go
+```go
+	goSpace.Put(inbox, "Hello World!")
+```
+
+3. Retreive the tuple from the space
+
+Go
+```go
+	var message string
+	goSpace.Get(inbox, &message)
+```
+
+4. Print the message
+
+Go
+```go
+	fmt.Println(message)
 }
 ```
 
-Java
-```Java
-TBD
-```
-
-C#
-```C#
-TBD
-```
-
-
+If you got it, you are now ready for more examples :)
