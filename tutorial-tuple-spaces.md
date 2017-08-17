@@ -120,4 +120,4 @@ Further operations on spaces include:
 
 They will be discussed in further chapters.
 
-What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming)!
+What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming.md)!
