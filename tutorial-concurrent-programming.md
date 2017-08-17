@@ -88,140 +88,71 @@ Bob:
 Get(fridge,"shop!")
 Put(fridge,"shop!")
 for {
-    Get(fridge,?item,?quantity) ;
+    Get(fridge,?item,?quantity)
     // go shopping
 }
 ```
 
-A drawback of this solution is that the check that Bob performs is not atomic. There is hence a moment in which the tuple ("shop!") removed by Bob which may lead other rooommates to thing that there is no shopping to be done, as in
+A drawback of this solution is that the check that Bob performs is not atomic. There is hence a moment in which the tuple ```("shop!")``` is removed by Bob which may lead other rooommates. Suppose, for instance, that Alice and Bob are executing their programs while Charlie is executing:
 
-Alice:
+Charlie:
 ```go
-put(fridge,milk, 2) ; ...
-put(fridge,butter, 1) ; ...
-put(fridge,"shop!") ; ...
+if GetP(fridge,"shop!") {
+    Put(fridge,"shop!")
+    for {
+        Get(fridge,?item,?quantity)
+        // go shopping ...
+    }
+}
+else // relax
 ```
+
+The standard solution to this problem is use the ```query``` operation to perform queries atomically. Operation ```Query(s,T)``` behaves like ```Get(s,T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
 
 Bob:
 ```go
-get (fridge,"shop!") ;
-put (fridge,"shop!") ; while true do
-get (fridge,?item, ?q) ; // go shopping ...
+Query(fridge,"shop!")
+for {
+    Get(fridge,?item,?quantity)
+    // go shopping
+}
 ```
 
 Charlie:
 ```go
-if getp (fridge,"shop!") then
-put (fridge,"shop!") ; while true do
-get (fridge,?item, ?q) ; // go shopping ...
-else
-// relax
+if QueryP(fridge,"shop!") {
+    for {
+        Get(fridge,?item,?quantity)
+        // go shopping ...
+    }
+}
 ```
 
-The standard solution to this problem is add an operation to perform queries atomically. We call such operation query. A query queryT) takes a pattern T = (?x1, ?x2, .., ?xn) as parameter and has a behaviour similar to the atomic execution of the sequence of commands
-get (?x1, ?x2, .., ?xn) ; put (x1, x2, .., xn) ;
-Now, Alice, Bob and Charlie can cooperate as follows
-
-Alice:
-```go
-put (milk, 2) ; ...
-put (butter, 1) ; ...
-put ("shop!") ; ...
-
-Bob:
-```go
-query ("shop!") ; while true do
-get (?item, ?q) ; // go shopping ...
-```
-
-Charlie:
-```go
-if queryp ("shop!") then while true do
-get (?item, ?q) ; // go shopping ...
-else
-// relax
-```
-
-A unique advantage of introducing a query operation is to allow concurrent queries efficiently.
-
-# Efficient updates
-A tuple in a tuple space can be easily update by first retrieving it and then inserting an updated version of it. Recall, for example how Alice can update the grocery list by increasing the number of milk bottles
-
-```go
-get ("milk", ?x) ; put ("milk", x + 1) ;
-```
-
-An annoying thing in this solution is that while Alice is updating the grocery list, there is an moment in which there may be no tuple matching the pattern ("milk", ?x) in the tuple space, so Bob could actually think that no milk needs to be bought. More generally, queries and retrievals may unnecessarily block or fail.
-A possible solution to this issue is to introduce an update operation. The operation replace(T,t) waits until there is a tuple matching the template T and then replaces it by a tuple t. It amounts to performing the following sequence atomically
-
-```go
-get T; put t;
-```
-
-Typically t can contain variables that are bound in T. For example, Alice can now update the grocery list with the command
-
-```
-replace ("milk", ?x) with ("milk", x + 1) ;
-```
+A unique advantage of introducing the query operation is that it allows concurrent queries efficiently.
 
 # Synchronisation mechanisms
-Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple (lock) and using a simple protocol to work on the tuple space with exclusive access, namely with:
+Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple ```(lock)``` and using a simple protocol to work on the tuple space with exclusive access, namely with:
 
 ```go
-get ("lock") ; // work
-put ("lock") ;
+Get(s,"lock")
+// work
+Put(s,"lock")
 ```
 
-Another example is a one-time barrier for N processes, which can be im- plemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
-put ("barrier", N) ;
+Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
+
+```go
+Put(s,"barrier",N) ;
+```
+
 and when process reaches the barrier it executes
-get ("barrier", ?n) ; put ("barrier", n − 1) ; query ("barrier", 0) ; // move on
-which updates the barrier counter and blocks the process until all processes are ready.
- 
-Alice
-```go
-x := y + 1 ;
-```
-is realised with
 
 ```go
-query ("y", ?A_y) ; get ("x", ?A_x) ; put ("x", A_y + 1) ;
-Bob y:=x+1;
-Bob
-query ("x", ?B_x) ; get ("y", ?B_y) ; put("y",B_x+1);
+Get(s,"barrier",&n)
+Put(s,"barrier",n−1)
+Query(s,"barrier",0)
+// move on
 ```
-
-# Tuple spaces and shared memory
-Tuple spaces can be used to implement a memory in a similar way in which a map or dictionary can be used to model a memory. The idea is that every variable x is represented by a unique tuple
-
-```
-("x", v)
-```
-
-where v is the current value of x.
-
-Updating a variable x can be realised by updating the corresponding tu-
-ple, possibly after having read the values some other (variable) tuples. For instance, the assignment
-
-```go
-x := y + z;
-```
-
-can be implemented with
-
-```go
-query ("y", ?my_y) ; query ("z", ?my_z) ;
-get ("x", ?my_x)
-put ("x", my_y + my_z) ;
-```
-
-A tuple space can be hence used as to emulate a shared memory.
-
-since updates are not atomic the tuple space ("x", 0) may end up to be
-("y", 0)
-("x", 1) ("y", 1)
-
-if the both queries are executed before any update.
    
 # Reading suggestions
 Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Dis- tributed Programming. Addison-Wesley, 1 edition
