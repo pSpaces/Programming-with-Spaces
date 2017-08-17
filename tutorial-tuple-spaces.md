@@ -105,6 +105,16 @@ and that Alice wants to execute command
 Get(fridge,?item,?quantity);
 ```
 
-Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve.
+Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different behaviours (FIFO-like, LIFO-like, randomised, etc.). We will come back to in the next chapters.
 
-A complete example can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
+A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
+
+What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming) or try some of these exercises:
+
+1. Implement a program that inserts a sequence 0..n of natural numbers in a tuple space and them retrives them in the order 0..n.
+
+
+TBD
+
+
+
