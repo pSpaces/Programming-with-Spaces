@@ -111,4 +111,13 @@ Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```
 
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
 
+Further operations on spaces include:
+- `getp` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `getall` is a non-blocking operation that returns all tuples matching a template and removes them from the space.
+- `query` is the non-destructive version of `get`. Given a template, the operation blocks until a tuple is found in the space which matches the template. It then returns the matched `tuple` and removes it from the space. 
+- `queryp` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `queryall` is the non-destructive version of `getAll`.
+
+They will be discussed in further chapters.
+
 What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming)!
