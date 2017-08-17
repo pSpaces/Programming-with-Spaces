@@ -109,8 +109,4 @@ Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```
 
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
 
-What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming) or try some of these exercises:
-
-1. Implement a program that inserts a sequence 0..n of natural numbers in a tuple space and them retrives them in the order 0..n.
-
-
+What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming)!
