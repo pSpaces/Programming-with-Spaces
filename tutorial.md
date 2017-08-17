@@ -1,4 +1,4 @@
-This tutorial provides a gentle introduction to programming with spaces.
+This tutorial provides a gentle introduction to programming with spaces. We use the Go implemenation of spaces ([goSpace](https://github.com/pSpaces/goSpace)) in the code examples, but most explanations are generic and can be easily adapted to other programming languages.
 
 The chapters are:
 1. [Programming with Tuple Spaces](tutorial-tuple-spaces.md)
