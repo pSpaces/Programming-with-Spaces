@@ -4,46 +4,72 @@ This chapter provides a gentle introduction to concurrent programing using space
  
 ## Blocking vs non-blocking operations
 
-What happens when we try to retrieve a tuple ```t``` with a get operation and there is actually no such tuple in the tuple space? For example, if Alice tries to behave as in
+The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
 ```go
-Put(fridge,"milk",1)
-Get(fridge,"milk",2)
-Put(fridge,"milk",3)
+Get(fridge,"milk",&quantity)
 ```
 
-It depends on whether we consider the get operation to be blocking or non-blocking. In this chapter we consider a blocking semantics of ```get```. So that in the above code, Alice gets stuck, waiting until a tuple ("milk",2) appears in the tuple space.
-We can also consider a non-blocking operation getp t that returns a boolean value to notify if a tuple was actually retrieved or not. This way, Alice can increase the number of bottles to buy as follows
+she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple ("milk",2) appears in the tuple space. Blocking operations are key to implement synchronisation as we shall see. 
 
-```
-if getp ("milk", 1) then put ("milk", 2) ;
-else if getp ("milk", 2) then put ("milk", 3) ;
-```
+Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```GetP(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a boolean value to notify if a tuple was actually retrieved or not.
 
-The blocking vs non-blocking dilemma applies to the put operation as well:
-a program
+In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
-```
-put ("milk", 2) ; put ("butter", 1) ;
+```go
+some_milk := GetP(fridge,"milk",&quantity)
+if (some_milk) // go shopping
+else put ("milk", 1) ;
 ```
 
-inserts tuple ("milk", 2) before ("butter", 1). However, there are situations in which we could consider a non-blocking variant of the put operation called putp that allows one to progress while tuples are being inserted.
+Also the ```Put``` operation has non-blocking variant ```PutP```, which allows one to progress while tuples are being inserted.
 
-# Producer/consumer
-The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to intro- duce our first coordinated system. The scenario is as before and behaviour of Alice and Bob can then be sketched as
+Indeed, the programs
+
+```go
+Put(fridge,"milk", 2)
+Put(fridge,"butter", 1) 
+```
+
+and
+
+```go
+PutP(fridge,"milk", 2)
+PutP(fridge,"butter", 1) 
+```
+
+behave differently. Indeed, the order in which the tuples appear in the tuple space in the second example is not guaranteed and the tuple space may be
+
+```
+(fridge,"butter", 1)
+```
+
+Note that the previous program may not be identical in behavour to
+
+```go
+go Put(fridge,"milk", 2)
+Put(fridge,"butter", 1) 
+``` 
+
+# Producer/consumer pattern
+The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
 ```go
-put ("milk", 2) 
-put ("butter", 1)
-```
-Bob:
-```go
-while true do
-get (?item, ?quantity) ; // go buy item
+Put(fridge,"milk",2) 
+Put(fridge,"butter",1)
+...
 ```
 
-The adopted coordination pattern is called consumer/producer. Alice has the role of a producer of tasks (items to be bought). She generates tasks by adding tuples to the tuple space. Bob has the role of a consumer of tasks. He consumes tasks by retrieving tuples from the tuple space. Note that the coordination between Alice and Bob is very loose: they do not need to meet and they do not need to produce or consume the shopping orders in any particular order.
+Bob:
+```go
+for {
+    GetP(fridge,?item,?quantity)
+    // go shopping 
+}
+```
+
+The adopted coordination pattern is called *consumer/producer*. Alice has the role of a *producer* of tasks (items to be bought). She generates tasks by adding tuples to the tuple space. Bob has the role of a *consumer* of tasks. He consumes tasks by retrieving tuples from the tuple space. Note that the coordination between Alice and Bob is very loose: they do not need to meet and they do not need to produce or consume the shopping orders in any particular order.
 
 This basic basic coordination pattern can be easily extended to the case in which there are multiple producers and consumers.
 
