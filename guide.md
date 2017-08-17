@@ -1,13 +1,4 @@
-# Documentation
-
-# I want to program with Spaces in language X
-You are in the wrong place :) Go to the the documentation of xSpaces follow the instructions.
-
-# Can a program written in X and another one written in Y interact through Spaces?
-Yes, they can. Instructions coming soon...
-
-# I want to implement a new support for Spaces in language X
-You should adhere to the below guidelines. The key idea of the programming model is to support interaction by adding and retrieving tuples from local and remote spaces. Programs and spaces can be located in any device. All spaces support the same minimal API and interaction protocols.
+This document provides some technical guidelines on the implementation of pSpaces. It is particularly meant for those willing to implement support for a new language. The key idea of the programming model is to support interaction by adding and retrieving tuples from local and remote spaces. Programs and spaces can be located in any device. All spaces support the same minimal API and interaction protocols.
  
 ## Local Spaces
 A space is is a collection of tuples supporting a simple API described below. Whenever possible the interface or abstract data type used for specify the API of spaces should be called `Space`.
