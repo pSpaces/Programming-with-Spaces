@@ -114,7 +114,3 @@ What next? Move to the next chapter on [concurrent programing with spaces](tutor
 1. Implement a program that inserts a sequence 0..n of natural numbers in a tuple space and them retrives them in the order 0..n.
 
 
-TBD
-
-
-
