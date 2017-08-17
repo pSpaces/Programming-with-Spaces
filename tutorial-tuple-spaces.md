@@ -106,3 +106,5 @@ Get(fridge,?item,?quantity);
 ```
 
 Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve.
+
+A complete example can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
