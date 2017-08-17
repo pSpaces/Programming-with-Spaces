@@ -74,42 +74,46 @@ The adopted coordination pattern is called *consumer/producer*. Alice has the ro
 This basic basic coordination pattern can be easily extended to the case in which there are multiple producers and consumers.
 
 # Efficient queries
-There are many situations in which one would like inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ("shop!") as in
+There are many situations in which one would like inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
 
 Alice:
 ```go
-put (milk, 2) ; ...
-put (butter, 1) ; ...
-put ("shop!") ; ...
+Put(fridge,"milk",2)
+Put(fridge,butter",1)
+Put(fridge,"shop!")
 ```
 
 Bob:
 ```go
-get ("shop!") ; put ("shop!") ; while true do
-get (?item, ?quantity) ; // go shopping
+Get(fridge,"shop!")
+Put(fridge,"shop!")
+for {
+    Get(fridge,?item,?quantity) ;
+    // go shopping
+}
 ```
 
 A drawback of this solution is that the check that Bob performs is not atomic. There is hence a moment in which the tuple ("shop!") removed by Bob which may lead other rooommates to thing that there is no shopping to be done, as in
 
 Alice:
 ```go
-put (milk, 2) ; ...
-put (butter, 1) ; ...
-put ("shop!") ; ...
+put(fridge,milk, 2) ; ...
+put(fridge,butter, 1) ; ...
+put(fridge,"shop!") ; ...
 ```
 
-Bob
+Bob:
 ```go
-get ("shop!") ;
-put ("shop!") ; while true do
-get (?item, ?q) ; // go shopping ...
+get (fridge,"shop!") ;
+put (fridge,"shop!") ; while true do
+get (fridge,?item, ?q) ; // go shopping ...
 ```
 
 Charlie:
 ```go
-if getp ("shop!") then
-put ("shop!") ; while true do
-get (?item, ?q) ; // go shopping ...
+if getp (fridge,"shop!") then
+put (fridge,"shop!") ; while true do
+get (fridge,?item, ?q) ; // go shopping ...
 else
 // relax
 ```
@@ -209,7 +213,7 @@ can be implemented with
 query ("y", ?my_y) ; query ("z", ?my_z) ;
 get ("x", ?my_x)
 put ("x", my_y + my_z) ;
-```go
+```
 
 A tuple space can be hence used as to emulate a shared memory.
 
@@ -218,24 +222,6 @@ since updates are not atomic the tuple space ("x", 0) may end up to be
 ("x", 1) ("y", 1)
 
 if the both queries are executed before any update.
-
-## Tuple spaces and message passing
-Communication channels can be implemented in tuple spaces in a similar way a set can be used to implement a list or a queue. Consider the simple case of FIFO channels. A possible solution is to represent messages in a channel c with tuples of the form
-("c", "msg", i, m)
-taking unique consecutive identifiers i, and m as the actual message con- tent.
-Then pointers to the next available identifier and the identifier of the message at the head of the channel are used, which initially can be set to
-("c", "first", 0) ("c", "next", 0)
-For example, a channel Alice’s Inbox with contents <"hi"<"LOL"<"bye"<
-can be represented in the tuple space with
-("Alice’s Inbox", "first", 0); ("Alice’s Inbox", "msg", 0, "hi"); ("Alice’s Inbox", "msg", 1, "LOL"); ("Alice’s Inbox", "msg", 2, "bye"); ("Alice’s Inbox", "next", 3);
-Sending a message m on a channel c can be done as follows:
-get (c, "next", ?i) ;
-put (c, "msg", i, m) ; put (c, "next", i + 1, 0) ;
-while reading the next message from channel m into variable m can be done as follows:
-get (c, "first", ?i) ;
-while queryp((c, "next", i)) do
-skip;
-get (c, "msg", i, ?m) ; put (c, "first", i + 1) ;
    
 # Reading suggestions
 Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Dis- tributed Programming. Addison-Wesley, 1 edition
