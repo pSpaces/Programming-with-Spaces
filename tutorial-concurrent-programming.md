@@ -155,7 +155,7 @@ Query(s,"barrier",0)
 ```
    
 # Reading suggestions
-Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Dis- tributed Programming. Addison-Wesley, 1 edition
-Gelernter, D. (1985). Generative communication in Linda. ACM Trans. Pro- gram. Lang. Syst., 7(1):80–112
+Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
+Gelernter, D. (1985). Generative communication in Linda. ACM Trans. Program. Lang. Syst., 7(1):80–112
 
-NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their re- spective non-blocking variants. In the paper and and in the literature you will often find that put, get and query are called out, in and rd (or read). Asynchronous/non-blocking versions of put, get and query are called eval, inp and rdp.
+NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their respective non-blocking variants. In the paper and and in the literature you will often find that put, get and query are called out, in and rd (or read). Asynchronous/non-blocking versions of put, get and query are called eval, inp and rdp.
