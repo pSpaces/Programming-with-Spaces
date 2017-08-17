@@ -13,25 +13,25 @@ We will go through it step by step.
 
 | Go | C# | Java |
 |----|----|------|
-| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` |
+| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```SpaceRepository repository = new SpaceRepository();```<br>```repository.addGate("tcp://127.0.0.1:9001/?keep");```<br>```repository.add("inbox", new SequentialSpace());```<br>```RemoteSpace inbox = new RemoteSpace("tcp://127.0.0.1:9001/?keep")``` |
 
 2. Put a simple tuple in the space
 
 | Go | C# | Java |
 |----|----|------|
-| ```goSpace.Put(inbox, "Hello World!")``` | ```dtu.Put("Hello world!");``` |
+| ```goSpace.Put(inbox, "Hello world!")``` | ```dtu.Put("Hello world!");``` | ```inbox.put("Hellow world!");```
 
 3. Retreive the tuple from the space
 
 | Go | C# | Java |
 |----|----|------|
-|```var message string;```<br>```goSpace.Get(inbox, &message) ``` | ```ITuple tuple = dtu.Get(typeof(string));``` |
+|```var message string;```<br>```goSpace.Get(inbox, &message) ``` | ```ITuple message = inbox.Get(typeof(string));``` | ```Tuple message = inbox.get(new FormalField(String.class())``` |
 
 4. Print the message
 
 | Go | C# | Java |
 |----|----|------|
-```fmt.Println(message)``` | ```Console.WriteLine(tuple);```
+```fmt.Println(message)``` | ```Console.WriteLine(tuple);``` | ```System.out.println(messsage.at(0));```
 
 
 If you got it, you are now ready for more examples :)
