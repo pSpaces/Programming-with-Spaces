@@ -105,4 +105,4 @@ and that Alice wants to execute command
 Get(fridge,?item,?quantity);
 ```
 
-Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter", 3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve.
+Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve.
