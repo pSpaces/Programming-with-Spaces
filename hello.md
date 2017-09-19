@@ -13,7 +13,7 @@ We will go through it step by step.
 
 | Go | C# | Java |
 |----|----|------|
-| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```Space space = new SequentialSpace();```|
+| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```Space inbox = new SequentialSpace();```|
 
 2. Put a simple tuple in the space
 
@@ -25,13 +25,13 @@ We will go through it step by step.
 
 | Go | C# | Java |
 |----|----|------|
-|```var message string;```<br>```goSpace.Get(inbox, &message) ``` | ```ITuple message = inbox.Get(typeof(string));``` | ```Tuple message = inbox.get(new FormalField(String.class())``` |
+|```var message string;```<br>```goSpace.Get(inbox, &message) ``` | ```ITuple message = inbox.Get(typeof(string));``` | ```Object[] tuple = inbox.get(new FormalField(String.class())``` |
 
 4. Print the message
 
 | Go | C# | Java |
 |----|----|------|
-```fmt.Println(message)``` | ```Console.WriteLine(tuple);``` | ```System.out.println(messsage.at(0));```
+```fmt.Println(message)``` | ```Console.WriteLine(tuple);``` | ```System.out.println(tuple[0]);```
 
 
 If you got it, you are now ready for more examples :)
