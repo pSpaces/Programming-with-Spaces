@@ -3,3 +3,4 @@ This tutorial provides a gentle introduction to programming with spaces. We use 
 The chapters are:
 1. [Programming with Spaces](tutorial-tuple-spaces.md)
 2. [Concurrent Programming with Spaces](tutorial-concurrent-programming.md)
+3. [Distributed Programming with Spaces](tutorial-distributed-programming.md)

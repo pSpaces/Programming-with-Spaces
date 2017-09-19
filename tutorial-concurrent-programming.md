@@ -1,7 +1,7 @@
 # Concurrent Programming with Tuple Spaces
 
-This chapter provides a gentle introduction to concurrent programing using spaces. The chapter is based on a simple and traditional notion of tuple space, namely a multiset of tuples. The chapters starts introducing a basic set of operations, which is incrementally enriched with additional operations. The final part discusses how to use tuple spaces to implement basic coordination and synchronisation mechanisms, and how to implement traditional communication means such as message passing and shared memory. The flavour of tuple spaces in this chapter is essentially based on Linda [Gelernter, 1985]. The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space ```fridge``` to coordinate their activities. 
- 
+This chapter provides a gentle introduction to concurrent programming using spaces. The chapter is based on a simple and traditional notion of tuple space, namely a multiset of tuples. The chapters starts introducing a basic set of operations, which is incrementally enriched with additional operations. The final part discusses how to use tuple spaces to implement basic coordination and synchronisation mechanisms, and how to implement traditional communication means such as message passing and shared memory. The flavour of tuple spaces in this chapter is essentially based on Linda [Gelernter, 1985]. The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space ```fridge``` to coordinate their activities.
+
 ## Blocking vs non-blocking operations
 
 The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
@@ -10,7 +10,7 @@ The previous chapter did not mention that ```Get``` is actually a blocking opera
 Get(fridge,"milk",&quantity)
 ```
 
-she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple ("milk",2) appears in the tuple space. Blocking operations are key to implement synchronisation as we shall see. 
+she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple ("milk",2) appears in the tuple space. Blocking operations are key to implement synchronisation as we shall see.
 
 Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```GetP(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a boolean value to notify if a tuple was actually retrieved or not.
 
@@ -28,14 +28,14 @@ Indeed, the programs
 
 ```go
 Put(fridge,"milk", 2)
-Put(fridge,"butter", 1) 
+Put(fridge,"butter", 1)
 ```
 
 and
 
 ```go
 PutP(fridge,"milk", 2)
-PutP(fridge,"butter", 1) 
+PutP(fridge,"butter", 1)
 ```
 
 behave differently. Indeed, the order in which the tuples appear in the tuple space in the second example is not guaranteed and the tuple space may be
@@ -48,15 +48,15 @@ Note that the previous program may not be identical in behavour to
 
 ```go
 go Put(fridge,"milk", 2)
-Put(fridge,"butter", 1) 
-``` 
+Put(fridge,"butter", 1)
+```
 
 # Producer/consumer pattern
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
 ```go
-Put(fridge,"milk",2) 
+Put(fridge,"milk",2)
 Put(fridge,"butter",1)
 ...
 ```
@@ -65,7 +65,7 @@ Bob:
 ```go
 for {
     GetP(fridge,?item,?quantity)
-    // go shopping 
+    // go shopping
 }
 ```
 
@@ -153,9 +153,11 @@ Put(s,"barrier",n−1)
 Query(s,"barrier",0)
 // move on
 ```
-   
+
 # Reading suggestions
 Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
 Gelernter, D. (1985). Generative communication in Linda. ACM Trans. Program. Lang. Syst., 7(1):80–112
 
 NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their respective non-blocking variants. In the paper and and in the literature you will often find that put, get and query are called out, in and rd (or read). Asynchronous/non-blocking versions of put, get and query are called eval, inp and rdp.
+
+What next? Move to the next chapter on [distributed programing with spaces](tutorial-distributed-programming.md)!
