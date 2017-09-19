@@ -13,7 +13,7 @@ We will go through it step by step.
 
 | Go | C# | Java |
 |----|----|------|
-| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```SpaceRepository repository = new SpaceRepository();```<br>```repository.addGate("tcp://127.0.0.1:9001/?keep");```<br>```repository.add("inbox", new SequentialSpace());```<br>```RemoteSpace inbox = new RemoteSpace("tcp://127.0.0.1:9001/?keep")``` |
+| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```Space space = new SequentialSpace();```|
 
 2. Put a simple tuple in the space
 
