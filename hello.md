@@ -17,7 +17,7 @@ inbox := goSpace.NewSpace("8080")
 ``` 
 C#
 ```cs
-FifoSpace dtu = new FifoSpace();
+FifoSpace dtu = new SequentialSpace();
 ```
 Java
 ```java
