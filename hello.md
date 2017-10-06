@@ -39,7 +39,7 @@ Java
 inbox.put("Hellow world!");
 ```
 
-# 3. Retreive the tuple from the space
+# 3. Retrieve the tuple from the space
 
 Go
 ```go
