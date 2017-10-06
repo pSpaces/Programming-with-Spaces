@@ -9,7 +9,7 @@ We will now create a simple program that illustrates the most basic features of 
 
 We will go through it step by step.
 
-1. Create a space named `inbox` at port 8080
+# 1. Create a space named `inbox` at port 8080
 
 Go
 ```go
@@ -24,7 +24,7 @@ Java
 Space inbox = new SequentialSpace();
 ```
 
-2. Put a simple tuple in the space
+# 2. Put a simple tuple in the space
 
 Go
 ```go
@@ -39,7 +39,7 @@ Java
 inbox.put("Hellow world!");
 ```
 
-3. Retreive the tuple from the space
+# 3. Retreive the tuple from the space
 
 Go
 ```go
@@ -55,7 +55,7 @@ Java
 Object[] tuple = inbox.get(new FormalField(String.class())
 ```
 
-4. Print the message
+# 4. Print the message
 
 Go
 ```go
@@ -69,6 +69,5 @@ Java
 ```java
 System.out.println(tuple[0]);
 ```
-
 
 If you got it, you are now ready for more examples :)
