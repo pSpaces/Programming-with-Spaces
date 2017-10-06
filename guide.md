@@ -11,10 +11,10 @@ All spaces must implement the following operations:
 - `put` adds a tuple to a space. 
 - `get` blocks until a tuple is found in the space which matches a given template. It then returns the matched tuple and removes it from the space. 
 - `getp` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `getall` is a non-blocking operation that returns all tuples matching a template and removes them from the space.
+- `getAll` is a non-blocking operation that returns all tuples matching a template and removes them from the space.
 - `query` is the non-destructive version of `get`. Given a template, the operation blocks until a tuple is found in the space which matches the template. It then returns the matched `tuple` and removes it from the space. 
 - `queryp` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `queryall` is the non-destructive version of `getAll`.
+- `queryAll` is the non-destructive version of `getAll`.
 
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
