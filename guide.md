@@ -35,10 +35,10 @@ The data structure for space repositories should be named `SpaceRepository`. A s
 
 Space repositories should support the following operations:
 - a constructor, with no parameters.
-- 'addSpace': this operation associates a space to the repository.  
-- 'delSpace': this operation dissasociates a space from the repository.
-- 'addGate': this operation associates a gate to the repository.  
-- 'delGate': this operation dissasociates a space from the repository. 
+- 'addSpace': this operation associates a space to the repository. There is no effect if the space does not exist or if the space is already associated with the repository.
+- 'delSpace': this operation dissasociates a space from the repository. There is no effect if the space does not exist or if it is not associated to the repository. 
+- 'addGate': this operation associates a gate to the repository. The gate is created if it does not exist. There is no effect if the gate is already associated to the gate.
+- 'delGate': this operation dissasociates a space from the repository. There is no effect if the gate is not associated to the repository.
 
 A gate is just an access point than application opens to provide access to the spaces it hosts. Each gate is specified by an URI with the following format:
  
