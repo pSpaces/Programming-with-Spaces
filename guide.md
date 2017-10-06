@@ -23,7 +23,13 @@ The core API underspecifies the behaviour of some operations. For example, the o
 A space can be accessed locally as an ordinary data structure and can hence offer a local API. Spaces can be accessed remotely and should hence support a remote API. Whenever possible, a wrapper for remote spaces should be offered to support a uniform access to spaces. 
 
 ## Space repositories and space gates
-To make a space accessible remotely, the space must be part of a space repository. Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
+
+
+![Spaces, repositories and gates](figures/spaces-repositories-gates.png)
+
+To make a space accessible to other applications, the space must be part of a space repository and that repository must be associated to at least one gate. The above figure illustrates these concepts with an example. Applications are represented as rounded boxes. The `server` application coordinates an application `app` which offers an interface to monitor the `sensor` of a device and control its `actuator`. The application `server` has three spaces (denoted with ovals): `information`, `commands` and `data`. The spaces `information` and `commands` belong to the uppermost repository (denoted with a dashed oval) is accessible though gate `gate1`. This is the gate that the `app` uses to retrieve information from the sensor and to insert new commands. The space `command` is also part to the bottom repository, which has a gate `gate2`. This gate is used by the `sensor` to provide raw data to the `server` and by the `actuator` to obtain new commands from the `server`. 
+
+Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
  
 `<protocol>://<host>[:<port>][?<mode>]`
  
