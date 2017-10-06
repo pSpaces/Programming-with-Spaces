@@ -66,7 +66,7 @@ As an example, a user should be able to create a space repository at `coolspaces
 SpaceRepository repository = new SpaceRepository();
 repository.addGate("coolspaces.com:1234?CONN");
 repository.addSpace("data",new SequentialSpace());
-repository.addSpace("data",new SequentialSpace());
+repository.addSpace("messages",new SequentialSpace());
 ```
 
 Remote spaces are addressed with a space address, which is an URI of the format
@@ -77,9 +77,9 @@ The format is very much like that of gates, but with name of the space.
  
 In our example, a programmer should be able to access the spaces created above with code along the lines of
 
-```
-Space data= new RemoteSpace(“coolspaces.com:1234/data?CONN”);
-Space messages= new RemoteSpace(“coolspaces:1234/messages?CONN”);
+```java
+Space data = new RemoteSpace("coolspaces.com:1234/data?CONN");
+Space messages = new RemoteSpace("coolspaces:1234/messages?CONN");
 ```
 
 assuming a wrapper `RemoteSpace` is supported.
