@@ -21,7 +21,8 @@ All the above operations may fail (e.g. due to communication errors or denied ac
 The core API intentionally underspecifies the behaviour of simple retrieval operations (`get`, `getp`, `query` and `queryp`). However, the following implementations should obey to the behaviour specified below:
 - `SequentialSpace`: retrieval operations return the oldest matching tuple. 
 - `FifoSpace`: retrieval operations return the oldest tuple, if it matches the specified template.
-- `LifoSpace`: retrieval operations must return the newest matching tuple.
+- `LifoSpace`: retrieval operations must return the newest tuple, if it matches the specified template.
+- `PileSpace`: retreival operations must return the newest matching tuple.
 - `RandomSpace`: retrival operations return any matching tuple, chosen according to a random choice with uniform distribution (equally likelihood of getting any tuple).
 
 All implementations should provide at least the `SequentialSpace` implementation. The rest are optional. 
