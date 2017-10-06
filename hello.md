@@ -11,27 +11,64 @@ We will go through it step by step.
 
 1. Create a space named `inbox` at port 8080
 
-| Go | C# | Java |
-|----|----|------|
-| ``` inbox := goSpace.NewSpace("8080")``` | ``` FifoSpace dtu = new FifoSpace();``` | ```Space inbox = new SequentialSpace();```|
+Go
+```go
+inbox := goSpace.NewSpace("8080")
+``` 
+C#
+```cs
+FifoSpace dtu = new FifoSpace();
+```
+Java
+```java
+Space inbox = new SequentialSpace();
+```
 
 2. Put a simple tuple in the space
 
-| Go | C# | Java |
-|----|----|------|
-| ```goSpace.Put(inbox, "Hello world!")``` | ```dtu.Put("Hello world!");``` | ```inbox.put("Hellow world!");```
+Go
+```go
+goSpace.Put(inbox, "Hello world!")
+```
+C#
+```cs
+dtu.Put("Hello world!");
+```
+Java
+```java
+inbox.put("Hellow world!");
+```
 
 3. Retreive the tuple from the space
 
-| Go | C# | Java |
-|----|----|------|
-|```var message string;```<br>```goSpace.Get(inbox, &message) ``` | ```ITuple message = inbox.Get(typeof(string));``` | ```Object[] tuple = inbox.get(new FormalField(String.class())``` |
+Go
+```go
+var message string;
+goSpace.Get(inbox, &message)
+```
+C#
+```cs
+ITuple message = inbox.Get(typeof(string));
+```
+Java
+```java
+Object[] tuple = inbox.get(new FormalField(String.class())
+```
 
 4. Print the message
 
-| Go | C# | Java |
-|----|----|------|
-```fmt.Println(message)``` | ```Console.WriteLine(tuple);``` | ```System.out.println(tuple[0]);```
+Go
+```go
+fmt.Println(message)
+```
+C#
+```cs
+Console.WriteLine(tuple);
+```
+Java
+```java
+System.out.println(tuple[0]);
+```
 
 
 If you got it, you are now ready for more examples :)
