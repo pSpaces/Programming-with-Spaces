@@ -18,7 +18,16 @@ All spaces must implement the following operations:
 
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
-The core API underspecifies the behaviour of some operations. For example, the order of retrievals is underspecified, and different variants may include FIFO (return the oldest matching tuple), LIFO (return the newest matching tuple), or random (randomly return any matching tuple). The corresponding space structures can be called FifoSpace, LifoSpace, RandomSpace, etc.
+The core API intentionally underspecifies the behaviour of simple retrieval operations (`get`, `getp`, `query` and `queryp`). However, the following implementations should obey to the behaviour specified below:
+- `SequentialSpace`: retrieval operations return the oldest matching tuple. 
+- `FifoSpace`: retrieval operations return the oldest tuple, if it matches the specified template.
+- `LifoSpace`: retrieval operations must return the newest matching tuple.
+- `RandomSpace`: retrival operations return any matching tuple, chosen according to a random choice with uniform distribution (equally likelihood of getting any tuple).
+
+All implementations should provide at least the `SequentialSpace` implementation. The rest are optional. 
+
+As a side note, `SequentialSpace` amounts to message channels in Promela, `FifoSpace` amounts to unbounded FIFO channels (with testing in addition to read operations) and `LifoSpace` provides a stack-based space.
+
  
 A space can be accessed locally as an ordinary data structure and can hence offer a local API. Spaces can be accessed remotely and should hence support a remote API. Whenever possible, a wrapper for remote spaces should be offered to support a uniform access to spaces. 
 
