@@ -29,13 +29,24 @@ A space can be accessed locally as an ordinary data structure and can hence offe
 
 To make a space accessible to other applications, the space must be part of a space repository and that repository must be associated to at least one gate. The above figure illustrates these concepts with an example. Applications are represented as rounded boxes. The `server` application coordinates an application `app` which offers an interface to monitor the `sensor` of a device and control its `actuator`. The application `server` has three spaces (denoted with ovals): `information`, `commands` and `data`. The spaces `information` and `commands` belong to the uppermost repository (denoted with a dashed oval) is accessible though gate `gate1`. This is the gate that the `app` uses to retrieve information from the sensor and to insert new commands. The space `command` is also part to the bottom repository, which has a gate `gate2`. This gate is used by the `sensor` to provide raw data to the `server` and by the `actuator` to obtain new commands from the `server`. 
 
-Whenever possible, the data structure for space repositories should be named `SpaceRepository`. Space repositories should be equipped with one or more gates. Each gate is specified by an URI with the following format:
+A space can be dynamically associated to none to several repositories. The notion of repository eases the management and sharing of access points (gates) to spaces. A space that is not associated to a repository can only be accesses by the application that created it. Associating a space with more than one repository is useful in scenarios like the above one, where some spaces need to be made available on two networks (say the Internet for `gate1` and a local network for `gate2`) where other spaces need to be confined to just one of the networks. Similar scenarios can arise if one wants to provide gates with different properties with respect to security or performance.  
+
+The data structure for space repositories should be named `SpaceRepository`. A space repository can be dynamically associated to zero or more spaces, and a space can be associated to zero or more repositories. Similarly, a space repository can be associated with zero or more gates. A gate can be associated to zero or more repositories. 
+
+Space repositories should support the following operations:
+- a constructor, with no parameters.
+- 'addSpace': this operation associates a space to the repository.  
+- 'delSpace': this operation dissasociates a space from the repository.
+- 'addGate': this operation associates a gate to the repository.  
+- 'delGate': this operation dissasociates a space from the repository. 
+
+A gate is just an access point than application opens to provide access to the spaces it hosts. Each gate is specified by an URI with the following format:
  
 `<protocol>://<host>[:<port>][?<mode>]`
  
 where
 - `protocol` is the protocol used for the communication. The default value is `tcp`, and must be supported.
-- `host` is the name or ip address of the device where the space is located.
+- `host` is the name or ip address of the host where the space is located. 
 - `port` is a port number. The default value is 31415.
 - `mode` specifies an interaction protocol (described below). The options are `KEEP`, `CONN`, `PUSH` and `PULL`. The default value is `KEEP`.
  
@@ -53,7 +64,6 @@ repository.addGate("coolspaces.com:1234?CONN");
 repository.add(new Space(“data”));
 repository.add(new Space(“messages”));
 ```
-
 
 Remote spaces are addressed with a space address, which is an URI of the format
  
