@@ -9,15 +9,15 @@ We will now create a simple program that illustrates the most basic features of 
 
 We will go through it step by step.
 
-# 1. Create a space named `inbox` at port 8080
+# 1. Create a space named `inbox`
 
 Go
 ```go
-inbox := goSpace.NewSpace("8080")
+inbox := goSpace.NewSpace()
 ``` 
 C#
 ```cs
-FifoSpace dtu = new SequentialSpace();
+FifoSpace inbox = new FifoSpace();
 ```
 Java
 ```java
