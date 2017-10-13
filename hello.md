@@ -4,7 +4,7 @@ You will need to have one of the frameworks up and running. If not already done,
 
 We will now create a simple program that illustrates the most basic features of spaces. The complete code of our example can be found:
 - [Hello World in Go](https://github.com/pSpaces/goSpace/blob/master/examples/HelloWorld/main.go)
-- [Hello World in C#](https://github.com/pSpaces/dotSpace/wiki/getting-started)
+- [Hello World in C#](https://github.com/pSpaces/dotSpace-Examples/blob/master/HelloWorld/Program.cs)
 - [Hello World in Java](https://github.com/pSpaces/jSpace/blob/master/examples/HelloWorld/src/main/java/org/jspace/examples/helloworld/HelloWorld.java)
 
 We will go through it step by step.
