@@ -17,7 +17,7 @@ inbox := goSpace.NewSpace()
 ``` 
 C#
 ```cs
-FifoSpace inbox = new FifoSpace();
+SequentialSpace inbox = new SequentialSpace();
 ```
 Java
 ```java
