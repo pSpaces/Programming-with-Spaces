@@ -28,11 +28,11 @@ Space inbox = new SequentialSpace();
 
 Go
 ```go
-goSpace.Put(inbox, "Hello world!")
+inbox.Put("Hello world!")
 ```
 C#
 ```cs
-dtu.Put("Hello world!");
+inbox.Put("Hello world!");
 ```
 Java
 ```java
@@ -44,7 +44,7 @@ inbox.put("Hellow world!");
 Go
 ```go
 var message string;
-goSpace.Get(inbox, &message)
+inbox.Get(&message)
 ```
 C#
 ```cs
