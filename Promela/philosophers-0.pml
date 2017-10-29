@@ -43,6 +43,6 @@ active [N] proctype philosopher() {
 		// Return the forks (put the corresponding tuples)
 		board!fork,left;
 		board!fork,right
-     	printf("Philosopher %d put both forks on the table\n",me);
+     		printf("Philosopher %d put both forks on the table\n",me);
 	od
 }
