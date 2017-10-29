@@ -6,6 +6,8 @@ We will now create a simple program that illustrates the most basic features of 
 - [Hello World in Go](https://github.com/pSpaces/goSpace/blob/master/examples/HelloWorld/main.go)
 - [Hello World in C#](https://github.com/pSpaces/dotSpace-Examples/blob/master/HelloWorld/Program.cs)
 - [Hello World in Java](https://github.com/pSpaces/jSpace/blob/master/examples/HelloWorld/src/main/java/org/jspace/examples/helloworld/HelloWorld.java)
+- [Hello World in Swift](https://github.com/pSpaces/SwiftSpace/blob/master/SwiftSpace/Examples/HelloWorld.swift)
+
 
 We will go through it step by step.
 
@@ -23,6 +25,10 @@ Java
 ```java
 Space inbox = new SequentialSpace();
 ```
+Swift
+```swift
+let inbox = TupleSpace(TupleList())
+```
 
 # 2. Put a simple tuple in the space
 
@@ -37,6 +43,10 @@ inbox.Put("Hello world!");
 Java
 ```java
 inbox.put("Hellow world!");
+```
+Swift
+```swift
+_ = inbox.put(["Hello World!"])
 ```
 
 # 3. Retrieve the tuple from the space
@@ -54,6 +64,11 @@ Java
 ```java
 Object[] tuple = inbox.get(new FormalField(String.class())
 ```
+Swift
+```swift
+let tuple = inbox.get([FormalTemplateField(String.self)])
+```
+
 
 # 4. Print the message
 
@@ -69,5 +84,10 @@ Java
 ```java
 System.out.println(tuple[0]);
 ```
+Swift
+```swift
+print(tuple)
+```
+
 
 If you got it, you are now ready for more examples :)
