@@ -9,7 +9,7 @@ Models in of Spin model checker are specified in Promela, a specification langua
 # Creating a space
 A space is created by creating a correspoding channel. For example 
 
-```c
+```C
 chan space = [N] of { type1, type2, ..., typen };
 ```
 
