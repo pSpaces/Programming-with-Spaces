@@ -35,7 +35,7 @@ active [N] proctype philosopher() {
 
 		// Wait until the right fork is ready (get the corresponding tuple)
 	   	board?fork,eval(right);
-       	printf("Philosopher %d got right fork\n",me);
+       		printf("Philosopher %d got right fork\n",me);
 
 		// Lunch time
 		printf("Philosopher %d is eating...\n",me);
