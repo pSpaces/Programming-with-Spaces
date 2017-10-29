@@ -26,5 +26,9 @@ Not all operations are supported in Promela and the actual syntax is significant
 # Templates and Matching
 Templates are specified as follows. If a variable `v` appears in the template, the value from the corresponding field in the tuple that is matched is copied into `v` upon retrieval of the tuple. To avoid updating the variable and just using the variable as its value, one has to use `eval(v)` to force a match of a message field with the current value of variable `v`. 
 
+# Examples
+See:
+- [Dining philosophers](philosophers-0.md)
+
 
 
