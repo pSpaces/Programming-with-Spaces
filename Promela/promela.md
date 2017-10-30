@@ -6,12 +6,13 @@ This document provides some guidelines on how to use the [Spin](http://spinroot.
 
 # Limitations
 Models in the Spin model checker are specified in [Promela](http://spinroot.com/spin/Man/Intro.html), a specification language with a C-like syntax which supports concurrent processes communicating via shared memory and message channels. Promela does *not* naturally support all features of pSpace implementations but a subset of them can be easily encoded in Promela. In particular, the main limitations are:
-- Promela does not support repositories or gates. Spaces are should be directly modelled as channels.
+- Promela does not support repositories or gates. Spaces are must be directly modelled as channels.
 - Only one class of space can be modelled, namely bounded sequential spaces.
 - Each space can hold only tuples of the same format (declared statically).
+- Tuple fields are limited to [basic data types](http://spinroot.com/spin/Man/datatypes.html).
 
 # Creating a space
-A space is created by creating a correspoding channel. For example 
+A space is created by declaring a correspoding channel. For example 
 
 ```C
 chan space = [N] of { type1, type2, ..., typen };
@@ -28,10 +29,11 @@ Not all operations are supported in Promela and the actual syntax is significant
 - QUERYP: `space??[template]` returns `true` if a matching tuple is found, and `false` otherwise.
 
 # Templates and Matching
-Templates are specified as follows. If a variable `v` appears in the template, the value from the corresponding field in the tuple that is matched is copied into `v` upon retrieval of the tuple. To avoid updating the variable and just using the variable as its value, one has to use `eval(v)` to force a match of a message field with the current value of variable `v`. 
+Templates are comma-separated sequences of expressions (possibly using variables and constants). If a field of the template is just a variable `v`, the value from the corresponding field in the tuple that is matched is copied into `v` upon retrieval of the tuple. To avoid updating the variable and just using the variable as its value, one has to use `eval(v)` to force a match of a message field with the current value of variable `v`. 
 
 # Examples
 The following examples are available:
+- [Hello World!](HelloWorld.pml): a "hello world!" example.
 - [Dining philosophers 0](philosophers-0.md): wrong solution that deadlocks.
 - [Dining philosophers 1](philosophers-1.md): correct solution based on tickets.
 
