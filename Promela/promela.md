@@ -28,7 +28,8 @@ Templates are specified as follows. If a variable `v` appears in the template, t
 
 # Examples
 See:
-- [Dining philosophers](philosophers-0.md)
+- [Dining philosophers 0](philosophers-0.md): wrong solution that deadlocks.
+- [Dining philosophers 1](philosophers-1.md): correct solution based on tickets.
 
 
 
