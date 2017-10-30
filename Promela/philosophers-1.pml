@@ -9,7 +9,7 @@ mtype = { fork , ticket }
 
 // We define two sequential spaces named "board" (for forks) and "bowl" (for tickets)
 
-// Tuples on the board are of type "< mtype , byte >"
+// Tuples on the board are of type "< mtype , int >"
 // where the first field is the kind of tuple (e.g. "fork")
 // and the second field is used as identifier (e.g. identifier of the fork)
 chan board = [N] of { mtype , int}

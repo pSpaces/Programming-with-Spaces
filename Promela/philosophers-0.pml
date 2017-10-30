@@ -11,7 +11,28 @@ mtype = { fork }
 // Tuples are of only of type "< mtype , byte >"
 // where the first field is the kind of tuple (e.g. "fork")
 // and the second field is used as identifier (e.g. identifier of the fork)
-chan board = [N] of { mtype , byte}
+chan board = [N] of { mtype , int}
+
+
+// We define a "waiter" process that setups the dining room
+active proctype waiter(){
+
+	int i;
+
+	// put all forks on the table
+	printf("Waiter putting forks on the table...\n");
+	i = N-1; 
+	do
+	::i >= 0 ->
+	 	board!fork,i;
+		printf("Waiter put fork %d on the table.\n",i);
+		i--
+	:: 	else -> break
+	od
+
+	printf("Waiter done.\n");
+
+}
 
 // We define an array of philosopher processes 
 active [N] proctype philosopher() {
@@ -24,17 +45,14 @@ active [N] proctype philosopher() {
 	int left = me;
 	int right = (me+1)%N;
 
-	// The philosopher i puts fork i on the table
-	board!fork,left;
-
 	// The philosopher enters his endless life cycle
 	do
 	::	// Wait until the left fork is ready (get the corresponding tuple)
-		board?fork,eval(left) ->
+		board??fork,eval(left) ->
 	   	printf("Philosopher %d got left fork\n",me);
 
 		// Wait until the right fork is ready (get the corresponding tuple)
-	   	board?fork,eval(right);
+	   	board??fork,eval(right);
        		printf("Philosopher %d got right fork\n",me);
 
 		// Lunch time
