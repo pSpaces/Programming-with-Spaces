@@ -30,7 +30,7 @@ this will run the model and print some verbose information about the behavour of
 To find deadlocks in the model we need to build a verifier for the model with
 
 ```
-spin -0 philosophers.pml
+spin -0 philosophers-0.pml
 gcc -o pan pan.c
 ```
 
