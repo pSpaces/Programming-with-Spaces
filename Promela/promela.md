@@ -21,12 +21,14 @@ chan space = [N] of { type1, type2, ..., typen };
 creates a bounded sequential space named `space` able to contain `N` tuples of type `type1, type2, ..., typen`.
 
 # Operations
-Not all operations are supported in Promela and the actual syntax is significantly different from the one in pSpaces. These are the operations supported and the way they are expressed in Promela:
+Not all operations are supported in Promela and the actual syntax is significantly different from the one in pSpaces. These are the operations directly supported and the way they are expressed in Promela:
 
-- PUT: `space!a,b,...` puts the tuple `<a,b,...>` in the space `space`.
-- GET: `space??template` gets the oldest matching the template `template`. Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching).
-- QUERY: `space??<template>` behaves as as above, but without removing the matched tuple.
-- QUERYP: `space??[template]` returns `true` if a matching tuple is found, and `false` otherwise.
+- `put`: `space!a,b,...` puts the tuple `<a,b,...>` in the space `space`.
+- `query`: `space??<template>` queries the oldest tuple the template `template` (blocks until there is one such tuple). Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching).
+- `queryP`: `space??[template]` returns `true` if a matching tuple is found, and `false` otherwise.
+- `get`: `space??template` removes the oldest tuple matching the template `template` (blocks until there is one such tuple). Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching).
+
+Additional operations like `getP`, `getAll` and `queryAll` can be encoded in an indirect way.
 
 # Templates and Matching
 Templates are comma-separated sequences of expressions (possibly using variables and constants). If a field of the template is just a variable `v`, the value from the corresponding field in the tuple that is matched is copied into `v` upon retrieval of the tuple. To avoid updating the variable and just using the variable as its value, one has to use `eval(v)` to force a match of a message field with the current value of variable `v`. 
