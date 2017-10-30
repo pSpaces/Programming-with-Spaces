@@ -34,8 +34,8 @@ Templates are comma-separated sequences of expressions (possibly using variables
 # Examples
 The following examples are available:
 - [Hello World!](HelloWorld.pml): a "hello world!" example.
-- [Dining philosophers 0](philosophers-0.md): wrong solution (deadlocks) to the [dining philosophers] problem(https://en.wikipedia.org/wiki/Dining_philosophers_problem).
-- [Dining philosophers 1](philosophers-1.md): correct solution to the [dining philosophers] problem(https://en.wikipedia.org/wiki/Dining_philosophers_problem), based on tickets.
+- [Dining philosophers 0](philosophers-0.md): wrong solution (deadlocks) to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
+- [Dining philosophers 1](philosophers-1.md): correct solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem), based on tickets.
 
 
 
