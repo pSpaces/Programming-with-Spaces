@@ -48,8 +48,8 @@ and then run it
 This will show an output like the following one, which indicates the absence of errors:
 
 ```
-(Spin Version 6.4.4 -- 1 November 2015)
-	+ Partial Order Reduction
+(Spin Version 6.4.7 -- 19 August 2017)
++ Partial Order Reduction
 
 Full statespace search for:
 	never claim         	- (none specified)
