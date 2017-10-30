@@ -74,3 +74,25 @@ This will generate a trace of the deadlock in a file, which can be used to repro
 ```
 spin philosophers-0.pml -replay philosophers-0.pml.trail 
 ```
+The result will look like
+
+```
+      Waiter putting forks on the table...
+              Philosopher 2 got left fork
+      Waiter put fork 2 on the table.
+          Philosopher 1 got left fork
+      Waiter put fork 1 on the table.
+      Waiter put fork 0 on the table.
+                  Philosopher 0 got left fork
+      Waiter done.
+      timeout
+#processes: 4
+		queue 1 (board): 
+ 27:	proc  3 (philosopher:1) philosophers-0.pml:55 (state 3)
+ 27:	proc  2 (philosopher:1) philosophers-0.pml:55 (state 3)
+ 27:	proc  1 (philosopher:1) philosophers-0.pml:55 (state 3)
+ 27:	proc  0 (waiter:1) philosophers-0.pml:35 (state 13) <valid end state>
+4 processes created
+```
+
+
