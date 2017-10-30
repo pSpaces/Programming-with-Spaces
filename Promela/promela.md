@@ -5,7 +5,7 @@ This document provides some guidelines on how to use the [Spin](http://spinroot.
 - [Tutorials and Manuals](http://spinroot.com/spin/Man/)
 
 # Limitations
-Models in the Spin model checker are specified in [Promela](http://spinroot.com/spin/Man/Intro.html), a specification language with a C-like syntax which supports concurrent processes communicating via shared memory and message channels. Promela does *not* support the all features of pSpace implementations but a subset of them can be easily encoded in Promela. In particular, the main limitations are:
+Models in the Spin model checker are specified in [Promela](http://spinroot.com/spin/Man/Intro.html), a specification language with a C-like syntax which supports concurrent processes communicating via shared memory and message channels. Promela does *not* naturally support all features of pSpace implementations but a subset of them can be easily encoded in Promela. In particular, the main limitations are:
 - Promela does not support repositories or gates. Spaces are should be directly modelled as channels.
 - Only one class of space can be modelled, namely bounded sequential spaces.
 - Each space can hold only tuples of the same format (declared statically).
