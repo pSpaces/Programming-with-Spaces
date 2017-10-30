@@ -42,11 +42,10 @@ and then run it
 This will show an output like the following one, which indicates the existence of a deadlock (invalid state)
 
 ```
-(Spin Version 6.4.7 -- 19 August 2017)
 pan:1: invalid end state (at depth 17)
 pan: wrote philosophers-0.pml.trail
 
-(Spin Version 6.4.4 -- 1 November 2015)
+(Spin Version 6.4.7 -- 19 August 2017)
 Warning: Search not completed
 	+ Partial Order Reduction
 
