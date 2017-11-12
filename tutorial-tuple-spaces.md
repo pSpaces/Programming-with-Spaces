@@ -1,6 +1,6 @@
 # 1. Programming with Tuple Spaces
 
-This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on).
+This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space `fridge` to coordinate their activities.
 
 ## 1.1 Tuples are finite lists
 A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent coordinates in a map
