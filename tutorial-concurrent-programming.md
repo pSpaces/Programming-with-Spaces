@@ -1,8 +1,12 @@
-# Concurrent Programming with Tuple Spaces
+# 2. Concurrent Programming with Tuple Spaces
 
 This chapter provides a gentle introduction to concurrent programming using spaces. The chapter is based on a simple and traditional notion of tuple space, namely a multiset of tuples. The chapters starts introducing a basic set of operations, which is incrementally enriched with additional operations. The final part discusses how to use tuple spaces to implement basic coordination and synchronisation mechanisms, and how to implement traditional communication means such as message passing and shared memory. The flavour of tuple spaces in this chapter is essentially based on Linda [Gelernter, 1985]. The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space ```fridge``` to coordinate their activities.
 
-## Blocking vs non-blocking operations
+## 2.1 Concurrent activities
+
+All programing languages with pSpace support provide some support for concurrent programmign based on creating concurrent activities (threads in Java and C#, goroutines in Go, etc.). 
+
+## 2.2 Blocking operations
 
 The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
@@ -51,7 +55,7 @@ go Put(fridge,"milk", 2)
 Put(fridge,"butter", 1)
 ```
 
-# Producer/consumer pattern
+## 2.3 A basic coordination pattern: producer/consumer
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
@@ -73,7 +77,7 @@ The adopted coordination pattern is called *consumer/producer*. Alice has the ro
 
 This basic basic coordination pattern can be easily extended to the case in which there are multiple producers and consumers.
 
-# Efficient queries
+## 2.4 Concurrent queries: why queries are in the API
 There are many situations in which one would like inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
 
 Alice:
@@ -130,7 +134,7 @@ if QueryP(fridge,"shop!") {
 
 A unique advantage of introducing the query operation is that it allows concurrent queries efficiently.
 
-# Synchronisation mechanisms
+## 2.5 Another coordination pattern: locks 
 Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple ```(lock)``` and using a simple protocol to work on the tuple space with exclusive access, namely with:
 
 ```go
@@ -139,6 +143,7 @@ Get(s,"lock")
 Put(s,"lock")
 ```
 
+## 2.6 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
 ```go
@@ -154,10 +159,25 @@ Query(s,"barrier",0)
 // move on
 ```
 
-# Reading suggestions
+## Summary
+ 
+We have seen the following operations on spaces:
+- `Query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
+- `Get`: like `Query` but also removes the found tuple.
+
+We have seen the following coordination patterns:
+- Producer/consumer: use a tuples space as a bag of tasks. Producers put tuples representing tasks; consumers get tuples representing tasks.
+- Locks: use a tuple to represent the exclusive right to access the tuple space (or a part of it). Only the process with the tuple can access the space.
+- Barriers: use tuples to count how many processses have reached some status in their computation.
+
+A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
+
+## Reading suggestions
 Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
 Gelernter, D. (1985). Generative communication in Linda. ACM Trans. Program. Lang. Syst., 7(1):80–112
 
-NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their respective non-blocking variants. In the paper and and in the literature you will often find that put, get and query are called out, in and rd (or read). Asynchronous/non-blocking versions of put, get and query are called eval, inp and rdp.
+NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their respective non-blocking variants. In the paper and and in the literature you will often find that `put`, `get` and `query` are called `out`, `in` and `rd` or `read`. Asynchronous/non-blocking versions of `put`, `get` and `query` are called `eval`, `inp` and `rdp`.
 
-What next? Move to the next chapter on [distributed programing with spaces](tutorial-distributed-programming.md)!
+## What next?
+
+Move to the next chapter on [distributed programing with spaces](tutorial-distributed-programming.md)!
