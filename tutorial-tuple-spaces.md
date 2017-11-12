@@ -168,19 +168,34 @@ fridge.QueryP(&item,&quantity);
 
 Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. We will come back to in the next chapters of the tutorial.
 
+# 1.12 Retrieving all matching tuples
+
+Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `QueryAll` returns all tuples matching a template and `GetAll` behaves similarly but removes the matched tuples. 
+
+The following example in Go shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
+
+```
+var item string
+var quantity int
+groceryList, _ := fridge.QueryAll(&item, &quantity)
+fmt.Println("Items to buy: ")
+fmt.Println(groceryList)
+```
+
 # Summary
 
 We have seen the following data types
-- Tuples 
-- Spaces
+- Tuples: finite lists of values.
+- Spaces: collections of tuples.
  
 We have seen the following operations on spaces:
-- `Queryp`: Given a template, the operation searches for a tuple which matches the template. It then returns the matched tuple (if any).
-- `Getp`: like `QueryP` but also removes the found tuple (if any).
+- `Put`: adds a tuple to a space.
+- `QueryP`: searches for a tuple which matching a template. It then returns the matched tuple (if any).
+- `GetP`: like `QueryP` but also removes the found tuple (if any).
 - `QueryAll`: returns all tuples matching a template. 
 - `GetAll`: returns all tuples matching a template and removes them from the space.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
+A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go).
 
 # What next?
 
