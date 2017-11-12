@@ -168,7 +168,7 @@ fridge.QueryP(&item,&quantity);
 
 Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. We will come back to in the next chapters of the tutorial.
 
-# 1.12 Retrieving all matching tuples
+## 1.12 Retrieving all matching tuples
 
 Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `QueryAll` returns all tuples matching a template and `GetAll` behaves similarly but removes the matched tuples. 
 
@@ -182,7 +182,7 @@ fmt.Println("Items to buy: ")
 fmt.Println(groceryList)
 ```
 
-# Summary
+## Summary
 
 We have seen the following data types
 - Tuples: finite lists of values.
@@ -197,6 +197,6 @@ We have seen the following operations on spaces:
 
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go).
 
-# What next?
+## What next?
 
 Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming.md)!
