@@ -1,81 +1,135 @@
-# Programming with Tuple Spaces
+# 1. Programming with Tuple Spaces
 
-This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will consider sequential programming using space as sort of collection data structure. 
+This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on).
 
-## What is a tuple space?
-A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent, for example,  coordinates in a map
+## 1.1 Tuples are finite lists
+A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent coordinates in a map
 
 ```(50°18'0"N, 120°30'0"W)```
 
-dates
+or dates
 
 ```(1984, "September", 13)```
 
-user credentials
+or user credentials
 
 ```("Alice", 1234)```
 
-groceries missing in the fridge
+or groceries missing in the fridge
 
-```("milk")```
+```("milk",1)```
 
 and so on.
 
-A tuple space is a collection of tuples. In general, the term collection has to be understood in the more general sense. However, the traditional interpretation is to consider the simple case of unordered collections of tuples, i.e. multisets of tuples. This is precisely what we shall consider in this chapter. Here is an example of a tuple space representing a grocery list
+## 1.2 Tuples in pSpace
+Tuples are supported in many programming languages. Some of pSpace implementations provide ad-hoc datatypes for tuples.
+
+For example in Go, a tuple `("milk",1)` can be declared and initialised as follows
+
+```go
+var tuple Tuple = CreateTuple("milk", 1)
+````
+
+We shall see that tuple constructors such as `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. 
+
+Tuple fields are accessed position-wise, very much like acccessing arrays. In Go, the `i`-th field is accessed with
 
 ```
-("coffee")
-("butter")
-("milk")
-("bread")
+(tuple.GetFieldAt(i))
+```
+
+## 1.3 Tuple spaces are collections of tuples
+A tuple space is a collection of tuples. In general, the term collection has to be understood in the more general sense (no specific order, bound or type for the tuples). However, the traditional interpretation is to consider the simple case of unordered heterogeneous collections of tuples, i.e. multisets of tuples of different types.
+
+Here is an example of a tuple space representing post-its on a fridge
+
+```
+("coffee",1)
+("clean kitchen")
+("butter",2)
+("clean kitchen")
+("milk",3)
 ```
 
 Recall that a multiset differs from a list in that the order of elements does not matter, and it differs from a set in that an element can appear more than once.
- 
-## Adding and retrieving tuples
-Tuple spaces are data structures and, as such, we need operations to inspect and manipulate them. We start considering a minimal API consisting of just one operation ```Put``` to add tuples and one operation ```Get``` to retrieve tuples. More precisely the operation 
+
+## 1.4 Tuple spaces in pSpaces
+pSpace implementations provide several datatypes for tuple spaces. We shall discuss them in detail in a later chapter of the tutorial. We focus here on sequential spaces. These are created in Go with the constructor `NewSpace`:
+
+```
+fridge := NewSpace("fridge")
+```
+
+The `fridge` space is now ready contain tuple spaces of arbitrary types.
+
+Tuple spaces are collection data structures and, as such, they provide operations to inspect and manipulate them. All implementations of spaces support operations to put (i.e. add) tuples, get (i.e. remove), and query (i.e. search) tuples in a space. The [core API](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md#core-space-api) describes such operations. This tutorial introduces them one by one. 
+
+## 1.5 Adding tuples with `Put`
+
+The operation to add tuples is named ```Put```. More precisely the operation 
 
 ```go
-Put(s,t)
+space.Put(tuple)
 ```
 
-adds the tuple ```t``` to the tuple space ```s```, while the operation
+adds the tuple ```tuple``` to the tuple space ```space```.
+
+## 1.6 Searching tuples with `QueryP`
+
+The operation to search for tuples tuples is called ```QueryP```. In detail,
 
 ```go
-Get(s,t)
+space.QueryP(tuple)
 ```
 
-retrieves the tuple ```t``` from the tuple space ```s```.
+looks for a tuple like ```tuple``` in the tuple space ```space``` and returns the found tuple (if any).
 
-Assume that Alice has a tuple space ```fridge``` to be used as as a grocery list. She can add the two bottles of milk to the grocery list with
+In Go, for example, we can write
 
 ```go
-Put(fridge,"milk",2)
+_, err := fridge.QueryP("clean kitchen")
 ```
 
-and she can update the number of milk bottles by first retrieving the old tuple and adding a new one as in
+to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (first argument) is ignored and we just store whether the tuple was found (`err == nil`).
+
+## 1.7 Removing tuples with `GetP`
+
+The operation to remove tuples tuples is named ```Get``` and has a similar behavour as `Query`, namely
 
 ```go
-Get(fridge,"milk",2)
-Put(fridge,"milk",3)
+space.GetP(tuple)
 ```
 
-## Pattern matching
-The get operation we have presented is not very flexible since retrieving a tuple requires to know in advance all of its elements. This can be very inconvenient in some cases, as in the previous example where Alice wanted to increase the number of milk bottles to be bought. Actually, tuple spaces support more powerful retrieve operations based on pattern matching mechanisms. In our example, pattern matching can be used to specify only the grocery item so to retrieve the current number of items for that item with
+looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space. 
+
+We can use for example
 
 ```go
-Get(fridge,"milk",&x)
+_, err := fridge.GetP("clean kitchen")
+```
+If we are willing to remove the note that says that we need to clean the kitchen.
+
+## 1.8 Tuples are content-addressable with pattern matching
+
+The tuple retrieval operations we have presented are actually more powerful: we do not need to know the actual tuple we are looking for. Indeed, tuples are content-addressable based on the a pattern matching mechanism.
+
+In our example, pattern matching can be used to specify only the grocery item so to retrieve the current number of items for that item with
+
+```go
+var numberOfBottles int
+fridge.GetP("milk", &numberOfBottles)
 ```
 
-which would save the number of milk bottles into variable ```x```.
+which would save the number of milk bottles into variable ```numberOfBottles```.
 
-We hence extend the ```Get``` operation to take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be binders for variables, in addition to ordinary values. A binder for a variable in a pattern is indicated with ```&v```, where ```v``` is the name of the variable to be bound. For example the pattern used above for retrieving the number of bottles of milk is
+So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be binders for variables, in addition to ordinary values. A binder for a variable in a pattern is indicated with ```&v```, where ```v``` is the name of the variable to be bound. For example the pattern used above for retrieving the number of bottles of milk is
 
 ```
-("milk",&x)
+("milk", &numberOfBottles)
 ```
 
-For the sake of simplicity we will consider in this section linear patterns only. A linear pattern is a pattern in which each binding variable appears only once. For example, the following pattern is forbidden
+## 1.9 Patterns must be linear
+We consider linear patterns only. A linear pattern is a pattern in which each binding variable appears only once. For example, the following pattern is forbidden
 
 ```
 (&x,&x)
@@ -84,15 +138,20 @@ For the sake of simplicity we will consider in this section linear patterns only
 In addition, we forbid patterns where a variable appears both as a binding
 variable and as a value, as in ```(&x,x)``` or ```(x,&x)```.
 
-With the new version of the get operation Alice can now increase the number of bottles with
+## 1.10 Updating tuples 
+
+Note that contrary to some collection datatypes in mainstream languages, the operato adds a fresh copy of the tuple. Once the tuple is in the space, its contents cannot be modified. This means that if the tuple contains values of complex data types with references or pointers, those are deeply copied. The only way to modify a tuple of a space is to remove it from the space and re-insert it
+
+For example, if Alice can increase the number of bottles to be bought with
 
 ```go
-Get(fridge,"milk",&x)
-Put(fridge,"milk",x+1)
+fridge.Get("milk",&numberOfBottles)
+fridge.Put("milk",numberOfBottles+1)
 ```
  
-## Non-deterministic retrieval
-What should happen when we try to retrieve a tuple with a pattern ```T``` and there is actually more than one tuple matching the pattern The answer is that any tuple may be retrieved.
+## 1.11 Tuple retrieval is non-deterministic 
+
+What should happen when we try to retrieve a tuple with a pattern `T` and there is actually more than one tuple matching the pattern? The specification of generic spaces is that any tuple may be retrieved. It is up to the concrete space data type to specify the concrete (deterministic or even randomised) behaviour.
 
 As an example, consider the following situation. Assume that the current state of the fridge space is
 
@@ -101,23 +160,28 @@ As an example, consider the following situation. Assume that the current state o
 ("butter",3)
 ```
 
-and that Alice wants to execute command
+and that Alice wants to look for an item to buy with
 
 ```
-Get(fridge,?item,?quantity);
+fridge.QueryP(&item,&quantity);
 ```
 
-Alice can retrieve any of the two tuples ```("milk",2)``` and ```("butter",3)```. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different behaviours (FIFO-like, LIFO-like, randomised, etc.). We will come back to in the next chapters.
+Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. We will come back to in the next chapters of the tutorial.
+
+# Summary
+
+We have seen the following data types
+- Tuples 
+- Spaces
+ 
+We have seen the following operations on spaces:
+- `Queryp`: Given a template, the operation searches for a tuple which matches the template. It then returns the matched tuple (if any).
+- `Getp`: like `QueryP` but also removes the found tuple (if any).
+- `QueryAll`: returns all tuples matching a template. 
+- `GetAll`: returns all tuples matching a template and removes them from the space.
 
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace/blob/master/examples/fridge1/main.go).
 
-Further operations on spaces include:
-- `getp` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `getall` is a non-blocking operation that returns all tuples matching a template and removes them from the space.
-- `query` is the non-destructive version of `get`. Given a template, the operation blocks until a tuple is found in the space which matches the template. It then returns the matched `tuple` and removes it from the space. 
-- `queryp` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `queryall` is the non-destructive version of `getAll`.
+# What next?
 
-They will be discussed in further chapters.
-
-What next? Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming.md)!
+Move to the next chapter on [concurrent programing with spaces](tutorial-concurrent-programming.md)!
