@@ -190,7 +190,7 @@ We have seen the following data types
  
 We have seen the following operations on spaces:
 - `Put`: adds a tuple to a space.
-- `QueryP`: searches for a tuple which matching a template. It then returns the matched tuple (if any).
+- `QueryP`: searches for a tuple atching a template. It then returns the matched tuple (if any).
 - `GetP`: like `QueryP` but also removes the found tuple (if any).
 - `QueryAll`: returns all tuples matching a template. 
 - `GetAll`: returns all tuples matching a template and removes them from the space.
