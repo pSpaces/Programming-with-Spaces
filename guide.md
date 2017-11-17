@@ -8,13 +8,13 @@ Spaces should implement an interface that supports several operations. Every imp
 
 ### Core Space API
 All spaces must implement the following operations:
-- `put` adds a tuple to a space. 
-- `get` blocks until a tuple is found in the space which matches a given template. It then returns the matched tuple and removes it from the space. 
-- `getp` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `getAll` is a non-blocking operation that returns all tuples matching a template and removes them from the space.
-- `query` is the non-destructive version of `get`. Given a template, the operation blocks until a tuple is found in the space which matches the template. It then returns the matched `tuple` and removes it from the space. 
-- `queryp` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
-- `queryAll` is the non-destructive version of `getAll`.
+- `put(t)` adds a tuple `t` to a space. 
+- `get(T)` blocks until a tuple is found in the space which matches the template `T`. It then returns the matched tuple and removes it from the space. 
+- `getp(T)` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `getAll(T)` is a non-blocking operation that returns all tuples matching the template `T` and removes them from the space.
+- `query(T)` is the non-destructive version of `get`. The operation blocks until a tuple is found in the space which matches the template `T`. It then returns the matched `tuple` and removes it from the space. 
+- `queryp(T)` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `queryAll(T)` is the non-destructive version of `getAll`.
 
 All the above operations may fail (e.g. due to communication errors or denied access) and must return a value stating indicating success or failure.
 
