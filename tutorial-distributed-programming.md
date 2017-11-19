@@ -1,59 +1,82 @@
 # Distributed Programmiong with Tuple Spaces
 
-In this chapter we provide a gentle introduction to distributed computing using tuple spaces.
+This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we showed how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using a shared tuple space. In a distributed systems, processes and data repositories are spread among several devices possibly far away one from each other. The chapter is illustrated with a scenario where Alice and her friends interact using social networking tools and some other internet-based tools like chats.
 
-In the [previous chapter](tutorial-concurrent-programming.md) we show how spaces can be used to support concurrent programming. Several processes communicate and cooperate using a shared tuple space; that is a reference to a local data structure.
+## Exposing a space
 
-In a distributed systems, processes and data repositories are spread among several hosts/devices possibly far away one from each other. In this context tuple spaces must be identified by an address and the appropriate protocol is used by processes to retrieve data from remote spaces.
-The interaction protocol may depend on the specific application context and may be based on TCP/IP for internet based application or based on BlueThoot in the context of IoT.
+In a distributed system, tuple spaces intended to be accessible from remote devices must be explicitly exposed and must have unique addresses to identify them. In pSpaces we use URIs for this purpose. A basic form of URI currently supported is
 
-In the rest of this document we show how spaces can be exposed over a specific protocol and how processes can retrieve data via an appropriate address.
-
-## Space repositories
-A *space repository* is a collection of spaces. Each space in the repository is (univocally) identified by a name. The following Java code can be used to create a repository and add two spaces named *fridge* and *pastry* respectively.
-
-```Go
-rep = SpaceRepository();
-Add(rep,"fridge",aspace);
-Add(rep,"pastry",anotherspace);
+```go
+tcp://host:port/space
 ```
 
-A space repository provides all the operations that are available on a space. However, in the case of a space repository, an extra parameter is used to select the name of the repository where the action takes effect.
+where `host` is the name or IP address of the device hosting the tuple space, `port` is a valid port, and `space` is the identifier for the tuple space.
 
-If Alice want remove the *eggs* from the pastry and place them into the *fridge*, the following code can be used:
+For example, suppose that Alice and her friends want to create a simple chat server to communicate. The server will just host a tuple space for all messages to be collected and displayed. The server can create such a space with
 
-```Go
-some_egg = GetP(rep,"pastry","eggs",&quantity)
-if (some_egg) Put(rep,"fridge","eggs",quantity)
-```  
+```go
+chat := NewSpace(tcp://localhost:3115/room123)
+```
 
+Once created, the server can keep retrieving and printing messages with
 
-### Gates
-A repository can be also accessed by a remote process. To enable this feature a *gate* must be added to the repository.
+```go
+chat.Get(&who, &message)
+fmt.Printf("%s: %s \n", who, message)
+```
 
-A *gate* can be thought of as a communication port and it is identified by an *uri* of the form:
+## Accesing a remote space
+
+A remote tuple space, possibly residing on another device, accepts the same operations as local tuple space. The only difference is that we need to create the space slightly differently. In our example, Alice and her friends can implement clients that connect to the server `chat.com` with:
+
+```go
+chat := NewRemoteSpace(tcp://chat.com:3115/room123)
+```
+
+after which the space `chat` can be treated as an ordinary tuple space. For example, messages can be sent with 
+
+```go
+chat.Put("Alice","Hi!")
+```
+
+## Interaction protocols
+Currently, `tcp` is the only supported protocol, but other support for additiona protocols in on the way.
+
+## Space repositories
+Some pSpace implementations (e.g. jSpace and dotSpace) support mechanisms to organise spaces and their exposition. Spaces can be put together in a *space repository*. Each space in the repository must univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms to the same repository:"
+
+```java
+chatRepository = SpaceRepository();
+chatRepository.Add("room123",New SequentialSpace());
+chatRepository.Add("room456",New SequentialSpace());
+```
+
+## Gates
+The main purpose of using space repositories ease the exposure of spaces on common ports. Access to all spaces within a repository can be done by adding a gate to the repository. A *gate* can be thought of as a communication port and it is identified by an URI of the form:
 
 ```
 <protocol>://<address>:<id>/?<par1>&...&<parn>
 ```
 
-Above ```<protocol>``` identifies the communication protocol. Different kinds of communication protocols can be considered. Examples of protocols are: ```tcp``` or ```udp```, when standard TCP or UDP sockets are used;  ```http```, when a web-oriented communciation protocol is used; or ```bt```, when BlueThoot communication is supported.
+where `<protocol>` identifies the communication protocol, `<address>` is a string identifying the local port used to accept requests, `<id>` is an integer, and `<par1>`,..., `<parn>` are extra parameters that can be used to configure the interaction protocol.
 
-The element ```<address>``` is a string identifying the local port used to accept requests; ```<id>``` is an integer value while ```<par1>```,..., ```<parn>``` are extra parameters that can be used to configure the interaction protocol. The precise meaning of these values is related to the value ```<protocol>```. For instance, when this is ```tcp```, ```<address>``` can be the network address of the local network interface used for the communication, ```<id>``` is the *socket port* used to accept connections, while ```<pari>``` can be used to select the format used to serialise data:
+Currently, most pSpace implementations provide support for `tcp` only but some implementations plan to support `udp`, `bt` (blueetooth) and `http`. The fields `<address>` and `<id>` depend on the protocol.  In the case of `tcp`, `<address>` can be the network address of the local network interface used for the communication and  `<id>` the *socket port* used to accept connections, while ```<pari>``` can be used to select the format used to serialise data.
 
-```go
-AddGate(rep,"tcp://127.0.0.1:9090/?lang=JSON")
-```
+## Mobility
 
-### Remote spaces
+Strong forms of code mobility are not supported. This is one of the main reasons why conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses)  and atomic update operations are not currently supported.
 
-If Alice is not located at the same host where the repository is stored, she must first create a *remote space*. This can be viewed as a *proxy* that allow to access to a specific space in a repository. To create a remote space, a *uri* is needed:
+## Summary
+ 
+We have seen the following operations to access remote spaces:
+- `RemoteSpace`: given an URI, it creates a local reference to a remote space.
 
-```Go
-remote_pastry = RemoteSpace("tcp://my.host.it:9090/pastry?lang=JSON")
-remote_fridge = RemoteSpace("udp://your.host.dk:9191/fridge?lang=XML")
-some_egg = GetP(remote_pastry,"eggs",&quantity)
-if (some_egg) Put(remote_fridge,"eggs",quantity)
-```  
+A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/chat-0/main.go).
 
-In the code above Alice use ```remote_pastry``` to interact with the space ```pastry``` that is provided by a repository located at ```my.host.it```. This interaction follows the ```tcp``` protocol and messages are serialised by using ```JSON``` documents. At the same time, ```remote_fridge``` is used to interact with a space located ```your.host.dk``` via ```udp```. In this case an ```XML``` encoding is used to serialise data.
+## Reading suggestions
+De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
+
+## What next?
+
+Stay tuned for more chapters :)
+
