@@ -1,4 +1,4 @@
-This is a draft of the formal operational semantics for the pSpace programming model.
+This page provides the formal operational semantics for the pSpace programming model.
 
 We start defining the syntax that describes a system S as a multiset of applications. Each application runs on a `host`, has a memory `M` and a multiset of concurrent processes `P`. Parallel composition of applications is denoted with operator `‖`, which is associative, commutative and has the empty set `0` as identity.  
 
