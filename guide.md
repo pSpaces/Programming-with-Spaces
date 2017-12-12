@@ -1,4 +1,6 @@
 This document provides some technical guidelines on the implementation of pSpaces. It is particularly meant for those willing to implement support for a new language. The key idea of the programming model is to support interaction by adding and retrieving tuples from local and remote spaces. Programs and spaces can be located in any device. All spaces support the same minimal API and interaction protocols.
+
+There is also a complementary [formal semantics](semantics.md) that provides a more formal description for the programming model, focusing on the abstraction provided to programmers.
  
 ## Local Spaces
 A space is is a collection of tuples supporting a simple API described below. Whenever possible the interface or abstract data type used for specify the API of spaces should be called `Space`.
@@ -50,7 +52,7 @@ Space repositories should support the following operations:
 - `addGate(gate)`: this operation associates a gate to the repository. The gate is created if it does not exist. There is no effect if the gate is already associated to the gate.
 - `delGate(gate)`: this operation dissasociates a space from the repository. There is no effect if the gate is not associated to the repository.
 
-A gate is just an access point than application opens to provide access to the spaces it hosts. Each gate is specified by an URI with the following format:
+A gate is just an access point that applications open to provide access to the spaces it hosts. Each gate is specified by an URI with the following format:
  
 `<protocol>://<host>[:<port>][?<mode>]`
  
