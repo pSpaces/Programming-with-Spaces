@@ -80,7 +80,7 @@ The following rule describes the behaviour of executing an operation on a local 
 The following rule describes the behaviour of executing an operation on a remote space.
 
 ```
-   gate = host2:*        M2[ss[spaceId]].O -> S,t,e
+   host(gate) = host2        M2[ss[spaceId]].O -> S,t,e
 ===================================================================
    App(host1, (M1 , space |-> RemoteSpace(gate/spaceId)), x,y := space.O ; P1 ‖ P2 )
  ‖ App(host2, (M2, rep |-> Repository(ss,(gate,gg)) , P3)  =>
@@ -91,7 +91,7 @@ The following rule describes the behaviour of executing an operation on a remote
 Connecting to a remote space is formalised by  
 
 ```
- Gate = host2:*            M2[spaceId] defined
+   host(gate) = host2         M2[spaceId] defined
 ===================================================================
    App(host1, M, space := new RemoteSpace(gate/spaceId); )
  ‖ App(host2, (M2, rep |-> Repository(ss),(gate,gg)) , P3)  =>
@@ -115,7 +115,7 @@ Adding and deleting gates and spaces to repositories is formalised by the follow
  App(host, M[rep |-> Repository(ss,gg)], rep.addSpace(spaceId,space) ; P1 ‖ P2) =>
  App(host, M[rep |-> Repository(ss[spaceId |-> space],gg)], P1 ‖ P2)
 
- gate = host:_
+ host(gate) = host
 ===================================================================
  App(host, M[rep |-> Repository(ss,gg)], rep.addGate(gate) ; P1 ‖ P2) =>
  App(host, M[rep |-> Repository(ss,(gg,gate))], P1 ‖ P2)
@@ -123,12 +123,12 @@ Adding and deleting gates and spaces to repositories is formalised by the follow
 
 ===================================================================
  App(host, M[rep |-> Repository(ss,gg)], rep.delSpace(spaceId,space) ; P1 ‖ P2) =>
- App(host, M[rep |-> Repository(ss\spaceId,gg)], P1 ‖ P2)
+ App(host, M[rep |-> Repository(ss/spaceId,gg)], P1 ‖ P2)
 
 
 ===================================================================
  App(host, M[rep |-> Repository(ss,gg)], rep.delGate(gate) ; P1 ‖ P2) =>
- App(host, M[rep |-> Repository(ss,gg\gate)], P1 ‖ P2)
+ App(host, M[rep |-> Repository(ss,gg/gate)], P1 ‖ P2)
 ```
 
 Spawning a process just creates a new concurrent activity:
@@ -140,11 +140,17 @@ Spawning a process just creates a new concurrent activity:
 
 In the following rules tuple structures TS are to be understood up to associativity of `*`, and identity of `nil` (i.e. as a list). Note that the result of an operation may alter the tuple structure, and produce a tuple and an error code (either `ok` or `ko`)
 
+The behaviour of `put` is common to all spaces
+
 ```
  |TS| <= b
 ===================================================================
  Space(k,b,TS).put(t) => Space(k,b,t*TS),t,ok
+``` 
 
+The behaviour of `query` depends on the class of space:
+ 
+```
  t matches T and no tuple in TS' matches T
 ===================================================================
 Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
@@ -161,14 +167,18 @@ Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
 ===================================================================
  Space(Pile,b,TS*t*TS').query(T) => Space(Pile,b,TS*t*TS'),t,ko
 
- t is chosen randomly in { t / Space(NonDet,b,TS*t*TS').query(T) => _,t}
+ t is chosen randomly in { t in TS such that t matches T}
 ===================================================================
 Space(Random,b,TS).query(T) => Space(Random,b,TS),t,ok
 	
  t matches T
 ===================================================================
  Space(NonDet,b,TS*t*TS').query(T) => Space(NonDet,b,TS*t*TS'),t,ok
-	
+```
+
+The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. We just provide the rules for sequential spaces, the rest of the rules are defined similarly.
+
+```
  t matches T and no tuple in TS' matches T
 ===================================================================
  Space(Sequential,b,TS*t*TS').queryP(T) => Space(Sequential,b,TS*t*TS'),t,ok
