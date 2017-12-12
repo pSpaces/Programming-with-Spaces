@@ -1,5 +1,7 @@
 This page provides the formal operational semantics for the pSpace programming model.
 
+## Syntax
+
 We start defining the syntax that describes a system S as a multiset of applications. Each application runs on a `host`, has a memory `M` and a multiset of concurrent processes `P`. Parallel composition of applications is denoted with operator `‖`, which is associative, commutative and has the empty set `0` as identity.  
 
 ```
@@ -58,7 +60,11 @@ Templates are denoted as non-empty lists of expressions `e` or types `τ`
 T ::= e | τ | e,T | τ,T
 ```
 
+# Operational semantics
+
 The operational semantics is defined by the below set of inference rules. The inference rules provided below can be applied under any context (i.e. under any sub-term) up-to the axioms of the symbols used (e.g. associativity of `*`). 
+
+## Operational semantics for actions
 
 Creating a new local space
 
@@ -137,6 +143,8 @@ Spawning a process just creates a new concurrent activity:
 ===================================================================
  App(host, M, new P1 ; P2 ‖ P3) -> App(host, M, P1 ‖ P2 ‖ P3)
 ```
+
+## Operational semantics of the core API
 
 In the following rules tuple structures TS are to be understood up to associativity of `*`, and identity of `nil` (i.e. as a list). Note that the result of an operation may alter the tuple structure, and produce a tuple and an error code (either `ok` or `ko`)
 
