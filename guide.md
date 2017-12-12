@@ -27,7 +27,7 @@ The core API intentionally underspecifies the behaviour of simple retrieval oper
 
 All implementations should provide at least the `SequentialSpace` implementation. The rest are optional. 
 
-As a side note, `SequentialSpace` amounts to message channels in Promela, `FifoSpace` amounts to unbounded FIFO channels (with testing in addition to read operations) and `LifoSpace` provides a stack-based space.
+As a side note, `SequentialSpace` are similar to message channels in Promela, `FifoSpace` amounts to unbounded FIFO channels (with testing in addition to read operations) and `LifoSpace` provides a stack-based space.
 
  
 A space can be accessed locally as an ordinary data structure and can hence offer a local API. Spaces can be accessed remotely and should hence support a remote API. Whenever possible, a wrapper for remote spaces should be offered to support a uniform access to spaces. 
