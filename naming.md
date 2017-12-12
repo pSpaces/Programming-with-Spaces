@@ -26,4 +26,5 @@ This page summarises some of the key programming primitives of pSpaces and their
 | `r.delGate(gate)` |  |  | (x) |  |  |
 
 (*) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
+
 (x) not supported
