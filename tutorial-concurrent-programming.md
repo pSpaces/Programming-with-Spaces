@@ -68,7 +68,7 @@ Put(fridge,"butter",1)
 Bob:
 ```go
 for {
-    GetP(fridge,?item,?quantity)
+    GetP(fridge,&item,&quantity)
     // go shopping
 }
 ```
@@ -92,7 +92,7 @@ Bob:
 Get(fridge,"shop!")
 Put(fridge,"shop!")
 for {
-    Get(fridge,?item,?quantity)
+    Get(fridge,&item,&quantity)
     // go shopping
 }
 ```
@@ -104,7 +104,7 @@ Charlie:
 if GetP(fridge,"shop!") {
     Put(fridge,"shop!")
     for {
-        Get(fridge,?item,?quantity)
+        Get(fridge,&item,&quantity)
         // go shopping ...
     }
 }
@@ -117,7 +117,7 @@ Bob:
 ```go
 Query(fridge,"shop!")
 for {
-    Get(fridge,?item,?quantity)
+    Get(fridge,&item,&quantity)
     // go shopping
 }
 ```
@@ -126,7 +126,7 @@ Charlie:
 ```go
 if QueryP(fridge,"shop!") {
     for {
-        Get(fridge,?item,?quantity)
+        Get(fridge,&item,&quantity)
         // go shopping ...
     }
 }
