@@ -45,7 +45,7 @@ For more details on corrency primitives refer to
 The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
 ```go
-Get(fridge,"milk",&quantity)
+fridge.Get("milk",&quantity)
 ```
 
 she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple `("milk",n)` appears in the tuple space. Blocking operations are key to implement synchronisation among activities.
@@ -59,7 +59,7 @@ _,err := fridge.GetP("milk",&quantity)
 if (err !=nil) {
   // go shopping
 } else {
-  put ("milk", 1)
+  fridge.Put ("milk", 1)
 }
 ```
 
@@ -121,17 +121,17 @@ There are many situations in which one would like inspect the tuple space withou
 
 Alice:
 ```go
-Put(fridge,"milk",2)
-Put(fridge,butter",1)
-Put(fridge,"shop!")
+fridge.Put("milk",2)
+fridge.Put(butter",1)
+fridge.Put("shop!")
 ```
 
 Bob:
 ```go
-Get(fridge,"shop!")
-Put(fridge,"shop!")
+fridge.Get("shop!")
+fridge.Put("shop!")
 for {
-    Get(fridge,&item,&quantity)
+    fridge.Get(&item,&quantity)
     // go shopping
 }
 ```
@@ -140,17 +140,17 @@ A drawback of this solution is that the check that Bob performs is not atomic. T
 
 Charlie:
 ```go
-if GetP(fridge,"shop!") {
-    Put(fridge,"shop!")
+_,err := fridge.GetP(fridge,"shop!") 
+if err != nil {
+    fridge.Put("shop!")
     for {
-        Get(fridge,&item,&quantity)
+        fridge.Get(&item,&quantity)
         // go shopping ...
     }
-}
-else // relax
+} else // relax
 ```
 
-The standard solution to this problem is use the ```query``` operation to perform queries atomically. Operation ```Query(s,T)``` behaves like ```Get(s,T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
+The standard solution to this problem is use the ```Query``` operation to perform queries atomically. Operation ```Query(s,T)``` behaves like ```Get(s,T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
 
 Bob:
 ```go
