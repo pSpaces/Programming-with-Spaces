@@ -1,5 +1,15 @@
 This page summarises some of the key programming primitives of pSpaces and their actual naming in the different languages. 
 
+## Tuples
+
+| Formal | Java | C#  | Go | Swift | TypeScript |
+| - | - | - | - | - | - |
+| Symbol (type) `t` |  |  |  `Tuple` or `[]interface{}` |  |  | |
+| `tuple := ("a",1,3.14)` |  |  | `tuple := CreateTuple("a",1,3.14)` |  |  
+| `tuple[i]` |  |  | `tuple.GetFieldAt(i)` |  |  |  |
+
+
+
 ## Space API
 
 | Formal | Java | C#  | Go | Swift | TypeScript |
