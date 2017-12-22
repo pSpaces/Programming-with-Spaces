@@ -216,7 +216,7 @@ We have seen the following coordination patterns:
 - Locks: use a tuple to represent the exclusive right to access the tuple space (or a part of it). Only the process with the tuple can access the space.
 - Barriers: use tuples to count how many processses have reached some status in their computation.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
+A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go).
 
 ## Reading suggestions
 * Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
