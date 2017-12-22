@@ -24,18 +24,18 @@ This page summarises some of the key programming primitives of pSpaces and their
 
 | |  Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
-| create local space | `new Space(kind,bound)` | (1)  | (1) | (1) | `let ts = TupleSpace(kind)` | (1) |
-| | `kind` = SequentialSpace | `new SequentialSpace()` |  |  new Space(uri) |  |  |
-| | `kind` = QueueSpace      | `new FIFOSpace()` |  |  -not supported- | `let kind = TupleList()` |  |
-| | `kind` =  StackSpace     | `new LIFOSpace()` |  | -not supported-  |  |  |
+| create local space | `s := new Space(kind,bound)` | (1)  | (1) | (1) | `let s = TupleSpace(kind)` | (1) |
+| | `kind` = SequentialSpace | `Space s = new SequentialSpace()` |  |  new Space(uri) |  |  |
+| | `kind` = QueueSpace      | `Space s = new FIFOSpace()` |  |  -not supported- | `let s = TupleSpace(TupleList())` |  |
+| | `kind` =  StackSpace     | `Space s = new LIFOSpace()` |  | -not supported-  |  |  |
 | | `kind` = PileSpace       | -not supported-  |  | -not supported-  |  |  |
 | | `kind` = RandomSpace     | -not supported-  |  | -not supported-  |  |  |
-| | `kind` = TreeSpace     | -not supported-  |  | -not supported-  | `let kind = TupleList()` |  |
+| | `kind` = TreeSpace     | -not supported-  |  | -not supported-  | `let s = TupleSpace(TupleList())` |  |
 | hook to remote space | `new RemoteSpace(gate,spaceId)` | `new RemoteSpace(uri)` |  | `new RemoteSpace(uri)`| `let rs = RemoteSpace(uri)` |  |
 | create repository | `new Repository()` |  |  | -not supported-  | `let sr = SpaceRepository()` |  |
 | add space to repository | `r.addSpace(spaceId,space)` |  |  | -not supported-  | `sr.add("id", space)` |  |
 | remove space from repository  | `r.delSpace(spaceId)` |  |  | -not supported-  | `sr.remove("id")` |  |
 | add gate to repository  | `r.addGate(gate)` |  |  | -not supported-  | `sr.addGate(gate)` |  |
-| remove gate from repository  | `r.delGate(gate)` |  |  | -not supported-  | -not yet implemented!- |  |
+| remove gate from repository  | `r.delGate(gate)` |  |  | -not supported-  | -not yet implemented- |  |
 
 (1) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
