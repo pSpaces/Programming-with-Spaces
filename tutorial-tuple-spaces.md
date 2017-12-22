@@ -93,14 +93,16 @@ looks for a tuple like ```tuple``` in the tuple space ```space``` and returns th
 In Go, for example, we can write
 
 ```go
-_, err := fridge.QueryP("clean kitchen")
+t, err := fridge.QueryP("clean kitchen")
 ```
 
-to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (first argument) is ignored and we just store whether the tuple was found (`err == nil`).
+to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `t` and whether the tuple was found (`err == nil`) is stored in `err`.
+
+In some implementations (e.g. in Java) the return type is just one (a tuple). The absence of a tuple is represented with a null value.
 
 ## 1.7 Removing tuples with `GetP`
 
-The operation to remove tuples tuples is named ```Get``` and has a similar behavour as `Query`, namely
+The operation to remove tuples is named ```Get``` and has a similar behavour as `Query`, namely
 
 ```go
 space.GetP(tuple)
@@ -113,7 +115,7 @@ We can use for example
 ```go
 _, err := fridge.GetP("clean kitchen")
 ```
-If we are willing to remove the note that says that we need to clean the kitchen.
+If we are willing to remove the note that says that we need to clean the kitchen. Note that we use the blank identifier `_` to store the tuple since we don't really care about it in this example. 
 
 ## 1.8 Tuples are content-addressable with pattern matching
 
@@ -132,6 +134,26 @@ So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pa
 
 ```
 ("milk", &numberOfBottles)
+```
+
+Binders are not supported in all languages. As an alternative, some of the libraries provide ad-hoc datatypes for templates. For instance, the jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
+
+The template of the above example would be constructed in Java with
+
+```java
+Template template = new Template(new ActualField("milk"),new FormalField(Integer.class())
+```
+
+and retrieving the number of bottles would then be done as follows:
+
+```java
+Tuple tuple = fridge.get(template)
+```
+
+or more compactly
+
+```java
+Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
 ```
 
 ## 1.9 Patterns must be linear
