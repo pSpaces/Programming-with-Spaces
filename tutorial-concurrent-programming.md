@@ -1,6 +1,6 @@
 # 2. Concurrent Programming with Tuple Spaces
 
-This chapter provides a gentle introduction to concurrent programming using spaces. The chapter is based on a simple and traditional notion of tuple space, namely a multiset of tuples. The chapters starts introducing a basic set of operations, which is incrementally enriched with additional operations. The final part discusses how to use tuple spaces to implement basic coordination and synchronisation mechanisms, and how to implement traditional communication means such as message passing and shared memory. The flavour of tuple spaces in this chapter is essentially based on Linda [Gelernter, 1985]. The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space ```fridge``` to coordinate their activities.
+This chapter provides a gentle introduction to concurrent programming using spaces. The chapter is based on a simple and traditional notion of tuple space, namely a multiset of tuples. The chapter presents the tuple space operations incrementally. The final part discusses how to use tuple spaces to implement basic coordination and synchronisation mechanism. The programming model for tuple spaces in this chapter is strongly based on [Linda](https://dl.acm.org/citation.cfm?id=2433). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space ```fridge``` to coordinate their activities.
 
 ## 2.1 Concurrent activities
 
@@ -40,8 +40,6 @@ For more details on corrency primitives refer to
 * [the Java tutorial on starting threads](https://docs.oracle.com/javase/tutorial/essential/concurrency/runthread.html) for more details.
 * [C# How to create threads](https://msdn.microsoft.com/en-us/library/btky721f.aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-2)
 
-
-
 ## 2.2 Blocking operations
 
 The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
@@ -50,61 +48,66 @@ The previous chapter did not mention that ```Get``` is actually a blocking opera
 Get(fridge,"milk",&quantity)
 ```
 
-she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple ("milk",2) appears in the tuple space. Blocking operations are key to implement synchronisation as we shall see.
+she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple `("milk",n)` appears in the tuple space. Blocking operations are key to implement synchronisation among activities.
 
-Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```GetP(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a boolean value to notify if a tuple was actually retrieved or not.
+Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```Get(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a value to notify if a tuple was actually retrieved or not.
 
 In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
 ```go
-some_milk := GetP(fridge,"milk",&quantity)
-if (some_milk) // go shopping
-else put ("milk", 1) ;
+_,err := fridge.GetP("milk",&quantity)
+if (err !=nil) {
+  // go shopping
+} else {
+  put ("milk", 1)
+}
 ```
 
-Also the ```Put``` operation has non-blocking variant ```PutP```, which allows one to progress while tuples are being inserted.
+The ```Put``` operation has non-blocking variant ```PutP```, which allows one to progress while tuples are being inserted.
 
 Indeed, the programs
 
 ```go
-Put(fridge,"milk", 2)
-Put(fridge,"butter", 1)
+fridge.Put("milk", 2)
+fridge.Put("butter", 1)
 ```
 
 and
 
 ```go
-PutP(fridge,"milk", 2)
-PutP(fridge,"butter", 1)
+fridge.PutP("milk", 2)
+fridge.PutP("butter", 1)
 ```
 
-behave differently. Indeed, the order in which the tuples appear in the tuple space in the second example is not guaranteed and the tuple space may be
+behave differently. Indeed, the order in which the tuples appear in the tuple space in the second example is not guaranteed and the tuple space may at some point contain
 
 ```
 (fridge,"butter", 1)
 ```
 
-Note that the previous program may not be identical in behavour to
+Note that the previous program may not be identical in behaviour to
 
 ```go
-go Put(fridge,"milk", 2)
-Put(fridge,"butter", 1)
+go fridge.Put("milk", 2)
+fridge.Put("butter", 1)
 ```
+
+since in this example the `Put` invokations may be invoked in different moments.
 
 ## 2.3 A basic coordination pattern: producer/consumer
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
 ```go
-Put(fridge,"milk",2)
-Put(fridge,"butter",1)
+fridge.Put("milk",2)
+fridge.Put("butter",1)
 ...
 ```
 
 Bob:
 ```go
 for {
-    GetP(fridge,&item,&quantity)
+    fridge.Get(&item,&quantity)
     // go shopping
 }
 ```
