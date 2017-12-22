@@ -4,7 +4,43 @@ This chapter provides a gentle introduction to concurrent programming using spac
 
 ## 2.1 Concurrent activities
 
-All programing languages with pSpace support provide some support for concurrent programmign based on creating concurrent activities (threads in Java and C#, goroutines in Go, etc.). 
+All programing languages with pSpace libraries provide support for concurrent programming based on some sort of concurrent activities.
+
+Go provides lightweight threads called goroutines that can be used to spawn parallel activities. Suppose that `f` is an ordinary Go function. A parallel activity `f(x,y)` can be spawned with 
+
+```go
+go f(x,y)
+```
+Concurrency is a bit more cumbersome in thread-based languages like Java. For instance, one of the approaches to deal with threads in Java is by implementing the activities we plan to spawn in parallel as classes implementing the `Runnable` interface. Following the above example, we would need to write
+
+```java
+public class F implements Runnable {
+	public F(int x, int y) {...}
+   
+	public void run() { // do what f(x,y) is supposed to do }
+}
+```
+
+to implement the runnable thread and then invoke it with
+
+```java
+(new Thread(new F(x,y)).start();
+```
+
+The creation of a Thread in C# is similar: 
+
+```c#
+(new System.Threading.Thread(new System.Threading.ThreadStart(F(x,y)))).Start();
+```
+
+with `F` being a delegate.
+
+For more details on corrency primitives refer to
+* [Golang tour on concurrency](https://tour.golang.org/concurrency/1)
+* [the Java tutorial on starting threads](https://docs.oracle.com/javase/tutorial/essential/concurrency/runthread.html) for more details.
+* [C# How to create threads](https://msdn.microsoft.com/en-us/library/btky721f.aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-2)
+
+
 
 ## 2.2 Blocking operations
 
