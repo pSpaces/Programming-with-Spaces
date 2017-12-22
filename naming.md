@@ -22,17 +22,21 @@ This page summarises some of the key programming primitives of pSpaces and their
 
 ## Spaces and repositories
 
-| Formal | Java | C#  | Go | Swift | TypeScript |
-| - | - | - | - | - | - |
-| create local space | `new Space(kind,bound)` | (*)  |  |  |  |  |
-| add tuple |                       | `new SequentialSpace()` |  |  |  |  |
+| |  Formal | Java | C#  | Go | Swift | TypeScript |
+| - | - | - | - | - | - | - |
+| create local space | `new Space(kind,bound)` | (1)  | (1) | (1) | (1) | (1) |
+| | SequentialSpace | `s := new SequentialSpace()` |  |  new Space("...") |  |  |
+| | QueueSpace      | `s := new FIFOSpace()` |  |  -not supported- |  |  |
+| | StackSpace      | `s := new LIFOSpace()` |  | -not supported-  |  |  |
+| | PileSpace       | -not supported-  |  |  |  |  |
+| | RandomSpace     | -not supported-  |  |  |  |  |
 | hook to remote space | `new RemoteSpace(gate,spaceId)` |  |  | |  |  |
-| create repository | `new Repository()` |  |  | (x) |  |  |
-| add space to repository | `r.addSpace(spaceId,space)` |  |  | (x) |  |  |
-| remove space from repository  | `r.delSpace(spaceId)` |  |  | (x) |  |  |
-| add gate to repository  | `r.addGate(gate)` |  |  | (x) |  |  |
-| remove gate from repository  | `r.delGate(gate)` |  |  | (x) |  |  |
+| create repository | `new Repository()` |  |  | -not supported-  |  |  |
+| add space to repository | `r.addSpace(spaceId,space)` |  |  | -not supported-  |  |  |
+| remove space from repository  | `r.delSpace(spaceId)` |  |  | -not supported-  |  |  |
+| add gate to repository  | `r.addGate(gate)` |  |  | -not supported-  |  |  |
+| remove gate from repository  | `r.delGate(gate)` |  |  | -not supported-  |  |  |
 
-(*) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
+(1) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
 
-(x) not supported
+(2) not supported
