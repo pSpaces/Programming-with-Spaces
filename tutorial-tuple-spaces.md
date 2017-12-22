@@ -157,18 +157,20 @@ Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class()
 ```
 
 ## 1.9 Patterns must be linear
-We consider linear patterns only. A linear pattern is a pattern in which each binding variable appears only once. For example, the following pattern is forbidden
+For those languages supporting pattern matching based on binders, we consider linear patterns only. A linear pattern is a pattern in which each binding variable appears only once. For example, the following pattern 
 
 ```
 (&x,&x)
 ```
 
-In addition, we forbid patterns where a variable appears both as a binding
-variable and as a value, as in ```(&x,x)``` or ```(x,&x)```.
+is not linear and its semantics is undefined.
+
+In addition, the semantics of patterns where variables appear both as a binding
+variable and as a value, as in ```(&x,x)``` or ```(x,&x)```, are undefined too.
 
 ## 1.10 Updating tuples 
 
-Note that contrary to some collection datatypes in mainstream languages, the operato adds a fresh copy of the tuple. Once the tuple is in the space, its contents cannot be modified. This means that if the tuple contains values of complex data types with references or pointers, those are deeply copied. The only way to modify a tuple of a space is to remove it from the space and re-insert it
+Note that contrary to some collection datatypes in mainstream languages, the operation `put` adds a fresh copy of the tuple. Once the tuple is in the space, its contents cannot be modified. This means that if the tuple contains values of complex data types with references or pointers, those are deeply copied. The only way to modify a tuple of a space is to remove it from the space and re-insert it
 
 For example, if Alice can increase the number of bottles to be bought with
 
@@ -176,10 +178,17 @@ For example, if Alice can increase the number of bottles to be bought with
 fridge.Get("milk",&numberOfBottles)
 fridge.Put("milk",numberOfBottles+1)
 ```
+
+or, in Java, 
+
+```java
+Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
+fridge.put("milk",tuple.getElementAt[1]+1)
+```
  
 ## 1.11 Tuple retrieval is non-deterministic 
 
-What should happen when we try to retrieve a tuple with a pattern `T` and there is actually more than one tuple matching the pattern? The specification of generic spaces is that any tuple may be retrieved. It is up to the concrete space data type to specify the concrete (deterministic or even randomised) behaviour.
+What should happen when we try to retrieve a tuple with a pattern `T` and there is actually more than one tuple matching the pattern? The specification of the interface for spaces is that any tuple may be retrieved. It is up to the concrete space datatype or class implementing the space interface to specify the concrete (deterministic or even randomised) behaviour.
 
 As an example, consider the following situation. Assume that the current state of the fridge space is
 
@@ -194,7 +203,9 @@ and that Alice wants to look for an item to buy with
 fridge.QueryP(&item,&quantity);
 ```
 
-Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. We will come back to in the next chapters of the tutorial.
+Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours.
+
+A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md)  and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
 
 ## 1.12 Retrieving all matching tuples
 
