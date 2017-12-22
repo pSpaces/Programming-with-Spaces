@@ -25,12 +25,12 @@ This page summarises some of the key programming primitives of pSpaces and their
 | |  Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
 | create local space | `new Space(kind,bound)` | (1)  | (1) | (1) | (1) | (1) |
-| | SequentialSpace | `s := new SequentialSpace()` |  |  new Space("...") |  |  |
-| | QueueSpace      | `s := new FIFOSpace()` |  |  -not supported- |  |  |
-| | StackSpace      | `s := new LIFOSpace()` |  | -not supported-  |  |  |
-| | PileSpace       | -not supported-  |  |  |  |  |
-| | RandomSpace     | -not supported-  |  |  |  |  |
-| hook to remote space | `new RemoteSpace(gate,spaceId)` |  |  | |  |  |
+| | `kind` = SequentialSpace | `new SequentialSpace()` |  |  new Space(uri) |  |  |
+| | `kind` = QueueSpace      | `new FIFOSpace()` |  |  -not supported- |  |  |
+| | `kind` =  StackSpace     | `new LIFOSpace()` |  | -not supported-  |  |  |
+| | `kind` = PileSpace       | -not supported-  |  | -not supported-  |  |  |
+| | `kind` = RandomSpace     | -not supported-  |  | -not supported-  |  |  |
+| hook to remote space | `new RemoteSpace(gate,spaceId)` | `new RemoteSpace(uri)` |  | `new RemoteSpace(uri)`|  |  |
 | create repository | `new Repository()` |  |  | -not supported-  |  |  |
 | add space to repository | `r.addSpace(spaceId,space)` |  |  | -not supported-  |  |  |
 | remove space from repository  | `r.delSpace(spaceId)` |  |  | -not supported-  |  |  |
@@ -38,5 +38,3 @@ This page summarises some of the key programming primitives of pSpaces and their
 | remove gate from repository  | `r.delGate(gate)` |  |  | -not supported-  |  |  |
 
 (1) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
-
-(2) not supported
