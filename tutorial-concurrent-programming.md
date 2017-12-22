@@ -154,47 +154,54 @@ The standard solution to this problem is use the ```Query``` operation to perfor
 
 Bob:
 ```go
-Query(fridge,"shop!")
+fridge.Query("shop!")
 for {
-    Get(fridge,&item,&quantity)
+    fridge.Get(&item,&quantity)
     // go shopping
 }
 ```
 
 Charlie:
 ```go
-if QueryP(fridge,"shop!") {
+_,err := fridge.GetP(fridge,"shop!") 
+if err != nil {
     for {
-        Get(fridge,&item,&quantity)
+        fridge.Get(&item,&quantity)
         // go shopping ...
     }
 }
 ```
 
-A unique advantage of introducing the query operation is that it allows concurrent queries efficiently.
+A unique advantage of introducing the `Query` operation it eases performant implementations of concurrent queries.
 
 ## 2.5 Another coordination pattern: locks 
-Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple ```(lock)``` and using a simple protocol to work on the tuple space with exclusive access, namely with:
+Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple ```(lock)``` that is initally placed in the tuple space:
 
 ```go
-Get(s,"lock")
+s.Put("lock")
+```
+
+and using a simple protocol to work on the tuple space with exclusive access adhering to the following pattern:
+
+```go
+s.Get("lock")
 // work
-Put(s,"lock")
+s.Put("lock")
 ```
 
 ## 2.6 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
 ```go
-Put(s,"barrier",N) ;
+s.Put("barrier",N) ;
 ```
 
-and when process reaches the barrier it executes
+and when a process reaches the barrier it has to execute the following code
 
 ```go
-Get(s,"barrier",&n)
-Put(s,"barrier",n−1)
-Query(s,"barrier",0)
+s.Get("barrier",&n)
+s.Put("barrier",n−1)
+s.Query("barrier",0)
 // move on
 ```
 
@@ -212,8 +219,8 @@ We have seen the following coordination patterns:
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
 
 ## Reading suggestions
-Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
-Gelernter, D. (1985). Generative communication in Linda. ACM Trans. Program. Lang. Syst., 7(1):80–112
+* Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
+* Gelernter, D. (1985). [Generative communication in Linda]([Linda](https://dl.acm.org/citation.cfm?id=2433)). ACM Trans. Program. Lang. Syst., 7(1):80–112
 
 NOTE: The above documents present the original Linda approach to tuple spaces. Linda consists of the set of primivites put, get, query and their respective non-blocking variants. In the paper and and in the literature you will often find that `put`, `get` and `query` are called `out`, `in` and `rd` or `read`. Asynchronous/non-blocking versions of `put`, `get` and `query` are called `eval`, `inp` and `rdp`.
 
