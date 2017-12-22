@@ -4,23 +4,21 @@ This page summarises some of the key programming primitives of pSpaces and their
 
 | | Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
-| Tuple datatype | `t` |  |  |  `Tuple` or `[]interface{}` |  |  | |
-| Tuple creation | `tuple := ("a",1,3.14)` |  |  | `tuple := CreateTuple("a",1,3.14)` |  |  
-| Tuple access | `tuple[i]` |  |  | `tuple.GetFieldAt(i)` |  |  |  |
-
-
+| Tuple datatype | `t` | `Tuple` or `Object[]` |  |  `Tuple` or `[]interface{}` |  |  | |
+| Tuple creation | `tuple := ("a",1)` | `Tuple tuple = new Tuple("a",1)` |  | `tuple := CreateTuple("a",1)` |  |  
+| Tuple access | `tuple[i]` | tuple.getElementAt[i] |  | `tuple.GetFieldAt(i)` |  |  |  |
 
 ## Space API
 
 | | Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
-| add tuple | `put("a",1)` |  |  | `Put("a",1)` |  |  |
-| search tuple | `t := s.query("a",&x)` | `Object[] t = s.get(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Query("a",typeof(int));` | `t: = query("a",&x)` |  |  |
-| wait for tuple) | `queryP` |  |  |  |  |  |
-| search all tuples | `queryAll` |  |  |  |  |  |
-| wait for tuple and remove ( | `get` |  |  |  |  |  |
-| remove tuple | `getP` |  |  |  |  |  |
-| remove all tuples | `getAll` |  |  |  |  |  |
+| add tuple | `s.put("a",1)` | s.put("a",1) |  | `Put("a",1)` |  |  |
+| search tuple | `t := s.query("a",&x)` | `Object[] t = s.query(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Query("a",typeof(int));` | `t,e := s.QueryP("a",&x)` |  |  |
+| wait for tuple) | `queryP` | `Object[] t = s.queryP(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.QueryP("a",&x)` |  |  |
+| search all tuples | `queryAll` | `List<Object[]> tl = s.queryAll(new ActualField("a"),new FormalField(Integer.class())` |  | `tl,e := s.QueryAll("a",&x)` |  |  |
+| wait for tuple and remove | `get` | `Object[] t = s.get(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.Get("a",&x)` |  |  |
+| remove tuple | `getP` | `Object[] t = s.getP(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.GetP("a",&x)` |  |  |
+| remove all tuples | `getAll` | `List<Object[]> tl = s.getAll(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.GetAll("a",&x)` |  |  |
 
 ## Spaces and repositories
 
