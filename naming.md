@@ -7,12 +7,13 @@ This page summarises some of the key programming primitives of pSpaces and their
 | ========================= | ========================= | ========================= | ========================= | ========================= | =========================  | ========================= |
 | Tuple datatype | `t` | `Tuple` or `Object[]` |  |  `Tuple` or `[]interface{}` | `[TemplateField]` |  |
 | Tuple creation | `tuple := ("a",1)` | `Tuple tuple = new Tuple("a",1)`|  | `tuple := CreateTuple("a",1)` | `let tuple = ["a", 1]` | |
-| Tuple access | `tuple[i]` | tuple.getElementAt[i] |  | `tuple.GetFieldAt(i)` | `tuple[i]` |  |  
+| Tuple access | `tuple[i]` | `tuple.getElementAt[i]` |  | `tuple.GetFieldAt(i)` | `tuple[i]` |  |  
 
 ## Space API
 
 | | Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
+| ========================= | ========================= | =================================== | ================================= | ========================= | =========================  | ========================= |
 | add tuple | `s.put("a",1)` | s.put("a",1) |  | `Put("a",1)` | `s.put(["a",1])` |  |
 | search tuple | `t := s.query("a",&x)` | `Object[] t = s.query(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Query("a",typeof(int));` | `t,e := s.QueryP("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
 | wait for tuple) | `queryP` | `Object[] t = s.queryP(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.QueryP("a",&x)` | `let t = s.queryp(["a",FormalTemplateField(Int.self)])` |  |
