@@ -13,7 +13,7 @@ This page summarises some of the key programming primitives of pSpaces and their
 
 | | Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
-| ==================== | ========================= | ===================================================== | ================================= | ========================= | ===========================================  | ========================= |
+| ==================== | ========================= | ======================================================================== | ================================= | ========================= | ==================================================  | ========================= |
 | add tuple | `s.put("a",1)` | s.put("a",1) |  | `Put("a",1)` | `s.put(["a",1])` |  |
 | search tuple | `t := s.query("a",&x)` | `Object[] t = s.query(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Query("a",typeof(int));` | `t,e := s.QueryP("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
 | wait for tuple) | `queryP` | `Object[] t = s.queryP(new ActualField("a"),new FormalField(Integer.class())` |  | `t,e := s.QueryP("a",&x)` | `let t = s.queryp(["a",FormalTemplateField(Int.self)])` |  |
