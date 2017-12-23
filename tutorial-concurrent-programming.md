@@ -174,20 +174,64 @@ if err != nil {
 
 A unique advantage of introducing the `Query` operation it eases performant implementations of concurrent queries.
 
-## 2.5 Another coordination pattern: locks 
-Standard synchronisation mechanisms can be implemented using tuple spaces. For example, a lock can be easily implemented by representing it with a tuple ```(lock)``` that is initally placed in the tuple space:
+## 2.5 Another coordination pattern: global locks 
+Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented by representing it with a tuple ```("lock")``` that is initally placed in the tuple space `s` with
 
 ```go
 s.Put("lock")
 ```
 
-and using a simple protocol to work on the tuple space with exclusive access adhering to the following pattern:
+The pattern to have exclusive access to the tuple space is then
 
 ```go
 s.Get("lock")
 // work
 s.Put("lock")
 ```
+Suppose, for instance, that Alice needs to increase the number of milk buttles and butter bars atomically. She can proceed as follows:
+
+```go
+s.Get("lock")
+s.Get("milk",&x)
+s.Get("butter",&y)
+s.Put("milk",x+1)
+s.Put("butter",y+1)
+s.Put("lock")
+```
+
+## 2.5 Another coordination pattern: multiple-readers/single-writer locks 
+
+Simple locks limit concurrency and may impact the performance of the tuple space. *Multiple-readers/single-writer* locks mitigate this by allowing for multiple readers to work concurrently on the tuple space, while requiring exclusive access on writers. With this coordination pattern we ensure that either none, at most one writer (and no readers), or multiple readers (but no writer) are accessing the tuple space. This coordination pattern can be implemented using a standard solution based on a counter for the number of readers (represented as a tuple `("readers",n)` and two locks: `lock` (a global lock) and `reader_lock` (to lock the counter).
+
+Processes that need to modify the tuple space (i.e. writers) have to adhere to the following protocol:
+
+```
+s.Get("lock")
+// update the tuple space with get/put operations
+s.Put("lock")
+```
+
+Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
+```
+s.Get("reader_lock")
+s.Get("readers",&num_readers)
+num_readers++
+s.Put("readers",num_readers)
+if num_readers == 1 { 
+  s.Get("lock")
+}
+s.Put("reader_lock")
+// search for tuples with query operations
+s.Get("reader_lock")
+s.Get("readers",&num_readers)
+num_readers--
+s.Put("readers",num_readers)
+if num_readers == 0 { 
+  s.Put("lock")
+}
+s.Put("reader_lock")
+```
+
 
 ## 2.6 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
@@ -213,7 +257,8 @@ We have seen the following operations on spaces:
 
 We have seen the following coordination patterns:
 - Producer/consumer: use a tuples space as a bag of tasks. Producers put tuples representing tasks; consumers get tuples representing tasks.
-- Locks: use a tuple to represent the exclusive right to access the tuple space (or a part of it). Only the process with the tuple can access the space.
+- Global locks: use a tuple to represent the exclusive right to access the tuple space (or a part of it). Only the process with the tuple can access the space.
+- Multiple-readers/single-writer locks: use a counter and two locks to allow for multiple process to search for tuples concurrently, or one process to update the tuple space.
 - Barriers: use tuples to count how many processses have reached some status in their computation.
 
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
