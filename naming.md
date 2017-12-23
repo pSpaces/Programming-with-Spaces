@@ -3,9 +3,10 @@ This page summarises some of the key programming primitives of pSpaces and their
 ## Tuples
 
 | | Formal | Java | C#  | Go | Swift | TypeScript |
-| - | - | - | - | - | - | - |
+| - | - | ---------------------------------------------- | - | - | - | - |
+| ========================= | ========================= | ========================= | ========================= | ========================= | =========================  | ========================= |
 | Tuple datatype | `t` | `Tuple` or `Object[]` |  |  `Tuple` or `[]interface{}` | `[TemplateField]` |  |
-| Tuple creation | `tuple := ("a",1)` | `Tuple tuple = new Tuple("a",1)` |  | `tuple := CreateTuple("a",1)` | `let tuple = ["a", 1]` | |
+| Tuple creation | `tuple := ("a",1)` | `Tuple tuple = new Tuple("a",1)`|  | `tuple := CreateTuple("a",1)` | `let tuple = ["a", 1]` | |
 | Tuple access | `tuple[i]` | tuple.getElementAt[i] |  | `tuple.GetFieldAt(i)` | `tuple[i]` |  |  
 
 ## Space API
