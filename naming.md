@@ -26,7 +26,7 @@ This page summarises some of the key programming primitives of pSpaces and their
 
 | |  Formal | Java | C#  | Go | Swift | TypeScript |
 | - | - | - | - | - | - | - |
-| ==================== | ========================= | ======================================================================== | ================================= | ========================= | ==================================================  | ========================= |
+| ==================== | ========================= | =========================== | ================================= | ========================= | ===========================  | ========================= |
 | create local space | `s := new Space(kind,bound)` | (1)  | (1) | (1) | `let s = TupleSpace(kind)` | (1) |
 | | `kind` = SequentialSpace | `Space s = new SequentialSpace()` |  |  new Space(uri) |  |  |
 | | `kind` = QueueSpace      | `Space s = new FIFOSpace()` |  |  -not supported- | `let s = TupleSpace(TupleList())` |  |
