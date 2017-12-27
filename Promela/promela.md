@@ -47,7 +47,7 @@ space??1,eval(x),y
 
 # Examples
 The following examples serve as illustration:
-- [Hello World!](HelloWorld.pml): a "hello world!" example.
+- [Hello World!](HelloWorld.md): a "hello world!" example.
 - [Dining philosophers 0](philosophers-0.md): wrong solution (deadlocks) to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 - [Dining philosophers 1](philosophers-1.md): correct solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem), based on tickets.
 
