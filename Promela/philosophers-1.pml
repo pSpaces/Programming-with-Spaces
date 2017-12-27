@@ -66,11 +66,11 @@ active [N] proctype philosopher() {
 
 		// Wait until the left fork is ready (get the corresponding tuple)
 		board??fork,eval(left);
-    printf("Philosopher %d got left fork\n",me);
+    		printf("Philosopher %d got left fork\n",me);
 
 		// Wait until the right fork is ready (get the corresponding tuple)
-	  board??fork,eval(right);
-    printf("Philosopher %d got right fork\n",me);
+	  	board??fork,eval(right);
+    		printf("Philosopher %d got right fork\n",me);
 
 		// Lunch time
 		printf("Philosopher %d is eating...\n",me);
@@ -79,6 +79,6 @@ active [N] proctype philosopher() {
 		board!fork,left;
 		board!fork,right;
 		bowl!ticket
-    printf("Philosopher %d put both forks on the table and the ticket in the bowl\n",me);
+    		printf("Philosopher %d put both forks on the table and the ticket in the bowl\n",me);
 	od
 }
