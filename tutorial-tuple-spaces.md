@@ -234,7 +234,9 @@ We have seen the following operations on spaces:
 - `QueryAll`: returns all tuples matching a template. 
 - `GetAll`: returns all tuples matching a template and removes them from the space.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go).
+Complete examples for this chapter can be found here:
+* [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
+* [example in Java](https://gitlab.gbar.dtu.dk/02148/home/blob/master/solutions/java/Exercise_1_4.java)
 
 ## What next?
 
