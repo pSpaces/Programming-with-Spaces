@@ -7,7 +7,7 @@ Assuming that Spin has been installed, the model can be run with
 spin philosophers-1.pml
 ```
 
-Not that the model is deadlock free; the philosophers will never stop an will keep progressing as in:
+Not that the model is deadlock free; the philosophers will never stop and will keep progressing as in:
 
 ```
       Waiter putting forks on the table...
