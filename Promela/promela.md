@@ -33,8 +33,20 @@ Additional operations like `getP`, `getAll` and `queryAll` can be encoded in an 
 # Templates and Matching
 Templates are comma-separated sequences of expressions (possibly using variables and constants). If a field of the template is just a variable `v`, the value from the corresponding field in the tuple that is matched is copied into `v` upon retrieval of the tuple. To avoid updating the variable and just using the variable as its value, one has to use `eval(v)` to force a match of a message field with the current value of variable `v`. 
 
+For example, the goSpace code 
+
+```go
+space.Query(1,x,?y)
+```  
+
+would be done in Promela with
+
+```
+space??1,eval(x),y>
+```  
+
 # Examples
-The following examples are available:
+The following examples serve as illustration:
 - [Hello World!](HelloWorld.pml): a "hello world!" example.
 - [Dining philosophers 0](philosophers-0.md): wrong solution (deadlocks) to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem).
 - [Dining philosophers 1](philosophers-1.md): correct solution to the [dining philosophers problem](https://en.wikipedia.org/wiki/Dining_philosophers_problem), based on tickets.
