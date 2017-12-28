@@ -93,14 +93,33 @@ Some examples of restrictions are:
 
 ## 3.7 A coordination pattern: private spaces
 
-A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server.
+A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lounge` space to receive requests to enter specific chatrooms from the Alice and her friends and will reply to those requests with the URI of the space used to handle the corresponding chatroom.
 
-Server
-```
+More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply contains the URI of the space they need to connect to start chatting:
+
+```go
+	lounge.Put("enter", name, roomID)
+	lounge.Get("roomURI", name, roomID, &uri)
+	room := NewRemoteSpace(uri)
 ```
 
+The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `show` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
 
-```
+```go
+	for {
+		lounge.Get("enter", &who, &roomID)
+		_, ok := rooms[roomID]
+		if ok {
+			roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
+		} else {
+			rooms[roomID] = chatPort
+			chatPort++
+			roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
+			room := NewSpace(roomURI)
+			go show(&room, roomID)
+		}
+		lounge.Put("roomURI", who, roomID, roomURI)
+	}
 
 ```
 
