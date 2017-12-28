@@ -84,24 +84,61 @@ RemoteSpace chat = new RemoteSpace("tcp://chathost:311415/?keep")
 
 ## 3.6 What can be send around?
 
+Dataypes should be common on both sides
+
+Code?
 
 
 ## 3.3 A coordination pattern: private spaces
 
 A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server.
 
-## 3.4 A coordination pattern: remote evaluation
+Server
+```
+```
 
-Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) and atomic update operations are not currently supported.
 
-## 3.7 Mobility
+```
 
-Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) and atomic update operations are not currently supported.
+```
+
+## 3.4 A coordination pattern: remote procedure call
+
+Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why operations such as atomic updates or  conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
+
+Suppose, for example, that Alice and her friends needs to compute functions such as `foo(1,2,3)` and `bar("a","b")` and want a server to do the job for them. They can send their RPC requests by first sending the function name and the arguments in separate tuples and then waiting for the result:
+
+Client
+```go
+server.Put("Alice123","func","foo")
+server.Put("Alice123","args",1,2,3)
+server.Get("Alice123",&z)
+```
+
+The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
+
+```go
+for {
+  myspace.Get(&callId,"call",&f)
+  switch(f){
+    case "foo" :
+      myspace.Get(callId,&x,&y,&z)
+      result := foo(x,y,z)
+    ...
+  }
+  myspace.Put(callId,"result",result)
+}
+```
+
+Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above.
 
 ## Summary
  
 We have seen the following operations to access remote spaces:
-- `RemoteSpace`: given an URI, it creates a local reference to a remote space.
+- `NewRemoteSpace` (Go) or `RemoteSpace` (Java, C#): constructor to create a local reference to a remote space specified by an URI.
+- `Repository`: a collector of spaces.
+- `addSpace`: operation to add a space to a space repository.
+- `addGate`: operation to open a gate (external access) to a space repository.
 
 We have seen the following coordination patterns:
 - Private space creation
@@ -110,7 +147,7 @@ We have seen the following coordination patterns:
 A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/chat-0/main.go).
 
 ## Reading suggestions
-De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
+* De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
 
 ## What next?
 
