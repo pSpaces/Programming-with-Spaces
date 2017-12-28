@@ -84,12 +84,14 @@ RemoteSpace chat = new RemoteSpace("tcp://chathost:311415/?keep")
 
 ## 3.6 What can be send around?
 
-Dataypes should be common on both sides
+There are limitations on the datatypes that can be used in the remote tuple space operations, partly due to the underlying serialisers used by the libraries.
 
-Code?
+Some examples of restrictions are:
+* dataypes should be known on both sides.
+* references and pointers cannot be sent.
+* code cannot be sent.
 
-
-## 3.3 A coordination pattern: private spaces
+## 3.7 A coordination pattern: private spaces
 
 A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server.
 
@@ -102,7 +104,7 @@ Server
 
 ```
 
-## 3.4 A coordination pattern: remote procedure call
+## 3.8 A coordination pattern: remote procedure call
 
 Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why operations such as atomic updates or  conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
 
@@ -124,13 +126,16 @@ for {
     case "foo" :
       myspace.Get(callId,&x,&y,&z)
       result := foo(x,y,z)
+    case "bar"
+      myspace.Get(callId,&s,&t)
+      result := bar(s,t)
     ...
   }
   myspace.Put(callId,"result",result)
 }
 ```
 
-Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above.
+Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticatd, e.g. by handling the RPCs asynchronously.
 
 ## Summary
  
@@ -141,10 +146,11 @@ We have seen the following operations to access remote spaces:
 - `addGate`: operation to open a gate (external access) to a space repository.
 
 We have seen the following coordination patterns:
-- Private space creation
-- Remote evaluation
+- Private space creation.
+- Remote procedure calls.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/chat-0/main.go).
+Complete examples for this chapter can be found here:
+* Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0).
 
 ## Reading suggestions
 * De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
