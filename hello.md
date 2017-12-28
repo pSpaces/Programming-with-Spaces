@@ -3,7 +3,7 @@ Let us program our first "hello world!" example.
 You will need to have one of the frameworks up and running. If not already done, go to the main page of [pSpaces](../), choose a framework and follow the instructions to install it. 
 
 We will now create a simple program that illustrates the most basic features of spaces in different languages. The complete code of the example in each of the languages can be found here:
-- [Hello World in Go](https://github.com/pSpaces/goSpace/blob/master/examples/HelloWorld/main.go)
+- [Hello World in Go](https://github.com/pSpaces/goSpace-examples/blob/master/hello/local/main.go)
 - [Hello World in C#](https://github.com/pSpaces/dotSpace-Examples/blob/master/HelloWorld/Program.cs)
 - [Hello World in Java](https://github.com/pSpaces/jSpace/blob/master/examples/HelloWorld/src/main/java/org/jspace/examples/helloworld/HelloWorld.java)
 - [Hello World in Swift](https://github.com/pSpaces/SwiftSpace/blob/master/SwiftSpace/Examples/HelloWorld.swift)
