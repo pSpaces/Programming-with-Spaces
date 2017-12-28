@@ -4,11 +4,12 @@ This chapter provides a gentle introduction to distributed computing using pSpac
 
 ## 3.1 Space URIs
 
-Tu spaces intended to be accessible from remote devices must be explicitly exposed and must have unique addresses to identify them. In pSpaces we use URIs for this purpose. A basic form of URI currently supported in pSpace is
+To make a tuple space accessible from a remove host, the tuple space needs an URI, which acts as its unique identifier. A basic form of URI currently supported in pSpace is
 
 ```go
 tcp://host:port/space
 ```
+
 where `tcp` specifies to use the TCP communication protocol, `host` is the name or IP address of the device hosting the tuple space, `port` is a valid port (e.g. a port number, and `space` is the identifier for the tuple space. Some implementations of pSpaces support several protocols beyond `tcp` and can handle additional parameters in the URI as we shall see later.
 
 ## 3.2 Sharing a space in Go
