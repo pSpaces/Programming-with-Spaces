@@ -131,30 +131,34 @@ Suppose, for example, that Alice and her friends needs to compute functions such
 
 Client
 ```go
-server.Put("Alice123","func","foo")
-server.Put("Alice123","args",1,2,3)
-server.Get("Alice123",&z)
+server.Put("Alice1", "func", "foo")
+server.Put("Alice1", "args", 1, 2, 3)
+var z int
+server.Get("Alice1", "result", &z)
 ```
 
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
 
 ```go
 for {
-  myspace.Get(&callId,"call",&f)
-  switch(f){
-    case "foo" :
-      myspace.Get(callId,&x,&y,&z)
-      result := foo(x,y,z)
-    case "bar"
-      myspace.Get(callId,&s,&t)
-      result := bar(s,t)
-    ...
+  mySpace.Get(&callID, "func", &f)
+  switch f {
+  case "foo":
+    mySpace.Get(callID, "args", &x, &y, &z)
+    result := foo(x, y, z)
+    mySpace.Put(callID, "result", result)
+  case "bar":
+    mySpace.Get(callID, "args", &a, &b)
+    result := bar(a, b)
+    mySpace.Put(callID, "result", result)
+  default:
+    // ignore RPC for unknown functions
+    continue
   }
-  myspace.Put(callId,"result",result)
 }
 ```
 
-Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticatd, e.g. by handling the RPCs asynchronously.
+Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticatd, e.g. by handling the RPCs asynchronously or dealing with calls to unknown functions differently.
 
 ## Summary
  
@@ -169,7 +173,7 @@ We have seen the following coordination patterns:
 - Remote procedure calls.
 
 Complete examples for this chapter can be found here:
-* Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-1)
+* Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-1), [remote procedure calls](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/rpc-0)
 
 ## Reading suggestions
 * De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
