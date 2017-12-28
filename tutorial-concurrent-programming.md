@@ -199,7 +199,7 @@ s.Put("butter",y+1)
 s.Put("lock")
 ```
 
-## 2.5 Another coordination pattern: multiple-readers/single-writer locks 
+## 2.6 Another coordination pattern: multiple-readers/single-writer locks 
 
 Simple locks limit concurrency and may impact the performance of the tuple space. *Multiple-readers/single-writer* locks mitigate this by allowing for multiple readers to work concurrently on the tuple space, while requiring exclusive access on writers. With this coordination pattern we ensure that either none, at most one writer (and no readers), or multiple readers (but no writer) are accessing the tuple space. This coordination pattern can be implemented using a standard solution based on a counter for the number of readers (represented as a tuple `("readers",n)` and two locks: `lock` (a global lock) and `reader_lock` (to lock the counter).
 
@@ -233,7 +233,7 @@ s.Put("reader_lock")
 ```
 
 
-## 2.6 Another coordination pattern: barriers
+## 2.7 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
 ```go
