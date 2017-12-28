@@ -36,10 +36,10 @@ for {
 
 A remote tuple space, possibly residing on another device, accepts the same operations as local tuple space. The only difference is that we need to create the space slightly differently, namely with the `NewRemoteSpace` constructor.
 
-In our example, Alice and her friends can implement clients that connect to the server `chat.com` in Go with:
+In our example, Alice and her friends can implement clients that connect to the server running in `chathost` in Go with:
 
 ```go
-chat := NewRemoteSpace("tcp://localhost:3115/room123")
+chat := NewRemoteSpace("tcp://chathost:3115/room123")
 ```
 
 after which the space `chat` can be treated as an ordinary tuple space. For example, messages can be sent with 
@@ -78,9 +78,12 @@ chatRepository.AddGate("tcp://localhost:311415/?keep");
 
 Then Alice and her friends con connect to it with
 
-```go
-chat := NewRemoteSpace("tcp://localhost:311415/?keep")
+```java
+RemoteSpace chat = new RemoteSpace("tcp://chathost:311415/?keep")
 ```
+
+## 3.6 What can be send around?
+
 
 
 ## 3.3 A coordination pattern: private spaces
@@ -91,7 +94,7 @@ A typical coordination pattern in distributed programming is the creation of fre
 
 Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) and atomic update operations are not currently supported.
 
-## 3.7 Strong mobility
+## 3.7 Mobility
 
 Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) and atomic update operations are not currently supported.
 
