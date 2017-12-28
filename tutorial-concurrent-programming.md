@@ -117,7 +117,7 @@ The adopted coordination pattern is called *consumer/producer*. Alice has the ro
 This basic basic coordination pattern can be easily extended to the case in which there are multiple producers and consumers.
 
 ## 2.4 Concurrent queries: why queries are in the API
-There are many situations in which one would like inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
+There are many situations in which one would like to inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
 
 Alice:
 ```go
