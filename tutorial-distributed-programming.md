@@ -1,6 +1,6 @@
-# 3. Distributed Programmiong with Tuple Spaces
+# 3. Distributed Programming with Tuple Spaces
 
-This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explain how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications.
+This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications.
 
 ## 3.1 Space URIs
 
@@ -34,7 +34,7 @@ for {
 
 ## 3.3 Accesing a remote space
 
-A remote tuple space, possibly residing on another device, accepts the same operations as local tuple space. The only difference is that we need to create the space slightly differently, namely with the `NewRemoteSpace` constructor.
+A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `NewRemoteSpace` constructor.
 
 In our example, Alice and her friends can implement clients that connect to the server running in `chathost` in Go with:
 
@@ -68,7 +68,7 @@ The main purpose of using space repositories is to ease the exposure of spaces t
 
 where `<protocol>` identifies the communication protocol, `<address>` is a string identifying the local port used to accept requests, `<id>` is an integer, and `<par1>`,..., `<parn>` are extra parameters that can be used to configure the interaction protocol.
 
-Currently, most pSpace implementations provide support for `tcp` only but some implementations plan to support `udp`, `bt` (blueetooth) and `http`. The fields `<address>` and `<id>` depend on the protocol.  In the case of `tcp`, `<address>` can be the network address of the local network interface used for the communication and  `<id>` the *socket port* used to accept connections, while ```<pari>``` can be used to select the format used to serialise data (e.g. `keep` to keep connections open or `conn` to open a new connection for every tuple space operation).
+Currently, most pSpace implementations provide support for `tcp` only but some implementations plan to support `udp`, `bt` (bluetooth) and `http`. The fields `<address>` and `<id>` depend on the protocol.  In the case of `tcp`, `<address>` can be the network address of the local network interface used for the communication and  `<id>` the *socket port* used to accept connections, while ```<pari>``` can be used to select the format used to serialise data (e.g. `keep` to keep connections open or `conn` to open a new connection for every tuple space operation).
 
 Following on our example, the server of chat rooms can open a gate for Alice and her friends with
 
