@@ -15,7 +15,7 @@ We will go through it step by step.
 
 Go
 ```go
-inbox := goSpace.NewSpace()
+inbox := NewSpace("space")
 ``` 
 C#
 ```cs
@@ -53,7 +53,7 @@ _ = inbox.put(["Hello World!"])
 
 Go
 ```go
-var message string;
+var message string
 inbox.Get(&message)
 ```
 C#
