@@ -163,7 +163,7 @@ for {
 
 Charlie:
 ```go
-_,err := fridge.GetP(fridge,"shop!") 
+_,err := fridge.QueryP(fridge,"shop!") 
 if err != nil {
     for {
         fridge.Get(&item,&quantity)
@@ -175,19 +175,23 @@ if err != nil {
 A unique advantage of introducing the `Query` operation it eases performant implementations of concurrent queries.
 
 ## 2.5 Another coordination pattern: global locks 
-Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented by representing it with a tuple ```("lock")``` that is initally placed in the tuple space `s` with
+Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented as follows.
+
+First, the lock is represented by a tuple ```("lock")``` that is initally placed in the tuple space `s` with
 
 ```go
 s.Put("lock")
 ```
 
-The pattern to have exclusive access to the tuple space is then
+Then, every time a process wants to work on the tuple space it should adhere to the following protocol:
 
 ```go
 s.Get("lock")
 // work
 s.Put("lock")
 ```
+If all processes respect the protocol, the computations specified between acquiring the lock and releasing the lock are executed atomically.
+
 Suppose, for instance, that Alice needs to increase the number of milk buttles and butter bars atomically. She can proceed as follows:
 
 ```go
