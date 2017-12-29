@@ -2,7 +2,11 @@ This page provides the formal operational semantics for the "local" part of the 
 
 ## Syntax
 
-A pSpace concurrent program is a pair M,P, where `M` is a memory (map of variables into values) `P` is a a multiset of concurrent processes `P`. 
+A pSpace concurrent program `S` is a pair `M |- P, where `M` is a memory (map of variables into values) `P` is a a multiset of concurrent processes `P`:
+
+```
+S := M |- P
+```
 
 A memory `M` is represented as a mapping of variables into values. We use the usual notation conventions:
 * A memory `M` is represented as `x |-> u , y |-> v , ...` where `x,y,...` are variables and `u,v,...` are values;
@@ -20,30 +24,23 @@ A tuple structure `TS` is basically a list of all tuples, composed with the asso
 TS ::= nil | t | TS * TS 
 ```
 
-Concurrent processes are composed with `‖` too.Parallel composition of applications is denoted with operator `‖`, which is associative, commutative and has the empty set `0` as identity.  
-
-
-We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions. 
+Concurrent processes are composed with the parallel composition operator `‖`. Such operator is associative, commutative and has the empty set `0` as identity:  
 
 ```
 P ::= 0 | C‖C | A;P | ...
 ```
 
-The actions of a process include creation of local and remote spaces, creation of repositories, addition/removal of gates and assignments using tuple space operations.
+We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions. 
+
+The actions of a process include creation of new processes, creation of new tuple spaces and assignments using tuple space operations.
 
 ```
 A ::= new P
   | space := new Space(kind,bound)
-  | space := new RemoteSpace(gate,spaceId)
-  | rep := new Repository()
-  | rep.addSpace(spaceId,space)
-  | rep.delSpace(spaceId)
-  | rep.addGate(gate)
-  | rep.delGate(gate)
   | x,y := space.O
 ```
 
-Operations `O` correspond to the core API
+Operations `O` correspond to the core API of pSpaces:
 
 ```
 O ::= put(t) 
@@ -77,8 +74,8 @@ Creating a new local space
 
 ```
 ===================================================================
- App(host, M, space := new Space(kind,bound) ; P1 ‖ P2) =>
- App(host, M[space |-> Space(kind,bound)] , P1 ‖ P2 )
+ M |- space := new Space(kind,bound) ; P1 ‖ P2 =>
+ M[space |-> Space(kind,bound)] |- P1 ‖ P2 
 ```
 
 The following rule describes the behaviour of executing an operation on a local space. Note that the premise of the rule requires a reaction of the space to the operation. Such reactions are described as operational rules below. Note that a space may not react (and thus block the process).  
@@ -86,22 +83,22 @@ The following rule describes the behaviour of executing an operation on a local 
 ```
  S1.O => S2,t,e
 ===================================================================
- App(host, (M , space |-> S1), x,y := space.O ; P1 ‖ P2) =>
- App(host, (M , space |-> S2)[x|->t][y|->e] , P1 ‖ P2)
+ (M , space |-> S1) |- , x,y := space.O ; P1 ‖ P2) =>
+ (M , space |-> S2)[x|->t][y|->e] |- P1 ‖ P2)
 ```
 
 Spawning a process just creates a new concurrent activity:
 
 ```
 ===================================================================
- App(host, M, new P1 ; P2 ‖ P3) -> App(host, M, P1 ‖ P2 ‖ P3)
+ M |- new P1 ; P2 ‖ P3 => M |- P1 ‖ P2 ‖ P3
 ```
 
 ## Operational semantics of the core API
 
-In the following rules tuple structures TS are to be understood up to associativity of `*`, and identity of `nil` (i.e. as a list). Note that the result of an operation may alter the tuple structure, and produce a tuple and an error code (either `ok` or `ko`)
+In the following rules, tuple structures TS are to be understood up to associativity of `*`, and identity of `nil` (i.e. as a list). Note that the result of an operation may alter the tuple structure, and produce a tuple and an error code (either `ok` or `ko`)
 
-The behaviour of `put` is common to all spaces
+The behaviour of `put` is common to all kinds of spaces
 
 ```
  |TS| <= b
@@ -109,12 +106,12 @@ The behaviour of `put` is common to all spaces
  Space(k,b,TS).put(t) => Space(k,b,t*TS),t,ok
 ``` 
 
-The behaviour of `query` depends on the class of space:
+The behaviour of `query` depends on the space kind. We present here the rules for kind `SequentialSpace` only:
  
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
-Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
+ Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
 
 
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. We just provide the rules for sequential spaces, the rest of the rules are defined similarly.
