@@ -29,7 +29,8 @@ Concurrent processes are composed with the parallel composition operator `‖`. 
 ```
 P ::= 0 | C‖C | A;P | ...
 ```
-We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`. 
+
+For simplicity, we usually drop the final `;0` from programs. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`. 
 
 The actions of a process include creation of new processes, creation of new tuple spaces and assignments using tuple space operations.
 
