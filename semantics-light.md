@@ -37,6 +37,7 @@ The actions of a process include creation of new processes, creation of new tupl
 ```
 A ::= new P
   | space := new Space()
+  | space.O
   | x,y := space.O
 ```
 
@@ -87,13 +88,20 @@ Creating a new local space is formalised by the following rule:
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists.
 
-The following rule describes the behaviour of executing an operation on a local space.
+The following rules describes the behaviour of executing an operation on a local space.
 
 ```
  S1.O => S2,t,e
 ===================================================================
  (M , space |-> S1) |- , x,y := space.O ; P1 ‖ P2) =>
  (M , space |-> S2)[x|->t][y|->e] |- P1 ‖ P2)
+```
+
+```
+ S1.O => S2,t,e
+===================================================================
+ (M , space |-> S1) |- space.O ; P1 ‖ P2) =>
+ (M , space |-> S2) |- P1 ‖ P2)
 ```
 
 Note that the premise of the above rule requires a reaction of the space to the operation. The tuple space may not react and thus may block the process (by not allowing to fire the rule). The reactions of tuple spaces are described as operational rules below. The effect of the assignment on variables `x` and `y` is the usual one (i.e. update/overwrite the variables).
