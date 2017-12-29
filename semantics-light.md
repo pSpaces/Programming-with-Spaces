@@ -21,7 +21,7 @@ We use the usual notational conventions:
 Tuple spaces reside in memory just as other values. A tuple space value is denoted by `Space(TS)` where and `TS` is a list of tuples, denoted with the following syntax:
 
 ```
-TS ::= nil | t | TS , TS 
+TS ::= nil | t | TS * TS 
 ```
 
 Concurrent processes are composed with the parallel composition operator `‖`. Such operator is associative, commutative and has the empty set `0` as identity:  
@@ -100,7 +100,7 @@ Note that the premise of the above rule requires a reaction of the space to the 
 
 ## Operational semantics of the core API
 
-Recall that tuple lists `TS` are to be understood up to associativity of `,`, and identity of `nil`. Note that the result of an operation may alter the tuple structure `TS`, and that they produce a tuple and an error code (either `ok` or `ko`)
+Recall that tuple lists `TS` are to be understood up to associativity of `*`, and identity of `nil`. Note that the result of an operation may alter the tuple structure `TS`, and that they produce a tuple and an error code (either `ok` or `ko`)
 
 The behaviour of operation `put` is described by the following rule:
 
@@ -115,7 +115,7 @@ The behaviour of `query` is governed by the following rule:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS,t,TS').query(T) => Space(TS,t,TS'),t,ok
+ Space(TS*t*TS').query(T) => Space(TS*t*TS'),t,ok
  ```
 
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. 
@@ -123,7 +123,7 @@ The behaviour of `queryP` is similar but ensures progress and returns error code
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS,t,TS').queryP(T) => Space(TS,t,TS'),t,ok
+ Space(TS*t*TS').queryP(T) => Space(TS*t*TS'),t,ok
 	
  no tuple in TS matches T
 ===================================================================
@@ -135,11 +135,11 @@ The rest of the operations are defined similarly:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS,t,TS').get(T) => Space(TS,TS'),t,ok
+ Space(TS*t*TS').get(T) => Space(TS*TS'),t,ok
 
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS,t,TS').getP(T) => Space(TS,TS'),t,ok
+ Space(TS*t*TS').getP(T) => Space(TS*TS'),t,ok
 	
  no tuple in TS matches T
 ===================================================================
