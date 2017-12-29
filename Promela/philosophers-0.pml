@@ -28,7 +28,7 @@ active proctype waiter(){
 		printf("Waiter put fork %d on the table.\n",i);
 		i--
 	:: 	else -> break
-	od
+	od;
 
 	printf("Waiter done.\n");
 
@@ -60,7 +60,7 @@ active [N] proctype philosopher() {
 
 		// Return the forks (put the corresponding tuples)
 		board!fork,left;
-		board!fork,right
-     		printf("Philosopher %d put both forks on the table\n",me);
+		board!fork,right;
+     		printf("Philosopher %d put both forks on the table\n",me)
 	od
 }
