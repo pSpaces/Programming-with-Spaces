@@ -1,4 +1,4 @@
-This page provides the formal operational semantics for the "local" part of the pSpace programming model.
+This page provides the formal operational semantics for a light version of the pSpace programming model.
 
 ## Syntax
 
@@ -18,12 +18,7 @@ We use the usual notational conventions:
 * `M[x]` is the value associated to `x`, if any;
 * Memory `M[x|->u]` is like `M` after updating the value associated to `x` by `u` or adding `x |-> u` if `M[x]` is not defined.
 
-Tuple spaces reside in memory just as other values. A tuple space value is denoted by `Space(kind,bound,TS)` where
-* `kind`  is one of `Sequential`, `Queue`, `Stack`, `Pile` and `Random` and `NonDet`;
-* `bound` is the capacity of the tuple space (a positive natural number or ∞); 
-* and `TS` is a list of tuples.
-
-List of tuples are have the following syntax:
+Tuple spaces reside in memory just as other values. A tuple space value is denoted by `Space(TS)` where and `TS` is a list of tuples, denoted with the following syntax:
 
 ```
 TS ::= nil | t | TS , TS 
@@ -40,7 +35,7 @@ The actions of a process include creation of new processes, creation of new tupl
 
 ```
 A ::= new P
-  | space := new Space(kind,bound)
+  | space := new Space()
   | x,y := space.O
 ```
 
@@ -85,8 +80,8 @@ Creating a new local space is formalised by the following rule:
 
 ```
 ===================================================================
- M |- space := new Space(kind,bound) ; P1 ‖ P2 =>
- M[space |-> Space(kind,bound,nil)] |- P1 ‖ P2 
+ M |- space := new Space() ; P1 ‖ P2 =>
+ M[space |-> Space(nil)] |- P1 ‖ P2 
 ```
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists.
@@ -107,36 +102,57 @@ Note that the premise of the above rule requires a reaction of the space to the 
 
 Recall that tuple lists `TS` are to be understood up to associativity of `,`, and identity of `nil`. Note that the result of an operation may alter the tuple structure `TS`, and that they produce a tuple and an error code (either `ok` or `ko`)
 
-The behaviour of operation `put` is common to all kinds of spaces:
+The behaviour of operation `put` is described by the following rule:
 
 ```
- |TS| <= b
-===================================================================
- Space(k,b,TS).put(t) => Space(k,b,t*TS),t,ok
+ Space(TS).put(t) => Space(t,TS),t,ok
 ``` 
 
 The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `t`.
 
-The behaviour of `query` and `get` operations depend on the space kind. We present here the rules for kind `SequentialSpace` only.
-
-We start with `query`:
+The behaviour of `query` is governed by the following rule:
  
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(Sequential,b,(TS,t,TS')).query(T) => Space(Sequential,b,(TS*t*TS')),t,ok
+ Space(TS,t,TS').query(T) => Space(TS,t,TS'),t,ok
  ```
 
-The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. We just provide the rules for sequential spaces, the rest of the rules are defined similarly.
+The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. 
 
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(Sequential,b,TS*t*TS').queryP(T) => Space(Sequential,b,TS*t*TS'),t,ok
+ Space(TS,t,TS').queryP(T) => Space(TS,t,TS'),t,ok
 	
  no tuple in TS matches T
 ===================================================================
- Space(Sequential,b,TS).queryP(T) => Space(Sequential,b,TS),null,ko
+ Space(TS).queryP(T) => Space(TS),null,ko
 ```
 
-The rest of the operations are defined similarly.
+The rest of the operations are defined similarly:
+
+```
+ t matches T and no tuple in TS' matches T
+===================================================================
+ Space(TS,t,TS').get(T) => Space(TS,TS'),t,ok
+
+ t matches T and no tuple in TS' matches T
+===================================================================
+ Space(TS,t,TS').getP(T) => Space(TS,TS'),t,ok
+	
+ no tuple in TS matches T
+===================================================================
+ Space(TS).getP(T) => Space(TS),null,ko
+ 
+ TS' = {t in TS such that t matches T}
+===================================================================
+ Space(TS).queryAll(T) => Space(TS),TS',ok
+ 
+ TS' = {t in TS such that t matches T}
+===================================================================
+ Space(TS).getAll(T) => Space(TS\TS'),TS',ok
+ 
+```
+
+
