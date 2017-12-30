@@ -137,8 +137,8 @@ Client
 ```go
 server.Put("Alice1", "func", "foo")
 server.Put("Alice1", "args", 1, 2, 3)
-var z int
-t,_ := server.Get("Alice1", "result", &z)
+var u int
+t,_ := server.Get("Alice1", "result", &u)
 ```
 
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
@@ -151,11 +151,11 @@ for {
   switch f {
   case "foo":
     mySpace.Get(callID, "args", &x, &y, &z)
-    result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(1)).(int), (t.GetFieldAt(2)).(int))
+    result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(3)).(int), (t.GetFieldAt(4)).(int))
     mySpace.Put(callID, "result", result)
   case "bar":
     mySpace.Get(callID, "args", &a, &b)
-    result := bar((t.GetFieldAt(0)).(string), (t.GetFieldAt(1)).(string))
+    result := bar((t.GetFieldAt(2)).(string), (t.GetFieldAt(3)).(string))
     mySpace.Put(callID, "result", result)
   default:
     // ignore RPC for unknown functions
