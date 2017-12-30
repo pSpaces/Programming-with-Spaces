@@ -55,44 +55,13 @@ Most operations on tuple spaces have blocking and non-blocking variants. Non-blo
 In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
 ```go
-_,err := fridge.GetP("milk",&quantity)
-if (err !=nil) {
+t,err := fridge.GetP("milk",&quantity)
+if (err == nil) {
   // go shopping
 } else {
   fridge.Put ("milk", 1)
 }
 ```
-
-The ```Put``` operation has non-blocking variant ```PutP```, which allows one to progress while tuples are being inserted.
-
-Indeed, the programs
-
-```go
-fridge.Put("milk", 2)
-fridge.Put("butter", 1)
-```
-
-and
-
-```go
-fridge.PutP("milk", 2)
-fridge.PutP("butter", 1)
-```
-
-behave differently. Indeed, the order in which the tuples appear in the tuple space in the second example is not guaranteed and the tuple space may at some point contain
-
-```
-(fridge,"butter", 1)
-```
-
-Note that the previous program may not be identical in behaviour to
-
-```go
-go fridge.Put("milk", 2)
-fridge.Put("butter", 1)
-```
-
-since in this example the `Put` invokations may be invoked in different moments.
 
 ## 2.3 A basic coordination pattern: producer/consumer
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
@@ -107,7 +76,7 @@ fridge.Put("butter",1)
 Bob:
 ```go
 for {
-    fridge.Get(&item,&quantity)
+    t,err := fridge.Get(&item,&quantity)
     // go shopping
 }
 ```
@@ -140,11 +109,11 @@ A drawback of this solution is that the check that Bob performs is not atomic. T
 
 Charlie:
 ```go
-_,err := fridge.GetP(fridge,"shop!") 
-if err != nil {
+t,err := fridge.GetP(fridge,"shop!") 
+if err == nil {
     fridge.Put("shop!")
     for {
-        fridge.Get(&item,&quantity)
+        t,err := fridge.Get(&item,&quantity)
         // go shopping ...
     }
 } else // relax
@@ -156,17 +125,17 @@ Bob:
 ```go
 fridge.Query("shop!")
 for {
-    fridge.Get(&item,&quantity)
+    t,err := fridge.Get(&item,&quantity)
     // go shopping
 }
 ```
 
 Charlie:
 ```go
-_,err := fridge.QueryP(fridge,"shop!") 
-if err != nil {
+t,err := fridge.QueryP(fridge,"shop!") 
+if err == nil {
     for {
-        fridge.Get(&item,&quantity)
+        t,err := fridge.Get(&item,&quantity)
         // go shopping ...
     }
 }
@@ -196,10 +165,10 @@ Suppose, for instance, that Alice needs to increase the number of milk buttles a
 
 ```go
 s.Get("lock")
-s.Get("milk",&x)
-s.Get("butter",&y)
-s.Put("milk",x+1)
-s.Put("butter",y+1)
+tx,_ := s.Get("milk",&x)
+ty,_ := s.Get("butter",&y)
+s.Put("milk",(tx.GetFieldAt(0)).(int)+1)
+s.Put("butter",(ty.GetFieldAt(0)).(int)+1)
 s.Put("lock")
 ```
 
@@ -218,7 +187,8 @@ s.Put("lock")
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
 ```
 s.Get("reader_lock")
-s.Get("readers",&num_readers)
+t,_ := s.Get("readers",&num_readers)
+num_readers = (t.GetFieldAt(1)).(int)
 num_readers++
 s.Put("readers",num_readers)
 if num_readers == 1 { 
@@ -227,7 +197,8 @@ if num_readers == 1 {
 s.Put("reader_lock")
 // search for tuples with query operations
 s.Get("reader_lock")
-s.Get("readers",&num_readers)
+t,_ := s.Get("readers",&num_readers)
+num_readers = (t.GetFieldAt(1)).(int)
 num_readers--
 s.Put("readers",num_readers)
 if num_readers == 0 { 
@@ -235,7 +206,6 @@ if num_readers == 0 {
 }
 s.Put("reader_lock")
 ```
-
 
 ## 2.7 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
@@ -247,8 +217,8 @@ s.Put("barrier",N) ;
 and when a process reaches the barrier it has to execute the following code
 
 ```go
-s.Get("barrier",&n)
-s.Put("barrier",n−1)
+t,_ := s.Get("barrier",&n)
+s.Put("barrier",(t.GetFieldAt(1)).(int)−1)
 s.Query("barrier",0)
 // move on
 ```
