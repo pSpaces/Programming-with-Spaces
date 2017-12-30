@@ -1,4 +1,4 @@
-# 1. Programming with Tuple Spaces
+# 1. Programming with Spaces
 
 This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space `fridge` to coordinate their activities.
 
@@ -36,10 +36,18 @@ Similar datatypes and interfaces can be found in the rest of the libraries (e.g.
 
 As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
 
-Tuple fields are accessed position-wise, very much like acccessing arrays. In Go, the `i`-th field is accessed with
+Tuple fields are accessed position-wise, very much like acccessing arrays. In Go, the `i-1`-th field is accessed with
+
+```go
+tuple.GetFieldAt(i)
+```
+
+Casting may be needed in some cases. So for example to get properly typed values in for the example above we could proceed as follows:
 
 ```
-tuple.GetFieldAt(i)
+var tuple Tuple = CreateTuple("milk", 1)
+item := (tuple.GetFieldAt(0)).(string)
+quantity := (tuple.GetFieldAt(1)).(int)
 ```
 
 And similarly in the rest of the languages. See the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) for a quick reference.
@@ -125,18 +133,21 @@ In our example, pattern matching can be used to specify only the grocery item so
 
 ```go
 var numberOfBottles int
-fridge.GetP("milk", &numberOfBottles)
+t,err := fridge.GetP("milk", &numberOfBottles)
+if(err == nil){
+  numberOfBottles = (t.GetFieldAt(1)).(int)
+}
 ```
 
 which would save the number of milk bottles into variable ```numberOfBottles```.
 
-So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be binders for variables, in addition to ordinary values. A binder for a variable in a pattern is indicated with ```&v```, where ```v``` is the name of the variable to be bound. For example the pattern used above for retrieving the number of bottles of milk is
+So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be *actual fields* (i.e. values) or *formal fields* (i.e. placeholders). Formal fields are specified in most pSpace implementations by type names. In goSpaces, however, formal fields are specified with pointer values (e.g. ```&v```, where ```v``` is the name of a variable ). For example the pattern used above for retrieving the number of bottles of milk is
 
 ```
 ("milk", &numberOfBottles)
 ```
 
-Binders are not supported in all languages. As an alternative, some of the libraries provide ad-hoc datatypes for templates. For instance, the jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
+Some of the libraries provide ad-hoc datatypes for templates. For instance, the jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
 
 The template of the above example would be constructed in Java with
 
@@ -156,27 +167,17 @@ or more compactly
 Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
 ```
 
-## 1.9 Patterns must be linear
-For those languages supporting pattern matching based on binders, we consider linear patterns only. A linear pattern is a pattern in which each binding variable appears only once. For example, the following pattern 
-
-```
-(&x,&x)
-```
-
-is not linear and its semantics is undefined.
-
-In addition, the semantics of patterns where variables appear both as a binding
-variable and as a value, as in ```(&x,x)``` or ```(x,&x)```, are undefined too.
-
-## 1.10 Updating tuples 
+## 1.9 Updating tuples 
 
 Note that contrary to some collection datatypes in mainstream languages, the operation `put` adds a fresh copy of the tuple. Once the tuple is in the space, its contents cannot be modified. This means that if the tuple contains values of complex data types with references or pointers, those are deeply copied. The only way to modify a tuple of a space is to remove it from the space and re-insert it
 
 For example, if Alice can increase the number of bottles to be bought with
 
 ```go
-fridge.Get("milk",&numberOfBottles)
-fridge.Put("milk",numberOfBottles+1)
+t,err := fridge.GetP("milk",&numberOfBottles)
+if err == nil {
+  fridge.Put("milk",(t.GetFieldAt(1)).(int)+1)
+}
 ```
 
 or, in Java, 
@@ -186,7 +187,7 @@ Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class()
 fridge.put("milk",tuple.getElementAt[1]+1)
 ```
  
-## 1.11 Tuple retrieval is non-deterministic 
+## 1.10 Tuple retrieval is non-deterministic 
 
 What should happen when we try to retrieve a tuple with a pattern `T` and there is actually more than one tuple matching the pattern? The specification of the interface for spaces is that any tuple may be retrieved. It is up to the concrete space datatype or class implementing the space interface to specify the concrete (deterministic or even randomised) behaviour.
 
@@ -200,14 +201,14 @@ As an example, consider the following situation. Assume that the current state o
 and that Alice wants to look for an item to buy with
 
 ```
-fridge.QueryP(&item,&quantity);
+t,err := fridge.QueryP(&item,&quantity);
 ```
 
 Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours.
 
 A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md)  and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
 
-## 1.12 Retrieving all matching tuples
+## 1.11 Retrieving all matching tuples
 
 Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `QueryAll` returns all tuples matching a template and `GetAll` behaves similarly but removes the matched tuples. 
 
