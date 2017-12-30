@@ -28,7 +28,9 @@ Once created, the server can keep retrieving and printing messages with
 var who string
 var message string
 for {
-  chat.Get(&who, &message)
+  t, _ := chat.Get(&who, &message)
+  who = (t.GetFieldAt(0)).(string)
+  message = (t.GetFieldAt(1)).(string)
   fmt.Printf("%s: %s \n", who, message)
 }
 ```
@@ -99,29 +101,30 @@ A typical coordination pattern in distributed programming is the creation of fre
 More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply contains the URI of the space they need to connect to start chatting:
 
 ```go
-	lounge.Put("enter", name, roomID)
-	lounge.Get("roomURI", name, roomID, &uri)
-	room := NewRemoteSpace(uri)
+lounge.Put("enter", name, roomID)
+t,_ := lounge.Get("roomURI", name, roomID, &uri)
+uri = (t.GetFieldAt(2)).(string)
+room := NewRemoteSpace(uri)
 ```
 
 The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `show` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
 
 ```go
-	for {
-		lounge.Get("enter", &who, &roomID)
-		_, ok := rooms[roomID]
-		if ok {
-			roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
-		} else {
-			rooms[roomID] = chatPort
-			chatPort++
-			roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
-			room := NewSpace(roomURI)
-			go show(&room, roomID)
-		}
-		lounge.Put("roomURI", who, roomID, roomURI)
-	}
-
+for {
+  t, _ := lounge.Get("enter", &who, &roomID)
+  who = (t.GetFieldAt(1)).(string)
+  roomID = (t.GetFieldAt(2)).(string)
+  _, ok := rooms[roomID]
+  if ok {
+    roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
+  } else {
+    rooms[roomID] = chatPort
+    chatPort++
+    room := NewSpace(roomURI)
+    go show(&room, roomID)
+  }
+  lounge.Put("roomURI", who, roomID, roomURI)
+}
 ```
 
 ## 3.8 A coordination pattern: remote procedure call
@@ -135,22 +138,24 @@ Client
 server.Put("Alice1", "func", "foo")
 server.Put("Alice1", "args", 1, 2, 3)
 var z int
-server.Get("Alice1", "result", &z)
+t,_ := server.Get("Alice1", "result", &z)
 ```
 
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
 
 ```go
 for {
-  mySpace.Get(&callID, "func", &f)
+  t,_ := mySpace.Get(&callID, "func", &f)
+  callID = (t.GetFieldAt(0)).(string)
+  f = (t.GetFieldAt(2)).(string)
   switch f {
   case "foo":
     mySpace.Get(callID, "args", &x, &y, &z)
-    result := foo(x, y, z)
+    result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(1)).(int), (t.GetFieldAt(2)).(int))
     mySpace.Put(callID, "result", result)
   case "bar":
     mySpace.Get(callID, "args", &a, &b)
-    result := bar(a, b)
+    result := bar((t.GetFieldAt(0)).(string), (t.GetFieldAt(1)).(string))
     mySpace.Put(callID, "result", result)
   default:
     // ignore RPC for unknown functions
