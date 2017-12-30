@@ -54,7 +54,7 @@ _ = inbox.put(["Hello World!"])
 Go
 ```go
 var message string
-inbox.Get(&message)
+t, _ := inbox.Get(&message)
 ```
 C#
 ```cs
@@ -74,7 +74,7 @@ let tuple = inbox.get([FormalTemplateField(String.self)])
 
 Go
 ```go
-fmt.Println(message)
+fmt.Println((t.GetFieldAt(0)).(string))
 ```
 C#
 ```cs
