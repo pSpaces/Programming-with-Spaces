@@ -87,12 +87,15 @@ RemoteSpace chat = new RemoteSpace("tcp://chathost:311415/?keep")
 
 ## 3.6 What can be send around?
 
-There are limitations on the datatypes that can be used in the remote tuple space operations, partly due to the underlying serialisers used by the libraries.
+There are limitations on the datatypes that can be used in the remote tuple space operations, partly due to the underlying serialisers used by the libraries. Currently the limitations are language dependent. Some examples are:
 
-Some examples of restrictions are:
+* Java: current support is mainly limited to JSON (see [serialization in jSpace](https://github.com/pSpaces/jSpace/blob/master/docs/jspace_serialization.md))
+* Go: current support is mainly limited to datatypes serializable by [gob](https://golang.org/pkg/encoding/gob/)
+* C#: current support is limited to primitive datatypes.
+
+Some examples of common restrictions are:
 * dataypes should be known on both sides.
-* references and pointers cannot be sent.
-* code cannot be sent.
+* references and pointers cannot be sent, typically the pointed/reference data will be send.
 
 ## 3.7 A coordination pattern: private spaces
 
