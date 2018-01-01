@@ -42,7 +42,7 @@ For more details on corrency primitives refer to
 
 ## 2.2 Blocking operations
 
-The previous chapter did not mention that ```Get``` is actually a blocking operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
+The operation ```GetP``` seen in the previous chapter is a *non-blocking* operation: it returns a result whether or not a matching tuple is found in the tuple space. The operation ```Get```, instead, is a *blocking* operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
 ```go
 fridge.Get("milk",&quantity)
