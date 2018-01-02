@@ -2,7 +2,7 @@ This page provides the formal operational semantics for a light version of the p
 
 ## Syntax
 
-A pSpace concurrent program `S` is a pair `M |- P`, where `M` is a memory (i.e. a map of variables into values) and `P` is a a multiset of concurrent processes. More precisely, the syntax for pSpace programs is 
+A pSpace concurrent program `S` is a pair `M |- P`, where `M` is a memory (i.e. a map of variables into values) and `P` is a multiset of concurrent processes. More precisely, the syntax for pSpace programs is 
 
 ```
 S := M |- P
