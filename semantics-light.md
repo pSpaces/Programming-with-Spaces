@@ -86,7 +86,7 @@ Creating a new local space is formalised by the following rule:
  M[space |-> Space(nil)] |- P1 ‖ P2 
 ```
 
-The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists.
+The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists).
 
 The following rules describes the behaviour of executing an operation on a local space.
 
