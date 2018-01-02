@@ -67,7 +67,25 @@ T ::= e | τ | e,T | τ,T
 
 # Operational semantics
 
-The operational semantics of concurrent pSpace programs is defined by the below set of inference rules. The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...). 
+The operational semantics of concurrent pSpace programs is defined by the below set of inference rules of the form
+
+```
+ premises
+============
+ conclusion
+```
+
+and, very often of the shape:
+
+```
+ premise1 premise2 ... premiseN
+================================
+ A => B
+```
+
+explaining how a program `A` can perform a computation step and evolve into `B` if the premises hold.
+
+The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...). 
 
 ## Operational semantics for actions
 
