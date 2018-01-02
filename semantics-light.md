@@ -8,7 +8,7 @@ A pSpace concurrent program `S` is a pair `M |- P`, where `M` is a memory (i.e. 
 S := M |- P
 ```
 
-A memory `M` is represented as list of mappings `x |-> u`, where `x` is a variaable and `u` is a value:
+A memory `M` is represented as list of mappings `x |-> u`, where `x` is a variable and `u` is a value:
 
 ```
 M := nil | x |-> u | M , M
