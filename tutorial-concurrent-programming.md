@@ -157,8 +157,12 @@ s.Put("lock")
 Then, every time a process wants to work on the tuple space it should adhere to the following protocol:
 
 ```go
+// acquire lock on s
 s.Get("lock")
-// work
+
+// work on tuple space s
+
+// release lock for s
 s.Put("lock")
 ```
 If all processes respect the protocol, the computations specified between acquiring the lock and releasing the lock are executed atomically.
@@ -181,13 +185,18 @@ Simple locks limit concurrency and may impact the performance of the tuple space
 Processes that need to modify the tuple space (i.e. writers) have to adhere to the following protocol:
 
 ```
+// acquire global lock
 s.Get("lock")
+
 // update the tuple space with get/put operations
+
+// release global lock
 s.Put("lock")
 ```
 
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
 ```
+// Increase number of readers and get global lock
 s.Get("reader_lock")
 t,_ := s.Get("readers",&num_readers)
 num_readers = (t.GetFieldAt(1)).(int)
@@ -197,7 +206,10 @@ if num_readers == 1 {
   s.Get("lock")
 }
 s.Put("reader_lock")
+
 // search for tuples with query operations
+
+// Decrease number of readers and release global lock
 s.Get("reader_lock")
 t,_ := s.Get("readers",&num_readers)
 num_readers = (t.GetFieldAt(1)).(int)
