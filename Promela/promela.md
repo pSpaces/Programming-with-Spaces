@@ -42,7 +42,7 @@ space.Query(1,x,?y)
 would be done in Promela with
 
 ```
-space??1,eval(x),y
+space??<1,eval(x),y>
 ```  
 
 # Examples
