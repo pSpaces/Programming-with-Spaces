@@ -28,12 +28,11 @@ This page summarises some of the key programming primitives of pSpaces and their
 | - | - | - | - | - | - | - |
 | ==================== | ========================= | =========================== | ================================= | ========================= | ===========================  | ========================= |
 | create local space | `s := new Space(kind,bound)` | (1)  | (1) | (1) | `let s = TupleSpace(kind)` | (1) |
-| | `kind` = SequentialSpace | `Space s = new SequentialSpace()` | `Space s = new SequentialSpace()` |  new Space(uri) |  |  |
-| | `kind` = QueueSpace      | `Space s = new FIFOSpace()` | -not supported- |  -not supported- | `let s = TupleSpace(TupleList())` |  |
+| | `kind` = SequentialSpace | `Space s = new SequentialSpace()` | `Space s = new SequentialSpace()` |  new Space(uri) | `let s = TupleSpace(TupleList())` |  |
+| | `kind` = QueueSpace      | `Space s = new FIFOSpace()` | -not supported- |  -not supported- |  |  |
 | | `kind` =  StackSpace     | `Space s = new LIFOSpace()` | -not supported- | -not supported-  |  |  |
 | | `kind` = PileSpace       | -not supported-  |  `Space s = new PileSpace()` | -not supported-  |  |  |
-| | `kind` = RandomSpace     | -not supported-  | -not supported- | -not supported-  |  |  |
-| | `kind` = TreeSpace     | -not supported-  | -not supported- | -not supported-  | `let s = TupleSpace(TupleList())` |  |
+| | `kind` = RandomSpace     | -not supported-  | -not supported- | -not supported-  | `let s = TupleSpace(TupleTree())` |  |
 | hook to remote space | `new RemoteSpace(gate,spaceId)` | `new RemoteSpace(uri)` |  `ISpace remotespace = new RemoteSpace(uri)` | `new RemoteSpace(uri)`| `let rs = RemoteSpace(uri)` |  |
 | create repository | `new Repository()` |  | `SpaceRepository repository = new SpaceRepository()` | -not supported-  | `let sr = SpaceRepository()` |  |
 | add space to repository | `r.addSpace(spaceId,space)` |  | `repository.AddSpace("dtu", new FifoSpace());` | -not supported-  | `sr.add("id", space)` |  |
