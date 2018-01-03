@@ -27,7 +27,7 @@ TS ::= nil | t | TS * TS
 Concurrent processes are composed with the parallel composition operator `‖`. Such operator is associative, commutative and has the empty set `0` as identity:  
 
 ```
-P ::= 0 | C‖C | A;P | ...
+P ::= 0 | P‖P | A;P | ...
 ```
 
 For simplicity, we usually drop the final `;0` from programs. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`. 
