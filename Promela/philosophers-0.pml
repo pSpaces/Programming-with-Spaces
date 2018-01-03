@@ -7,12 +7,11 @@
 // We will use "mtype" values as tags (first field) for our tuples
 mtype = { fork }
 
-// We define a sequential space named "board" 
+// We define a sequential space named "board"
 // Tuples are of only of type "< mtype , byte >"
 // where the first field is the kind of tuple (e.g. "fork")
 // and the second field is used as identifier (e.g. identifier of the fork)
 chan board = [N] of { mtype , int}
-
 
 // We define a "waiter" process that setups the dining room
 active proctype waiter(){
@@ -21,7 +20,7 @@ active proctype waiter(){
 
 	// put all forks on the table
 	printf("Waiter putting forks on the table...\n");
-	i = N-1; 
+	i = N-1;
 	do
 	::i >= 0 ->
 	 	board!fork,i;
@@ -34,7 +33,7 @@ active proctype waiter(){
 
 }
 
-// We define an array of philosopher processes 
+// We define an array of philosopher processes
 active [N] proctype philosopher() {
 
 	// In Promela "_pid" is the unique integer identifier of the current process
@@ -48,6 +47,7 @@ active [N] proctype philosopher() {
 	// The philosopher enters his endless life cycle
 	do
 	::	// Wait until the left fork is ready (get the corresponding tuple)
+	  // t = board.Get("fork",int)
 		board??fork,eval(left) ->
 	   	printf("Philosopher %d got left fork\n",me);
 
