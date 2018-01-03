@@ -24,7 +24,7 @@ creates a bounded sequential space named `space` able to contain `N` tuples of f
 Not all operations are supported in Promela and the actual syntax is significantly different from the one in pSpaces. These are the operations directly supported and the way they are expressed in Promela:
 
 - `put`: `space!a,b,...` puts the tuple `(a,b,...)` in the space `space`.
-- `query`: `space??template` queries the oldest tuple matching the template `template` (blocks until there is one such tuple). Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching), similarly as in [goSpaces](https://github.com/pSpaces/goSpace).
+- `query`: `space??<template>` queries the oldest tuple matching the template `template` (blocks until there is one such tuple). Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching), similarly as in [goSpaces](https://github.com/pSpaces/goSpace).
 - `queryP`: `space??[template]` returns `true` if a matching tuple is found, and `false` otherwise.
 - `get`: `space??template` removes the oldest tuple matching the template `template` (blocks until there is one such tuple). Instead of returning a tuple, the resulting tuple is used to update variables in the template (see the below description on templates and matching).
 
