@@ -18,7 +18,7 @@ We use the usual notational conventions:
 * `M[x]` is the value associated to `x`, if any;
 * Memory `M[x|->u]` is like `M` after updating the value associated to `x` by `u` or adding `x |-> u` if `M[x]` is not defined.
 
-Tuple spaces reside in memory just as other values. A tuple space value is denoted by `Space(TS)` where and `TS` is a list of tuples, denoted with the following syntax:
+Tuple spaces reside in memory just as other values. A tuple space value is denoted by `TS` with the following syntax:
 
 ```
 TS ::= nil | t | TS * TS 
@@ -101,7 +101,7 @@ Creating a new local space is formalised by the following rule:
 ```
 ===================================================================
  M |- space := new Space() ; P1 ‖ P2 =>
- M[space |-> Space(nil)] |- P1 ‖ P2 
+ M[space |-> nil] |- P1 ‖ P2 
 ```
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists).
@@ -109,17 +109,17 @@ The rule says that new spaces are created with an empty tuple list. The effect o
 The following rules describes the behaviour of executing an operation on a local space.
 
 ```
- S1.O => S2,t,e
+ TS1.O => TS2,t,e
 ===================================================================
- (M , space |-> S1) |- , x,y := space.O ; P1 ‖ P2) =>
- (M , space |-> S2)[x|->t][y|->e] |- P1 ‖ P2)
+ (M , space |-> TS1) |- , x,y := space.O ; P1 ‖ P2 =>
+ (M , space |-> TS2)[x|->t][y|->e] |- P1 ‖ P2
 ```
 
 ```
- S1.O => S2,t,e
+ TS1.O => TS2,t,e
 ===================================================================
- (M , space |-> S1) |- space.O ; P1 ‖ P2) =>
- (M , space |-> S2) |- P1 ‖ P2)
+ (M , space |-> TS1) |- space.O ; P1 ‖ P2 =>
+ (M , space |-> TS2) |- P1 ‖ P2
 ```
 
 Note that the premise of the above rule requires a reaction of the space to the operation. The tuple space may not react and thus may block the process (by not allowing to fire the rule). The reactions of tuple spaces are described as operational rules below. The effect of the assignment on variables `x` and `y` is the usual one (i.e. update/overwrite the variables).
@@ -142,7 +142,7 @@ The behaviour of `query` is governed by the following rule:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').query(T) => Space(TS*t*TS'),t,ok
+ TS*t*TS'.query(T) => TS*t*TS',t,ok
  ```
 
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. 
@@ -150,11 +150,11 @@ The behaviour of `queryP` is similar but ensures progress and returns error code
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').queryP(T) => Space(TS*t*TS'),t,ok
+ TS*t*TS'.queryP(T) => TS*t*TS',t,ok
 	
  no tuple in TS matches T
 ===================================================================
- Space(TS).queryP(T) => Space(TS),null,ko
+ TS.queryP(T) => TS,null,ko
 ```
 
 The rest of the operations are defined similarly:
@@ -162,23 +162,23 @@ The rest of the operations are defined similarly:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').get(T) => Space(TS*TS'),t,ok
+ TS*t*TS'.get(T) => TS*TS',t,ok
 
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').getP(T) => Space(TS*TS'),t,ok
+ TS*t*TS'.getP(T) => TS*TS',t,ok
 	
  no tuple in TS matches T
 ===================================================================
- Space(TS).getP(T) => Space(TS),null,ko
+ TS.getP(T) => TS,null,ko
  
  TS' = {t in TS such that t matches T}
 ===================================================================
- Space(TS).queryAll(T) => Space(TS),TS',ok
+ TS.queryAll(T) => TS,TS',ok
  
  TS' = {t in TS such that t matches T}
 ===================================================================
- Space(TS).getAll(T) => Space(TS\TS'),TS',ok
+ TS.getAll(T) => TS\TS',TS',ok
  
 ```
 
