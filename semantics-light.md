@@ -18,7 +18,7 @@ We use the usual notational conventions:
 * `M[x]` is the value associated to `x`, if any;
 * Memory `M[x|->u]` is like `M` after updating the value associated to `x` by `u` or adding `x |-> u` if `M[x]` is not defined.
 
-Tuple spaces reside in memory just as other values. A tuple space value is denoted by `Space(TS)` where and `TS` is a list of tuples, denoted with the following syntax:
+Tuple spaces reside in memory just as other values. A tuple space value is denoted by `TS` with the following syntax:
 
 ```
 TS ::= nil | t | TS * TS 
@@ -27,7 +27,7 @@ TS ::= nil | t | TS * TS
 Concurrent processes are composed with the parallel composition operator `‖`. Such operator is associative, commutative and has the empty set `0` as identity:  
 
 ```
-P ::= 0 | C‖C | A;P | ...
+P ::= 0 | P‖P | A;P | ...
 ```
 
 For simplicity, we usually drop the final `;0` from programs. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`. 
@@ -67,7 +67,25 @@ T ::= e | τ | e,T | τ,T
 
 # Operational semantics
 
-The operational semantics of concurrent pSpace programs is defined by the below set of inference rules. The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...). 
+The operational semantics of concurrent pSpace programs is defined by the below set of inference rules of the form
+
+```
+ premises
+============
+ conclusion
+```
+
+and, very often of the shape:
+
+```
+ premise1 premise2 ... premiseN
+================================
+ A => B
+```
+
+explaining how a program `A` can perform a computation step and evolve into `B` if the premises hold.
+
+The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...). 
 
 ## Operational semantics for actions
 
@@ -83,7 +101,7 @@ Creating a new local space is formalised by the following rule:
 ```
 ===================================================================
  M |- space := new Space() ; P1 ‖ P2 =>
- M[space |-> Space(nil)] |- P1 ‖ P2 
+ M[space |-> nil] |- P1 ‖ P2 
 ```
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists).
@@ -91,17 +109,17 @@ The rule says that new spaces are created with an empty tuple list. The effect o
 The following rules describes the behaviour of executing an operation on a local space.
 
 ```
- S1.O => S2,t,e
+ TS1.O => TS2,t,e
 ===================================================================
- (M , space |-> S1) |- , x,y := space.O ; P1 ‖ P2) =>
- (M , space |-> S2)[x|->t][y|->e] |- P1 ‖ P2)
+ (M , space |-> TS1) |- , x,y := space.O ; P1 ‖ P2 =>
+ (M , space |-> TS2)[x|->t][y|->e] |- P1 ‖ P2
 ```
 
 ```
- S1.O => S2,t,e
+ TS1.O => TS2,t,e
 ===================================================================
- (M , space |-> S1) |- space.O ; P1 ‖ P2) =>
- (M , space |-> S2) |- P1 ‖ P2)
+ (M , space |-> TS1) |- space.O ; P1 ‖ P2 =>
+ (M , space |-> TS2) |- P1 ‖ P2
 ```
 
 Note that the premise of the above rule requires a reaction of the space to the operation. The tuple space may not react and thus may block the process (by not allowing to fire the rule). The reactions of tuple spaces are described as operational rules below. The effect of the assignment on variables `x` and `y` is the usual one (i.e. update/overwrite the variables).
@@ -114,7 +132,7 @@ Recall that tuple lists `TS` are to be understood up to associativity of `*`, an
 The behaviour of operation `put` is described by the following rule:
 
 ```
- Space(TS).put(t) => Space(t,TS),t,ok
+ TS.put(t) => (t*TS),t,ok
 ``` 
 
 The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `t`.
@@ -124,7 +142,7 @@ The behaviour of `query` is governed by the following rule:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').query(T) => Space(TS*t*TS'),t,ok
+ TS*t*TS'.query(T) => TS*t*TS',t,ok
  ```
 
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. 
@@ -132,11 +150,11 @@ The behaviour of `queryP` is similar but ensures progress and returns error code
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').queryP(T) => Space(TS*t*TS'),t,ok
+ TS*t*TS'.queryP(T) => TS*t*TS',t,ok
 	
  no tuple in TS matches T
 ===================================================================
- Space(TS).queryP(T) => Space(TS),null,ko
+ TS.queryP(T) => TS,null,ko
 ```
 
 The rest of the operations are defined similarly:
@@ -144,23 +162,23 @@ The rest of the operations are defined similarly:
 ```
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').get(T) => Space(TS*TS'),t,ok
+ TS*t*TS'.get(T) => TS*TS',t,ok
 
  t matches T and no tuple in TS' matches T
 ===================================================================
- Space(TS*t*TS').getP(T) => Space(TS*TS'),t,ok
+ TS*t*TS'.getP(T) => TS*TS',t,ok
 	
  no tuple in TS matches T
 ===================================================================
- Space(TS).getP(T) => Space(TS),null,ko
+ TS.getP(T) => TS,null,ko
  
  TS' = {t in TS such that t matches T}
 ===================================================================
- Space(TS).queryAll(T) => Space(TS),TS',ok
+ TS.queryAll(T) => TS,TS',ok
  
  TS' = {t in TS such that t matches T}
 ===================================================================
- Space(TS).getAll(T) => Space(TS\TS'),TS',ok
+ TS.getAll(T) => TS\TS',TS',ok
  
 ```
 
