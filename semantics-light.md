@@ -132,7 +132,7 @@ Recall that tuple lists `TS` are to be understood up to associativity of `*`, an
 The behaviour of operation `put` is described by the following rule:
 
 ```
- Space(TS).put(t) => Space(t,TS),t,ok
+ TS.put(t) => (t*TS),t,ok
 ``` 
 
 The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `t`.
