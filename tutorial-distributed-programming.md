@@ -94,7 +94,7 @@ There are limitations on the datatypes that can be used in the remote tuple spac
 * C#: current support is limited to primitive datatypes.
 
 Some examples of common restrictions are:
-* dataypes should be known on both sides.
+* datatypes should be known on both sides.
 * references and pointers cannot be sent, typically the pointed/reference data will be send.
 
 ## 3.7 A coordination pattern: private spaces
