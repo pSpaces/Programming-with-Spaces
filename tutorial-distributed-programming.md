@@ -153,11 +153,11 @@ for {
   f = (t.GetFieldAt(2)).(string)
   switch f {
   case "foo":
-    mySpace.Get(callID, "args", &x, &y, &z)
+    t,_ := mySpace.Get(callID, "args", &x, &y, &z)
     result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(3)).(int), (t.GetFieldAt(4)).(int))
     mySpace.Put(callID, "result", result)
   case "bar":
-    mySpace.Get(callID, "args", &a, &b)
+    t,_ := mySpace.Get(callID, "args", &a, &b)
     result := bar((t.GetFieldAt(2)).(string), (t.GetFieldAt(3)).(string))
     mySpace.Put(callID, "result", result)
   default:
