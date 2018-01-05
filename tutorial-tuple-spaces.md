@@ -237,7 +237,7 @@ We have seen the following operations on spaces:
 
 Complete examples for this chapter can be found here:
 * [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
-* [example in Java](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/fridge_0/Fridge_0.java)
+* [example in Java](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/fridge-0/Fridge_0.java)
 
 ## What next?
 
