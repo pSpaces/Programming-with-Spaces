@@ -26,7 +26,7 @@ A ::= new P
   | rep.addSpace(spaceId,space)
   | rep.delSpace(spaceId)
   | rep.addGate(gate)
-  | rep.delGate(gate)
+  | rep.closeGate(gate)
   | x,y := space.O
 ```
 
