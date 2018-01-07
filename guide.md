@@ -50,7 +50,7 @@ Space repositories should support the following operations:
 - `addSpace(spaceId,space)`: this operation associates a space `space` to the repository, under the name `spaceId`. If the `spaceId` has been already added, an error or exception is returned.
 - `delSpace(spaceId)`: this operation dissasociates a space identifier `spaceId` from the repository. There is no effect if the space does not exist or if it is not associated to the repository. If a space is associated with other identifiers, it remains associated to the repository with those identifiers.
 - `addGate(gate)`: this operation associates a gate to the repository. The gate is created if it does not exist. There is no effect if the gate is already associated to the gate.
-- `delGate(gate)`: this operation dissasociates a space from the repository. There is no effect if the gate is not associated to the repository.
+- `closeGate(gate)`: this operation closes a gate of the repository. There is no effect if the gate is not associated to the repository.
 
 A gate is just an access point that applications open to provide access to the spaces it hosts. Each gate is specified by an URI with the following format:
  
