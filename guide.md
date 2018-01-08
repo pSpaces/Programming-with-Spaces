@@ -24,7 +24,7 @@ The core API intentionally underspecifies the behaviour of simple retrieval oper
 - `SequentialSpace`: retrieval operations return the oldest matching tuple. 
 - `QueueSpace`: retrieval operations return the oldest tuple, if it matches the specified template.
 - `StackSpace`: retrieval operations must return the newest tuple, if it matches the specified template.
-- `PileSpace`: retreival operations must return the newest matching tuple.
+- `PileSpace`: retrieval operations must return the newest matching tuple.
 - `RandomSpace`: retrival operations return any matching tuple, chosen according to a random choice with uniform distribution (equally likelihood of getting any tuple).
 
 All implementations should provide at least the `SequentialSpace` implementation. The rest are optional. 
