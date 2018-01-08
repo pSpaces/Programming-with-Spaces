@@ -38,6 +38,6 @@ This page summarises some of the key programming primitives of pSpaces and their
 | add space to repository | `r.addSpace(spaceId,space)` |  | `repository.AddSpace("dtu", new FifoSpace());` | -not supported-  | `sr.add("id", space)` |  |
 | remove space from repository  | `r.delSpace(spaceId)` |  | -not supported- | -not supported-  | `sr.remove("id")` |  |
 | add gate to repository  | `r.addGate(gate)` |  | `repository.AddGate(uri)` | -not supported-  | `sr.addGate(gate)` |  |
-| remove gate from repository  | `r.closeGate(gate)` |  | -not supported- | -not supported-  | `sr.closeGate(gate) |  |
+| remove gate from repository  | `r.closeGate(gate)` | `r.closeGate(uri)` | `r.closeGate(uri)` | -not supported-  | `sr.closeGate(gate) |  |
 
 (1) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
