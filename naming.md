@@ -34,10 +34,10 @@ This page summarises some of the key programming primitives of pSpaces and their
 | | `kind` = PileSpace       | -not supported-  |  `Space s = new PileSpace()` | -not supported-  |  |  |
 | | `kind` = RandomSpace     | -not supported-  | -not supported- | -not supported-  | `let s = TupleSpace(TupleTree())` |  |
 | hook to remote space | `new RemoteSpace(gate,spaceId)` | `new RemoteSpace(uri)` |  `ISpace remotespace = new RemoteSpace(uri)` | `new RemoteSpace(uri)`| `let rs = RemoteSpace(uri)` |  |
-| create repository | `new Repository()` |  | `SpaceRepository repository = new SpaceRepository()` | -not supported-  | `let sr = SpaceRepository()` |  |
-| add space to repository | `r.addSpace(spaceId,space)` |  | `repository.AddSpace("dtu", new FifoSpace());` | -not supported-  | `sr.add("id", space)` |  |
+| create repository | `new Repository()` | `SpaceRepository repository = new SpaceRepository()` | `SpaceRepository repository = new SpaceRepository()` | -not supported-  | `let sr = SpaceRepository()` |  |
+| add space to repository | `r.addSpace(spaceId,space)` | `repository.addSpace("aspace", new SequentialSpace());` | `repository.AddSpace("dtu", new FifoSpace());` | -not supported-  | `sr.add("id", space)` |  |
 | remove space from repository  | `r.delSpace(spaceId)` |  | -not supported- | -not supported-  | `sr.remove("id")` |  |
-| add gate to repository  | `r.addGate(gate)` |  | `repository.AddGate(uri)` | -not supported-  | `sr.addGate(gate)` |  |
-| remove gate from repository  | `r.closeGate(gate)` |  | -not supported- | -not supported-  | `sr.closeGate(gate) |  |
+| add gate to repository  | `r.addGate(gate)` | `r.addGate(uri)` | `repository.AddGate(uri)` | -not supported-  | `sr.addGate(gate)` |  |
+| remove gate from repository  | `r.closeGate(gate)` | `r.closeGate(uri)` | `repository.CloseGate(uri)` | -not supported-  | `sr.closeGate(gate) |  |
 
 (1) `kind` not supported as parameter: one constructor per kind. `bound` not supported (internal choice is ∞)
