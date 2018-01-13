@@ -10,3 +10,6 @@ This repository contains information for programmers and developers, including:
 - [Spaces in Promela](Promela/promela.md) - how to use the Spin model checker to model and verify pSpace applications.
 
 pSpaces is work in progress: current work includes interoperability between applications written in different languages, support for additional mainstream languages like Python, secure communications, encryption, access control and privacy protection.
+
+pSpaces is used in education:
+* [Introduction to Coordination in Distributed Applications](https://gitlab.gbar.dtu.dk/02148/home), undergraduate course at the [Technical University of Denmark](http://www.dtu.dk/)
