@@ -6,26 +6,65 @@ The following table lists the main objectives of the pSpace project order by the
 
 | Objective | Priority | Effort |
 | - | - | - |
-| End-to-end testing | high | low |
-| Unit testing | high | medium |
+| Reliability | high | medium|
 | Maintainability |  medium | low |
 | Interoperability | high | medium/high |
-| Access control | medium/high | medium |
-| Secture communications | medium/high | medium |
-| Performance | low/medium  | high
-| Benchmarking | low | low |
-| Persistency | low | high |
-| Transactions | low | high |
-| Mobility | low | high |
+| Security | medium/high | medium |
+| Performance | low/medium  | high |
+| Enhancements | low | high |
 
 * Urgency: what needs to be addressed first.
 * Objective: a desired property/capability of pSpaces.
 * Priority: how important the objective is.
 * Effort: predicted effort as the project grows, that his how the effort required to maintain or enrich the objective grows keep new features are being added. 
 
+## Tasks
+
+We list here some tasks that need to be carried out to achieve the desired goals:
+
+Reliability
+* End-to-end testing
+* Unit testing
+
+Maintainability
+* Slim documentation 
+* Commenting conventions
+* Contribution rules
+
+Interoperability
+* Networked repositories architecture
+* Protocol
+
+Security
+* Access control
+* Secure communication 
+
+Performance
+* Efficient data structures
+* Benchmarking
+
+Enhancements
+* Persistency | low | high |
+* Transactions | low | high |
+* Mobility | low | high |
+
 ## Responsibilities
 
+The following table can be used to identify contact persons for each task/language:
 
-
-
-
+| Objective | Networked Repository (C#/Java/Go?) | C# | Java | Go | Swift | TypeScript
+| - | - | - | - |  - | - | - | 
+| End-to-end testing | | | | | | |
+| Unit testing | | | | | | |
+| Slim documentation | | | | | | |
+| Commenting conventions | | | | | | |
+| Contribution Rules | | | | | | |
+| Networked repositories architecture | | | | | | |
+| Protocol | | | | | | |
+| Access control | | | | | | |
+| Secture communications | | | | | | |
+| Efficient data structures | | | | | | |
+| Benchmarking | | | | | | |
+| Persistency | | | | | | |
+| Transactions | | | | | | |
+| Mobility | | | | | | |
