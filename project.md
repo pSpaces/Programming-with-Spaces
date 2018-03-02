@@ -4,25 +4,30 @@
 
 The following table lists the main objectives of the pSpace project order by their urgency.
 
-| Objective | Priority | Effort |
-| - | - | - |
-| Reliability | high | medium|
-| Maintainability |  medium | low |
-| Interoperability | high | medium/high |
-| Security | medium/high | medium |
-| Performance | low/medium  | high |
-| Enhancements | low | high |
+| Objective | Priority | Effort | Status | 
+| - | - | - | - | 
+| Reliability | high | medium | ✘ | 
+| Maintainability |  medium | low | ✘ |
+| Interoperability | high | medium/high | ✘ |
+| Security | medium/high | medium | ✘ |
+| Performance | low/medium  | high | ✘ |
+| Enhancements | low | high | ✘ |
 
 * Urgency: what needs to be addressed first.
 * Objective: a desired property/capability of pSpaces.
 * Priority: how important the objective is.
-* Effort: predicted effort as the project grows, that his how the effort required to maintain or enrich the objective grows keep new features are being added. 
+* Effort: predicted effort as the project grows, that is, how the effort required to maintain the objective grows as new features keep being added. 
+* Status: ✓ (achieved), ✘ (non achieved).
+
+The objectives shall act as barriers for all libraries: only once all libraries have meet the objective, development of the project can move to the next objective. 
 
 ## Tasks
 
 We list here some tasks that need to be carried out to achieve the desired goals:
 
 Reliability
+* Networked repositories architecture (at least for one language)
+* Well-defined protocol (at least for one language)
 * End-to-end testing
 * Unit testing
 
@@ -32,8 +37,8 @@ Maintainability
 * Contribution rules
 
 Interoperability
-* Networked repositories architecture
-* Protocol
+* Networked repositories architecture (for all languages)
+* Protocol adherence for all languages
 
 Security
 * Access control
