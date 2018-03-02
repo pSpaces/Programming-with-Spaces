@@ -60,7 +60,7 @@ The following table can be used to identify contact persons for each task/langua
 | Commenting conventions | | | | | | |
 | Contribution Rules | | | | [Linas](https://github.com/luhac) | | |
 | Networked repositories architecture | [Alberto](https://github.com/albertolluch)/[Thomas](https://github.com/Thomas58)/[Linas](https://github.com/luhac) | | | | | |
-| Protocol | | | | | | |
+| Protocol | [Alberto](https://github.com/albertolluch)/[Thomas](https://github.com/Thomas58)/[Linas](https://github.com/luhac) | | | | | |
 | Access control | | | | | | |
 | Secture communications | | | | | | |
 | Efficient data structures | | | | | | |
