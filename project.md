@@ -44,9 +44,9 @@ Performance
 * Benchmarking
 
 Enhancements
-* Persistency | low | high |
-* Transactions | low | high |
-* Mobility | low | high |
+* Persistency 
+* Transactions 
+* Mobility
 
 ## Responsibilities
 
@@ -57,7 +57,7 @@ The following table can be used to identify contact persons for each task/langua
 | End-to-end testing | | | | | | |
 | Unit testing | | | | | | |
 | Slim documentation | | | | | | |
-| Commenting conventions | | | | | | |
+| Commenting conventions | | | | [Linas](https://github.com/luhac) | | |
 | Contribution Rules | | | | | | |
 | Networked repositories architecture | | | | | | |
 | Protocol | | | | | | |
