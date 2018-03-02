@@ -59,7 +59,7 @@ The following table can be used to identify contact persons for each task/langua
 | Slim documentation | | | | | | |
 | Commenting conventions | | | | [Linas](https://github.com/luhac) | | |
 | Contribution Rules | | | | | | |
-| Networked repositories architecture | | | | | | |
+| Networked repositories architecture | [Alberto](https://github.com/albertolluch)/[Thomas](https://github.com/Thomas58)/[Linas](https://github.com/luhac) | | | | | |
 | Protocol | | | | | | |
 | Access control | | | | | | |
 | Secture communications | | | | | | |
