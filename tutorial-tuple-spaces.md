@@ -185,13 +185,13 @@ Template template = new Template(new ActualField("milk"),new FormalField(Integer
 and retrieving the number of bottles would then be done as follows:
 
 ```java
-Tuple tuple = fridge.get(template)
+Tuple tuple = fridge.getp(template)
 ```
 
 or more compactly
 
 ```java
-Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
 ```
 
 as we did in the first example of this section.
@@ -202,18 +202,11 @@ Note that contrary to some collection datatypes in mainstream languages, the ope
 
 For example, if Alice can increase the number of bottles to be bought with
 
-```go
-t,err := fridge.GetP("milk",&numberOfBottles)
-if err == nil {
-  fridge.Put("milk",(t.GetFieldAt(1)).(int)+1)
-}
-```
-
-or, in Java, 
-
 ```java
-Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
-fridge.put("milk",tuple.getElementAt[1]+1)
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
+if (tuple =! nil) {
+    fridge.put("milk",tuple.getElementAt(1)+1)
+}
 ```
  
 ## 1.10 Tuple retrieval is non-deterministic 
@@ -235,20 +228,20 @@ t,err := fridge.QueryP(&item,&quantity);
 
 Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours.
 
-A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md)  and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
+A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
 
 ## 1.11 Retrieving all matching tuples
 
-Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `QueryAll` returns all tuples matching a template and `GetAll` behaves similarly but removes the matched tuples. 
+Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `queryAll` returns all tuples matching a template and `getAll` behaves similarly but removes the matched tuples. 
 
-The following example in Go shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
+The following example shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
 
 ```
-var item string
-var quantity int
-groceryList, _ := fridge.QueryAll(&item, &quantity)
-fmt.Println("Items to buy: ")
-fmt.Println(groceryList)
+List<Object[]> groceryList = fridge.queryAll(new FormalField(String.class), new FormalField(Integer.class));
+System.out.println("Items to buy: ");
+for (Object[] obj : groceryList) {
+    System.out.println(Arrays.toString(obj));
+}
 ```
 
 ## Summary
@@ -258,15 +251,15 @@ We have seen the following data types
 - Spaces: collections of tuples.
  
 We have seen the following operations on spaces:
-- `Put`: adds a tuple to a space.
-- `QueryP`: searches for a tuple atching a template. It then returns the matched tuple (if any).
-- `GetP`: like `QueryP` but also removes the found tuple (if any).
-- `QueryAll`: returns all tuples matching a template. 
-- `GetAll`: returns all tuples matching a template and removes them from the space.
+- `put`: adds a tuple to a space.
+- `queryp`: searches for a tuple atching a template. It then returns the matched tuple (if any).
+- `getp`: like `queryp` but also removes the found tuple (if any).
+- `queryAll`: returns all tuples matching a template. 
+- `getAll`: returns all tuples matching a template and removes them from the space.
 
 Complete examples for this chapter can be found here:
-* [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
 * [example in Java](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/fridge-0/Fridge_0.java)
+* [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
 
 ## What next?
 
