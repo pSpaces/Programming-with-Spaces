@@ -2,7 +2,7 @@
 
 This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space `fridge` to coordinate their activities.
 
-The tutorial is mainly based on the `Go` library, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here. 
+The tutorial is mainly based on the `Java` and `Go` libraries, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here. 
 
 ## 1.1 Tuples are finite lists
 A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent coordinates in a map
@@ -26,7 +26,13 @@ and so on.
 ## 1.2 Tuples in pSpace
 Many programming languages provide types or mechanisms for tuples or value lists. The pSpace implementations provide ad-hoc datatypes for tuples but sometimes admit the use native features from the language.
 
-For example the Go library provides the interface `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+For example, the Java Library provides a classs `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+
+```java
+Tuple tuple = new Tuple("milk", 1);
+```
+
+Similarly, the Go library provides an interface `Tuple` that can be used to create the same tuple as above as follows:
 
 ```go
 var tuple Tuple = CreateTuple("milk", 1)
@@ -34,15 +40,21 @@ var tuple Tuple = CreateTuple("milk", 1)
 
 Similar datatypes and interfaces can be found in the rest of the libraries (e.g. the `ITuple` interface in C#).
 
-As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
+As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `Tuple` and `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
 
-Tuple fields are accessed position-wise, very much like acccessing arrays. In Go, the `i-1`-th field is accessed with
+Tuple fields are accessed position-wise, very much like acccessing arrays. In Java the `i-1`-th field is accessed with
+
+```
+tuple.GetFieldAt(i)
+```
+
+In Go, the `i-1`-th field is accessed with
 
 ```go
 tuple.GetFieldAt(i)
 ```
 
-Casting may be needed in some cases. So for example to get properly typed values in for the example above we could proceed as follows:
+Casting may be needed in some cases. So for example to get properly typed values in the example above we could proceed as follows:
 
 ```
 var tuple Tuple = CreateTuple("milk", 1)
