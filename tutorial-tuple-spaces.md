@@ -2,7 +2,7 @@
 
 This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space `fridge` to coordinate their activities.
 
-The tutorial is mainly based on the `Go` library, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here. 
+The tutorial is mainly based on the `Java` and `Go` libraries, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here. 
 
 ## 1.1 Tuples are finite lists
 A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent coordinates in a map
@@ -26,7 +26,13 @@ and so on.
 ## 1.2 Tuples in pSpace
 Many programming languages provide types or mechanisms for tuples or value lists. The pSpace implementations provide ad-hoc datatypes for tuples but sometimes admit the use native features from the language.
 
-For example the Go library provides the interface `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+For example, the Java Library provides a class `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+
+```java
+Tuple tuple = new Tuple("milk", 1);
+```
+
+Similarly, the Go library provides an interface `Tuple` that can be used to create the same tuple as above as follows:
 
 ```go
 var tuple Tuple = CreateTuple("milk", 1)
@@ -34,17 +40,31 @@ var tuple Tuple = CreateTuple("milk", 1)
 
 Similar datatypes and interfaces can be found in the rest of the libraries (e.g. the `ITuple` interface in C#).
 
-As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
+As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `Tuple` and `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
 
-Tuple fields are accessed position-wise, very much like acccessing arrays. In Go, the `i-1`-th field is accessed with
+Tuple fields are accessed position-wise, very much like acccessing arrays. In Java the `i-1`-th field is accessed with
+
+```
+tuple.GetFieldAt(i)
+```
+
+In Go, the `i-1`-th field is accessed with
 
 ```go
 tuple.GetFieldAt(i)
 ```
 
-Casting may be needed in some cases. So for example to get properly typed values in for the example above we could proceed as follows:
+Casting may be needed in some cases. For example, in Java, the fields of a `Tuple`-object are objects and need to be casted into their actual types if needed:
 
+```java
+Tuple tuple = new Tuple("milk", 1);
+String item = (tuple.getElementAt(0)).toString();
+Integer quantity = (Integer) tuple.getElementAt(1);
 ```
+
+likewise, in Go:
+
+```go
 var tuple Tuple = CreateTuple("milk", 1)
 item := (tuple.GetFieldAt(0)).(string)
 quantity := (tuple.GetFieldAt(1)).(int)
@@ -68,9 +88,15 @@ Here is an example of a tuple space representing post-its on a fridge
 Recall that a multiset differs from a list in that the order of elements does not matter, and it differs from a set in that an element can appear more than once.
 
 ## 1.4 Tuple spaces in pSpaces
-pSpace implementations provide several datatypes for tuple spaces. We shall discuss them in detail in a later chapter of the tutorial. We focus here on sequential spaces. These are created in Go with the constructor `NewSpace`:
+pSpace implementations provide several datatypes for tuple spaces. We shall discuss them in detail in a later chapter of the tutorial. We focus here on sequential spaces. These are created in Java with the constructor `SequentialSpace()':
 
+```java
+Space inbox = new SequentialSpace();
 ```
+
+and in Go with the constructor `NewSpace`:
+
+```go
 fridge := NewSpace("fridge")
 ```
 
@@ -82,38 +108,39 @@ Tuple spaces are collection data structures and, as such, they provide operation
 
 The operation to add tuples is named ```Put```. More precisely the operation 
 
-```go
-space.Put(tuple)
+```java
+space.put(tuple)
 ```
 
 adds the tuple ```tuple``` to the tuple space ```space```.
 
 ## 1.6 Searching tuples with `QueryP`
 
-The operation to search for tuples tuples is called ```QueryP```. In detail,
+The operation to search for tuples tuples is called ```queryp```. In detail,
 
 ```go
-space.QueryP(tuple)
+space.queryp(tuple)
 ```
 
 looks for a tuple like ```tuple``` in the tuple space ```space``` and returns the found tuple (if any).
 
-In Go, for example, we can write
+In Java, for example, we can write
 
-```go
-t, err := fridge.QueryP("clean kitchen")
+```java
+Object obj = fridge.queryp(new ActualField("clean kitchen"));
+if (obj != null) {
+    System.out.println("We need to clean the kitchen");
+}
 ```
 
-to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `t` and whether the tuple was found (`err == nil`) is stored in `err`.
-
-In some implementations (e.g. in Java) the return type is just one (a tuple). The absence of a tuple is represented with a null value.
+to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `obj`. The absence of a tuple is represented with a null value.
 
 ## 1.7 Removing tuples with `GetP`
 
-The operation to remove tuples is named ```Get``` and has a similar behavour as `Query`, namely
+The operation to remove tuples is named ```getp``` and has a similar behavour as `queryp`, namely
 
 ```go
-space.GetP(tuple)
+space.getp(tuple)
 ```
 
 looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space. 
@@ -121,9 +148,10 @@ looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the
 We can use for example
 
 ```go
-_, err := fridge.GetP("clean kitchen")
+obj := fridge.getp("clean kitchen")
 ```
-If we are willing to remove the note that says that we need to clean the kitchen. Note that we use the blank identifier `_` to store the tuple since we don't really care about it in this example. 
+
+if we are willing to remove the note that says that we need to clean the kitchen. 
 
 ## 1.8 Tuples are content-addressable with pattern matching
 
@@ -131,23 +159,22 @@ The tuple retrieval operations we have presented are actually more powerful: we 
 
 In our example, pattern matching can be used to specify only the grocery item so to retrieve the current number of items for that item with
 
-```go
-var numberOfBottles int
-t,err := fridge.GetP("milk", &numberOfBottles)
-if(err == nil){
-  numberOfBottles = (t.GetFieldAt(1)).(int)
+```java
+Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
+if (obj != null) {
+    int numberOfBottles = (int)obj[1];
 }
 ```
 
 which would save the number of milk bottles into variable ```numberOfBottles```.
 
-So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be *actual fields* (i.e. values) or *formal fields* (i.e. placeholders). Formal fields are specified in most pSpace implementations by type names. In goSpaces, however, formal fields are specified with pointer values (e.g. ```&v```, where ```v``` is the name of a variable ). For example the pattern used above for retrieving the number of bottles of milk is
+So actually both `queryp` and `getp` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be *actual fields* (i.e. values) or *formal fields* (i.e. placeholders). Formal fields are specified in most pSpace implementations by type names. In goSpaces, however, formal fields are specified with pointer values (e.g. ```&v```, where ```v``` is the name of a variable ). For example the pattern used above for retrieving the number of bottles of milk would be
 
-```
+```go
 ("milk", &numberOfBottles)
 ```
 
-Some of the libraries provide ad-hoc datatypes for templates. For instance, the jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
+Some of the libraries provide ad-hoc datatypes for templates. For instance, jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
 
 The template of the above example would be constructed in Java with
 
@@ -158,14 +185,16 @@ Template template = new Template(new ActualField("milk"),new FormalField(Integer
 and retrieving the number of bottles would then be done as follows:
 
 ```java
-Tuple tuple = fridge.get(template)
+Tuple tuple = fridge.getp(template)
 ```
 
 or more compactly
 
 ```java
-Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
 ```
+
+as we did in the first example of this section.
 
 ## 1.9 Updating tuples 
 
@@ -173,18 +202,11 @@ Note that contrary to some collection datatypes in mainstream languages, the ope
 
 For example, if Alice can increase the number of bottles to be bought with
 
-```go
-t,err := fridge.GetP("milk",&numberOfBottles)
-if err == nil {
-  fridge.Put("milk",(t.GetFieldAt(1)).(int)+1)
-}
-```
-
-or, in Java, 
-
 ```java
-Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
-fridge.put("milk",tuple.getElementAt[1]+1)
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
+if (tuple =! nil) {
+    fridge.put("milk",tuple.getElementAt(1)+1)
+}
 ```
  
 ## 1.10 Tuple retrieval is non-deterministic 
@@ -206,20 +228,20 @@ t,err := fridge.QueryP(&item,&quantity);
 
 Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours.
 
-A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md)  and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
+A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
 
 ## 1.11 Retrieving all matching tuples
 
-Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `QueryAll` returns all tuples matching a template and `GetAll` behaves similarly but removes the matched tuples. 
+Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `queryAll` returns all tuples matching a template and `getAll` behaves similarly but removes the matched tuples. 
 
-The following example in Go shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
+The following example shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
 
 ```
-var item string
-var quantity int
-groceryList, _ := fridge.QueryAll(&item, &quantity)
-fmt.Println("Items to buy: ")
-fmt.Println(groceryList)
+List<Object[]> groceryList = fridge.queryAll(new FormalField(String.class), new FormalField(Integer.class));
+System.out.println("Items to buy: ");
+for (Object[] grocery : groceryList) {
+    System.out.println(grocery[1] + " units of "+ grocery[0]);
+}
 ```
 
 ## Summary
@@ -229,15 +251,15 @@ We have seen the following data types
 - Spaces: collections of tuples.
  
 We have seen the following operations on spaces:
-- `Put`: adds a tuple to a space.
-- `QueryP`: searches for a tuple atching a template. It then returns the matched tuple (if any).
-- `GetP`: like `QueryP` but also removes the found tuple (if any).
-- `QueryAll`: returns all tuples matching a template. 
-- `GetAll`: returns all tuples matching a template and removes them from the space.
+- `put`: adds a tuple to a space.
+- `queryp`: searches for a tuple atching a template. It then returns the matched tuple (if any).
+- `getp`: like `queryp` but also removes the found tuple (if any).
+- `queryAll`: returns all tuples matching a template. 
+- `getAll`: returns all tuples matching a template and removes them from the space.
 
 Complete examples for this chapter can be found here:
-* [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
 * [example in Java](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/fridge-0/Fridge_0.java)
+* [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
 
 ## What next?
 
