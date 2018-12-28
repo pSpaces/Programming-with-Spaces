@@ -196,51 +196,49 @@ s.put("lock")
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
 ```
 // Increase number of readers and get global lock
-s.Get("reader_lock")
-t,_ := s.Get("readers",&num_readers)
-num_readers = (t.GetFieldAt(1)).(int)
-num_readers++
-s.Put("readers",num_readers)
-if num_readers == 1 { 
-  s.Get("lock")
+s.get("reader_lock")
+Object[] readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
+s.put("readers",readers[1]+1)
+if readers[1] == 0 {
+    // Get the global lock if I am the first reader
+    s.get("lock")
 }
 s.Put("reader_lock")
 
-// search for tuples with query operations
+// Search for tuples with query operations
 
 // Decrease number of readers and release global lock
 s.Get("reader_lock")
-t,_ := s.Get("readers",&num_readers)
-num_readers = (t.GetFieldAt(1)).(int)
-num_readers--
-s.Put("readers",num_readers)
-if num_readers == 0 { 
-  s.Put("lock")
+readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
+s.Put("readers",readers[1]-1)
+if readers[1] == 1 { 
+  // If I am the last one, realease the global lock
+  s.put("lock")
 }
-s.Put("reader_lock")
+s.put("reader_lock")
 ```
 
 ## 2.7 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
 ```go
-s.Put("barrier",N) ;
+s.put("barrier",N) ;
 ```
 
 and when a process reaches the barrier it has to execute the following code
 
 ```go
-t,_ := s.Get("barrier",&n)
-s.Put("barrier",(t.GetFieldAt(1)).(int)−1)
-s.Query("barrier",0)
+Object[] barrier = get(new ActualField("barrier"), new FormalField(Integer.class));
+s.put("barrier",barrier[1]-1);
+s.query(new ActualField("barrier"), new ActualField(0));
 // move on
 ```
 
 ## Summary
  
 We have seen the following operations on spaces:
-- `Query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
-- `Get`: like `Query` but also removes the found tuple.
+- `query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
+- `get`: like `query` but also removes the found tuple.
 
 We have seen the following coordination patterns:
 - Producer/consumer: use a tuples space as a bag of tasks. Producers put tuples representing tasks; consumers get tuples representing tasks.
