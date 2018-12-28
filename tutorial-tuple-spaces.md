@@ -159,23 +159,22 @@ The tuple retrieval operations we have presented are actually more powerful: we 
 
 In our example, pattern matching can be used to specify only the grocery item so to retrieve the current number of items for that item with
 
-```go
-var numberOfBottles int
-t,err := fridge.GetP("milk", &numberOfBottles)
-if(err == nil){
-  numberOfBottles = (t.GetFieldAt(1)).(int)
+```java
+Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
+if (obj != null) {
+    int numberOfBottles = (int)obj[1];
 }
 ```
 
 which would save the number of milk bottles into variable ```numberOfBottles```.
 
-So actually both `QueryP` and `GetP` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be *actual fields* (i.e. values) or *formal fields* (i.e. placeholders). Formal fields are specified in most pSpace implementations by type names. In goSpaces, however, formal fields are specified with pointer values (e.g. ```&v```, where ```v``` is the name of a variable ). For example the pattern used above for retrieving the number of bottles of milk is
+So actually both `queryp` and `getp` take a pattern ```T``` as an argument. A pattern is like a tuple, where fields can be *actual fields* (i.e. values) or *formal fields* (i.e. placeholders). Formal fields are specified in most pSpace implementations by type names. In goSpaces, however, formal fields are specified with pointer values (e.g. ```&v```, where ```v``` is the name of a variable ). For example the pattern used above for retrieving the number of bottles of milk would be
 
-```
+```go
 ("milk", &numberOfBottles)
 ```
 
-Some of the libraries provide ad-hoc datatypes for templates. For instance, the jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
+Some of the libraries provide ad-hoc datatypes for templates. For instance, jSpace provides the class `Template` and methods for actual fields (i.e. values) and formal fields (i.e. datatypes).
 
 The template of the above example would be constructed in Java with
 
@@ -194,6 +193,8 @@ or more compactly
 ```java
 Tuple tuple = fridge.get(new ActualField("milk"),new FormalField(Integer.class())
 ```
+
+as we did in the first example of this section.
 
 ## 1.9 Updating tuples 
 
