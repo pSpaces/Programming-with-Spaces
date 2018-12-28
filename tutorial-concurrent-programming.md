@@ -91,18 +91,18 @@ This basic coordination pattern can be easily extended to the case in which ther
 There are many situations in which one would like to inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
 
 Alice:
-```go
-fridge.Put("milk",2)
-fridge.Put("butter",1)
-fridge.Put("shop!")
+```java
+fridge.put("milk",2);
+fridge.put("butter",1);
+fridge.put("shop!");
 ```
 
 Bob:
-```go
-fridge.Get("shop!")
-fridge.Put("shop!")
-for {
-    fridge.Get(&item,&quantity)
+```java
+fridge.get(new ActualField("shop!"));
+fridge.put("shop!");
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
@@ -110,40 +110,39 @@ for {
 A drawback of this solution is that the check that Bob performs is not atomic. There is hence a moment in which the tuple ```("shop!")``` is removed by Bob which may lead other rooommates. Suppose, for instance, that Alice and Bob are executing their programs while Charlie is executing:
 
 Charlie:
-```go
-t,err := fridge.GetP(fridge,"shop!") 
-if err == nil {
-    fridge.Put("shop!")
-    for {
-        t,err := fridge.Get(&item,&quantity)
-        // go shopping ...
+```java
+Object[] t = fridge.queryp(new ActualField("shop!"));
+if (t != null) {
+    while (true) {
+        Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
+        // go shopping
     }
 } else // relax
 ```
 
-The standard solution to this problem is use the ```Query``` operation to perform queries atomically. Operation ```Query(s,T)``` behaves like ```Get(s,T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
+The standard solution to this problem is use the ```query``` operation to perform queries atomically. Operation ```query(T)``` behaves like ```get(T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
 
 Bob:
-```go
-fridge.Query("shop!")
-for {
-    t,err := fridge.Get(&item,&quantity)
+```java
+fridge.query(new ActualField("shop!"));
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
 
 Charlie:
-```go
-t,err := fridge.QueryP(fridge,"shop!") 
-if err == nil {
-    for {
-        t,err := fridge.Get(&item,&quantity)
-        // go shopping ...
+```java
+Object[] t = fridge.queryp(new ActualField("shop!"));
+if (t != null) {
+    while (true) {
+        Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
+        // go shopping
     }
-}
+} else // relax
 ```
 
-A unique advantage of introducing the `Query` operation it eases performant implementations of concurrent queries.
+A unique advantage of introducing the `query` operation it eases performant implementations of concurrent queries.
 
 ## 2.5 Another coordination pattern: global locks 
 Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented as follows.
@@ -151,31 +150,31 @@ Standard synchronisation mechanisms can be implemented using tuple spaces. Globa
 First, the lock is represented by a tuple ```("lock")``` that is initally placed in the tuple space `s` with
 
 ```go
-s.Put("lock")
+s.put("lock")
 ```
 
 Then, every time a process wants to work on the tuple space it should adhere to the following protocol:
 
 ```go
 // acquire lock on s
-s.Get("lock")
+s.get("lock")
 
 // work on tuple space s
 
 // release lock for s
-s.Put("lock")
+s.put("lock")
 ```
 If all processes respect the protocol, the computations specified between acquiring the lock and releasing the lock are executed atomically.
 
 Suppose, for instance, that Alice needs to increase the number of milk buttles and butter bars atomically. She can proceed as follows:
 
 ```go
-s.Get("lock")
-tx,_ := s.Get("milk",&x)
-ty,_ := s.Get("butter",&y)
-s.Put("milk",(tx.GetFieldAt(0)).(int)+1)
-s.Put("butter",(ty.GetFieldAt(0)).(int)+1)
-s.Put("lock")
+fridge.get("lock")
+Object[] milk = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
+Object[] butter = fridge.get(new ActualField("butter"), new FormalField(Integer.class));
+fridge.put("milk",milk[1]+1)
+fridge.put("butter",butter[1]+1)
+fridge.put("lock")
 ```
 
 ## 2.6 Another coordination pattern: multiple-readers/single-writer locks 
@@ -186,12 +185,12 @@ Processes that need to modify the tuple space (i.e. writers) have to adhere to t
 
 ```
 // acquire global lock
-s.Get("lock")
+s.get("lock")
 
 // update the tuple space with get/put operations
 
 // release global lock
-s.Put("lock")
+s.put("lock")
 ```
 
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
