@@ -40,7 +40,7 @@ For more details on corrency primitives refer to
 * [the Java tutorial on starting threads](https://docs.oracle.com/javase/tutorial/essential/concurrency/runthread.html) for more details.
 * [C# How to create threads](https://msdn.microsoft.com/en-us/library/btky721f.aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-2).
 
-It is worth recalling that most programmign languages have a main activity and that the termination of the program and any concurrent activity may differ: for example, a Go program finishes when the main activity completes its execution (without waiting for any concurrent activity) whereas as Java and C# programs will wait for completion of all concurrent activities.
+It is worth recalling that most programming languages have a main activity and that the termination of the program and any concurrent activity may differ: for example, a Go program finishes when the main activity completes its execution (without waiting for any concurrent activity) whereas as Java and C# programs will wait for completion of all concurrent activities.
 
 ## 2.2 Blocking operations
 
