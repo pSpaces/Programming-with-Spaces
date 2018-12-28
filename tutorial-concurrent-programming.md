@@ -44,24 +44,24 @@ It is worth recalling that most programming languages have a main activity and t
 
 ## 2.2 Blocking operations
 
-The operation ```GetP``` seen in the previous chapter is a *non-blocking* operation: it returns a result whether or not a matching tuple is found in the tuple space. The operation ```Get```, instead, is a *blocking* operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
+The operation ```getp``` seen in the previous chapter is a *non-blocking* operation: it returns a result whether or not a matching tuple is found in the tuple space. The operation ```get```, instead, is a *blocking* operation. This means that an operation ```s.get(T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
-```go
-fridge.Get("milk",&quantity)
+```java
+fridge.get(new ActualField("milk"), new FormalField(Integer.class));
 ```
 
 she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple `("milk",n)` appears in the tuple space. Blocking operations are key to implement synchronisation among activities.
 
-Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```Get(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a value to notify if a tuple was actually retrieved or not.
+Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```p```. For example, operation ```getp(t)``` is pretty much like ```get(t)``` but it does not block if the operation fails to retrieve a value and it actually returns a value to notify if a tuple was actually retrieved or not.
 
 In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
-```go
-t,err := fridge.GetP("milk",&quantity)
-if (err == nil) {
+```java
+Object[] item = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
+if (item == nil) {
   // go shopping
 } else {
-  fridge.Put ("milk", 1)
+  fridge.put("milk", 1);
 }
 ```
 
@@ -69,16 +69,16 @@ if (err == nil) {
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
-```go
-fridge.Put("milk",2)
-fridge.Put("butter",1)
+```java
+fridge.put("milk",2)
+fridge.put("butter",1)
 ...
 ```
 
 Bob:
-```go
-for {
-    t,err := fridge.Get(&item,&quantity)
+```java
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
@@ -249,7 +249,7 @@ We have seen the following coordination patterns:
 - Multiple-readers/single-writer locks: use a counter and two locks to allow for multiple process to search for tuples concurrently, or one process to update the tuple space.
 - Barriers: use tuples to count how many processses have reached some status in their computation.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
+A complete example for this chapter can be found [here](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/Fridge_1/Fridge_1.java).
 
 ## Reading suggestions
 * Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
