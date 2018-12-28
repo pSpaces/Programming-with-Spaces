@@ -26,7 +26,7 @@ and so on.
 ## 1.2 Tuples in pSpace
 Many programming languages provide types or mechanisms for tuples or value lists. The pSpace implementations provide ad-hoc datatypes for tuples but sometimes admit the use native features from the language.
 
-For example, the Java Library provides a classs `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+For example, the Java Library provides a class `Tuple`, which can be used to create a tuple `("milk",1)` as follows
 
 ```java
 Tuple tuple = new Tuple("milk", 1);
@@ -54,9 +54,17 @@ In Go, the `i-1`-th field is accessed with
 tuple.GetFieldAt(i)
 ```
 
-Casting may be needed in some cases. So for example to get properly typed values in the example above we could proceed as follows:
+Casting may be needed in some cases. For example, in Java, the fields of a `Tuple`-object are objects and need to be casted into their actual types if needed:
 
+```java
+Tuple tuple = new Tuple("milk", 1);
+String item = (tuple.getElementAt(0)).toString();
+Integer quantity = (Integer) tuple.getElementAt(1);
 ```
+
+likewise, in Go:
+
+```go
 var tuple Tuple = CreateTuple("milk", 1)
 item := (tuple.GetFieldAt(0)).(string)
 quantity := (tuple.GetFieldAt(1)).(int)
