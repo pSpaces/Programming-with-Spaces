@@ -40,28 +40,28 @@ For more details on corrency primitives refer to
 * [the Java tutorial on starting threads](https://docs.oracle.com/javase/tutorial/essential/concurrency/runthread.html) for more details.
 * [C# How to create threads](https://msdn.microsoft.com/en-us/library/btky721f.aspx?cs-save-lang=1&cs-lang=csharp#code-snippet-2).
 
-It is worth recalling that most programmign languages have a main activity and that the termination of the program and any concurrent activity may differ: for example, a Go program finishes when the main activity completes its execution (without waiting for any concurrent activity) whereas as Java and C# programs will wait for completion of all concurrent activities.
+It is worth recalling that most programming languages have a main activity and that the termination of the program and any concurrent activity may differ: for example, a Go program finishes when the main activity completes its execution (without waiting for any concurrent activity) whereas as Java and C# programs will wait for completion of all concurrent activities.
 
 ## 2.2 Blocking operations
 
-The operation ```GetP``` seen in the previous chapter is a *non-blocking* operation: it returns a result whether or not a matching tuple is found in the tuple space. The operation ```Get```, instead, is a *blocking* operation. This means that an operation ```Get(s,T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
+The operation ```getp``` seen in the previous chapter is a *non-blocking* operation: it returns a result whether or not a matching tuple is found in the tuple space. The operation ```get```, instead, is a *blocking* operation. This means that an operation ```s.get(T)``` will block if there is no tuple matching ```T``` in space ```s```. For example, if Alice tries to behave as in
 
-```go
-fridge.Get("milk",&quantity)
+```java
+fridge.get(new ActualField("milk"), new FormalField(Integer.class));
 ```
 
 she will get stuck if the fridge space contains no tuple of the form ```("milk",n)```, waiting until a tuple `("milk",n)` appears in the tuple space. Blocking operations are key to implement synchronisation among activities.
 
-Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```P```. For example, operation ```GetP(s,t)``` is pretty much like ```Get(s,t)``` but it does not block if the operation fails to retrieve a value and it actually returns a value to notify if a tuple was actually retrieved or not.
+Most operations on tuple spaces have blocking and non-blocking variants. Non-blocking variants have the same name as their blocking counterparts but are typically suffixed with ```p```. For example, operation ```getp(t)``` is pretty much like ```get(t)``` but it does not block if the operation fails to retrieve a value and it actually returns a value to notify if a tuple was actually retrieved or not.
 
 In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
-```go
-t,err := fridge.GetP("milk",&quantity)
-if (err == nil) {
+```java
+Object[] item = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
+if (item == nil) {
   // go shopping
 } else {
-  fridge.Put ("milk", 1)
+  fridge.put("milk", 1);
 }
 ```
 
@@ -69,16 +69,16 @@ if (err == nil) {
 The combination of pattern matching and non-deterministic retrieval allows one to specify loose coordination mechanisms. We are indeed ready to introduce our first coordinated system, where the behaviour of Alice and Bob is
 
 Alice:
-```go
-fridge.Put("milk",2)
-fridge.Put("butter",1)
+```java
+fridge.put("milk",2)
+fridge.put("butter",1)
 ...
 ```
 
 Bob:
-```go
-for {
-    t,err := fridge.Get(&item,&quantity)
+```java
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
@@ -91,18 +91,18 @@ This basic coordination pattern can be easily extended to the case in which ther
 There are many situations in which one would like to inspect the tuple space without actually removing any tuple. A typical example is when the presence of a tuple signals an event and we want to wait until that event happnes. For example, in our case study, Alice and Bob may decide that Bob does not need to go shopping immediately but can wait until Alice decides that the grocery list has enough items, signalled by a tuple ```("shop!")``` as in
 
 Alice:
-```go
-fridge.Put("milk",2)
-fridge.Put("butter",1)
-fridge.Put("shop!")
+```java
+fridge.put("milk",2);
+fridge.put("butter",1);
+fridge.put("shop!");
 ```
 
 Bob:
-```go
-fridge.Get("shop!")
-fridge.Put("shop!")
-for {
-    fridge.Get(&item,&quantity)
+```java
+fridge.get(new ActualField("shop!"));
+fridge.put("shop!");
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
@@ -110,72 +110,71 @@ for {
 A drawback of this solution is that the check that Bob performs is not atomic. There is hence a moment in which the tuple ```("shop!")``` is removed by Bob which may lead other rooommates. Suppose, for instance, that Alice and Bob are executing their programs while Charlie is executing:
 
 Charlie:
-```go
-t,err := fridge.GetP(fridge,"shop!") 
-if err == nil {
-    fridge.Put("shop!")
-    for {
-        t,err := fridge.Get(&item,&quantity)
-        // go shopping ...
+```java
+Object[] t = fridge.queryp(new ActualField("shop!"));
+if (t != null) {
+    while (true) {
+        Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
+        // go shopping
     }
 } else // relax
 ```
 
-The standard solution to this problem is use the ```Query``` operation to perform queries atomically. Operation ```Query(s,T)``` behaves like ```Get(s,T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
+The standard solution to this problem is use the ```query``` operation to perform queries atomically. Operation ```query(T)``` behaves like ```get(T)``` but does not remove the retrived tuple from the space. Now Bob and Charlie can safely check if it is time to shop as follows.
 
 Bob:
-```go
-fridge.Query("shop!")
-for {
-    t,err := fridge.Get(&item,&quantity)
+```java
+fridge.query(new ActualField("shop!"));
+while (true) {
+    Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
     // go shopping
 }
 ```
 
 Charlie:
-```go
-t,err := fridge.QueryP(fridge,"shop!") 
-if err == nil {
-    for {
-        t,err := fridge.Get(&item,&quantity)
-        // go shopping ...
+```java
+Object[] t = fridge.queryp(new ActualField("shop!"));
+if (t != null) {
+    while (true) {
+        Object[] item = fridge.get(new FormalField(String.class), new FormalField(Integer.class));
+        // go shopping
     }
-}
+} else // relax
 ```
 
-A unique advantage of introducing the `Query` operation it eases performant implementations of concurrent queries.
+A unique advantage of introducing the `query` operation it eases performant implementations of concurrent queries.
 
 ## 2.5 Another coordination pattern: global locks 
 Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented as follows.
 
 First, the lock is represented by a tuple ```("lock")``` that is initally placed in the tuple space `s` with
 
-```go
-s.Put("lock")
+```java
+s.put("lock")
 ```
 
 Then, every time a process wants to work on the tuple space it should adhere to the following protocol:
 
-```go
+```java
 // acquire lock on s
-s.Get("lock")
+s.get("lock")
 
 // work on tuple space s
 
 // release lock for s
-s.Put("lock")
+s.put("lock")
 ```
 If all processes respect the protocol, the computations specified between acquiring the lock and releasing the lock are executed atomically.
 
 Suppose, for instance, that Alice needs to increase the number of milk buttles and butter bars atomically. She can proceed as follows:
 
-```go
-s.Get("lock")
-tx,_ := s.Get("milk",&x)
-ty,_ := s.Get("butter",&y)
-s.Put("milk",(tx.GetFieldAt(0)).(int)+1)
-s.Put("butter",(ty.GetFieldAt(0)).(int)+1)
-s.Put("lock")
+```java
+fridge.get("lock")
+Object[] milk = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
+Object[] butter = fridge.get(new ActualField("butter"), new FormalField(Integer.class));
+fridge.put("milk",milk[1]+1)
+fridge.put("butter",butter[1]+1)
+fridge.put("lock")
 ```
 
 ## 2.6 Another coordination pattern: multiple-readers/single-writer locks 
@@ -184,64 +183,63 @@ Simple locks limit concurrency and may impact the performance of the tuple space
 
 Processes that need to modify the tuple space (i.e. writers) have to adhere to the following protocol:
 
-```
+```java
 // acquire global lock
-s.Get("lock")
+s.get("lock")
 
 // update the tuple space with get/put operations
 
 // release global lock
-s.Put("lock")
+s.put("lock")
 ```
 
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
-```
+
+```java
 // Increase number of readers and get global lock
-s.Get("reader_lock")
-t,_ := s.Get("readers",&num_readers)
-num_readers = (t.GetFieldAt(1)).(int)
-num_readers++
-s.Put("readers",num_readers)
-if num_readers == 1 { 
-  s.Get("lock")
+s.get("reader_lock")
+Object[] readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
+s.put("readers",readers[1]+1)
+if readers[1] == 0 {
+    // Get the global lock if I am the first reader
+    s.get("lock")
 }
 s.Put("reader_lock")
 
-// search for tuples with query operations
+// Search for tuples with query operations
 
 // Decrease number of readers and release global lock
 s.Get("reader_lock")
-t,_ := s.Get("readers",&num_readers)
-num_readers = (t.GetFieldAt(1)).(int)
-num_readers--
-s.Put("readers",num_readers)
-if num_readers == 0 { 
-  s.Put("lock")
+readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
+s.Put("readers",readers[1]-1)
+if readers[1] == 1 { 
+  // If I am the last one, realease the global lock
+  s.put("lock")
 }
-s.Put("reader_lock")
+s.put("reader_lock")
 ```
 
 ## 2.7 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
-```go
-s.Put("barrier",N) ;
+```java
+s.put("barrier",N) ;
 ```
 
 and when a process reaches the barrier it has to execute the following code
 
-```go
-t,_ := s.Get("barrier",&n)
-s.Put("barrier",(t.GetFieldAt(1)).(int)−1)
-s.Query("barrier",0)
+```java
+Object[] barrier = get(new ActualField("barrier"), new FormalField(Integer.class));
+s.put("barrier",barrier[1]-1);
+s.query(new ActualField("barrier"), new ActualField(0));
 // move on
 ```
 
 ## Summary
  
 We have seen the following operations on spaces:
-- `Query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
-- `Get`: like `Query` but also removes the found tuple.
+- `query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
+- `get`: like `query` but also removes the found tuple.
 
 We have seen the following coordination patterns:
 - Producer/consumer: use a tuples space as a bag of tasks. Producers put tuples representing tasks; consumers get tuples representing tasks.
@@ -249,7 +247,7 @@ We have seen the following coordination patterns:
 - Multiple-readers/single-writer locks: use a counter and two locks to allow for multiple process to search for tuples concurrently, or one process to update the tuple space.
 - Barriers: use tuples to count how many processses have reached some status in their computation.
 
-A complete example for this chapter can be found [here](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-1/main.go).
+A complete example for this chapter can be found [here](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/Fridge_1/Fridge_1.java).
 
 ## Reading suggestions
 * Andrews, G. R. (1999). Foundations of Multithreaded, Parallel, and Distributed Programming. Addison-Wesley, 1 edition
