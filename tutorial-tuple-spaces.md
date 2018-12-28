@@ -88,9 +88,15 @@ Here is an example of a tuple space representing post-its on a fridge
 Recall that a multiset differs from a list in that the order of elements does not matter, and it differs from a set in that an element can appear more than once.
 
 ## 1.4 Tuple spaces in pSpaces
-pSpace implementations provide several datatypes for tuple spaces. We shall discuss them in detail in a later chapter of the tutorial. We focus here on sequential spaces. These are created in Go with the constructor `NewSpace`:
+pSpace implementations provide several datatypes for tuple spaces. We shall discuss them in detail in a later chapter of the tutorial. We focus here on sequential spaces. These are created in Java with the constructor `SequentialSpace()':
 
+```java
+Space inbox = new SequentialSpace();
 ```
+
+and in Go with the constructor `NewSpace`:
+
+```go
 fridge := NewSpace("fridge")
 ```
 
@@ -102,38 +108,39 @@ Tuple spaces are collection data structures and, as such, they provide operation
 
 The operation to add tuples is named ```Put```. More precisely the operation 
 
-```go
-space.Put(tuple)
+```java
+space.put(tuple)
 ```
 
 adds the tuple ```tuple``` to the tuple space ```space```.
 
 ## 1.6 Searching tuples with `QueryP`
 
-The operation to search for tuples tuples is called ```QueryP```. In detail,
+The operation to search for tuples tuples is called ```queryp```. In detail,
 
 ```go
-space.QueryP(tuple)
+space.queryp(tuple)
 ```
 
 looks for a tuple like ```tuple``` in the tuple space ```space``` and returns the found tuple (if any).
 
-In Go, for example, we can write
+In Java, for example, we can write
 
-```go
-t, err := fridge.QueryP("clean kitchen")
+```java
+Object obj = fridge.queryp(new ActualField("clean kitchen"));
+if (obj != null) {
+    System.out.println("We need to clean the kitchen");
+}
 ```
 
-to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `t` and whether the tuple was found (`err == nil`) is stored in `err`.
-
-In some implementations (e.g. in Java) the return type is just one (a tuple). The absence of a tuple is represented with a null value.
+to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `obj`. The absence of a tuple is represented with a null value.
 
 ## 1.7 Removing tuples with `GetP`
 
-The operation to remove tuples is named ```Get``` and has a similar behavour as `Query`, namely
+The operation to remove tuples is named ```getp``` and has a similar behavour as `queryp`, namely
 
 ```go
-space.GetP(tuple)
+space.getp(tuple)
 ```
 
 looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space. 
@@ -141,9 +148,10 @@ looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the
 We can use for example
 
 ```go
-_, err := fridge.GetP("clean kitchen")
+obj := fridge.getp("clean kitchen")
 ```
-If we are willing to remove the note that says that we need to clean the kitchen. Note that we use the blank identifier `_` to store the tuple since we don't really care about it in this example. 
+
+if we are willing to remove the note that says that we need to clean the kitchen. 
 
 ## 1.8 Tuples are content-addressable with pattern matching
 
