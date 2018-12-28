@@ -149,13 +149,13 @@ Standard synchronisation mechanisms can be implemented using tuple spaces. Globa
 
 First, the lock is represented by a tuple ```("lock")``` that is initally placed in the tuple space `s` with
 
-```go
+```java
 s.put("lock")
 ```
 
 Then, every time a process wants to work on the tuple space it should adhere to the following protocol:
 
-```go
+```java
 // acquire lock on s
 s.get("lock")
 
@@ -168,7 +168,7 @@ If all processes respect the protocol, the computations specified between acquir
 
 Suppose, for instance, that Alice needs to increase the number of milk buttles and butter bars atomically. She can proceed as follows:
 
-```go
+```java
 fridge.get("lock")
 Object[] milk = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
 Object[] butter = fridge.get(new ActualField("butter"), new FormalField(Integer.class));
@@ -183,7 +183,7 @@ Simple locks limit concurrency and may impact the performance of the tuple space
 
 Processes that need to modify the tuple space (i.e. writers) have to adhere to the following protocol:
 
-```
+```java
 // acquire global lock
 s.get("lock")
 
@@ -194,7 +194,8 @@ s.put("lock")
 ```
 
 Processes that just need to search for tuples without modifying the tuple space (i.e. readers) can proceed as follows:
-```
+
+```java
 // Increase number of readers and get global lock
 s.get("reader_lock")
 Object[] readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
@@ -221,13 +222,13 @@ s.put("reader_lock")
 ## 2.7 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
-```go
+```java
 s.put("barrier",N) ;
 ```
 
 and when a process reaches the barrier it has to execute the following code
 
-```go
+```java
 Object[] barrier = get(new ActualField("barrier"), new FormalField(Integer.class));
 s.put("barrier",barrier[1]-1);
 s.query(new ActualField("barrier"), new ActualField(0));
