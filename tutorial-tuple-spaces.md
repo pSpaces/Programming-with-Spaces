@@ -239,8 +239,8 @@ The following example shows how the grocery list can be retrieved from the `frid
 ```
 List<Object[]> groceryList = fridge.queryAll(new FormalField(String.class), new FormalField(Integer.class));
 System.out.println("Items to buy: ");
-for (Object[] obj : groceryList) {
-    System.out.println(Arrays.toString(obj));
+for (Object[] grocery : groceryList) {
+    System.out.println(grocery[1] + " units of "+ grocery[0]);
 }
 ```
 
