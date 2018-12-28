@@ -223,10 +223,10 @@ As an example, consider the following situation. Assume that the current state o
 and that Alice wants to look for an item to buy with
 
 ```
-t,err := fridge.QueryP(&item,&quantity);
+Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
 ```
 
-Alice can retrieve any of the two tuples `("milk",2)` and `("butter",3)`. It is actually up to the implementation of the tuple space to decide which one she will actually retrieve. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours.
+Which of the two tuples `("milk",2)` and `("butter",3)` Alice will retrieve actually depends on the implementation of the tuple space. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. In our example the `fridge` tuple space is of type `Sequential`, which behaves similarly to a FIFO queue so that the oldest matching tuple will be retrieved.
 
 A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
 
