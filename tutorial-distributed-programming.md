@@ -182,8 +182,8 @@ We have seen the following coordination patterns:
 - Remote procedure calls.
 
 Complete examples for this chapter can be found here:
+* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat1)
 * Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-1), [remote procedure calls](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/rpc-0)
-* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0)
 
 ## Reading suggestions
 * De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
