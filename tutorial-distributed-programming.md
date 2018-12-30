@@ -190,7 +190,7 @@ We have seen the following coordination patterns:
 - Remote procedure calls.
 
 Complete examples for this chapter can be found here:
-* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat1)
+* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat1), [remote procedure calls](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/rpc)
 * Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-1), [remote procedure calls](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/rpc-0)
 
 ## Reading suggestions
