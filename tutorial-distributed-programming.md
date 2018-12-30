@@ -1,69 +1,18 @@
 # 3. Distributed Programming with Tuple Spaces
 
-This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications.
+This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications. As a running example we consider chat application that Alice and her roommates can use exchange messages.
 
-## 3.1 Space URIs
-
-To make a tuple space accessible from a remove host, the tuple space needs an URI, which acts as its unique identifier. A basic form of URI currently supported in pSpace is
-
-```go
-tcp://host:port/space
-```
-
-where `tcp` specifies to use the TCP communication protocol, `host` is the name or IP address of the device hosting the tuple space, `port` is a valid port (e.g. a port number, and `space` is the identifier for the tuple space. Some implementations of pSpaces support several protocols beyond `tcp` and can handle additional parameters in the URI as we shall see later.
-
-## 3.2 Sharing a space in Go
-
-Most pSpaces libraries (including [jSpace](https://github.com/pSpaces/jSpace) and [dotSpace](https://github.com/pSpaces/dotSpace)) rely on the notion of space repository and space gates to structure the way local spaces are exposed to external applications. [goSpace](https://github.com/pSpaces/goSpace) does not yet support repositories and gates and relies on a simpler mechanism that we explain here.
-
-Suppose that Alice and her friends want to create a simple chat server to communicate with each other. The server will just host a tuple space for all messages to be collected and it will take care of displaying the messages on a shared screen. The server can create such a space in Go with
-
-```go
-chat := NewSpace("tcp://localhost:31415/room123")
-```
-
-Once created, the server can keep retrieving and printing messages with
-
-```go
-var who string
-var message string
-for {
-  t, _ := chat.Get(&who, &message)
-  who = (t.GetFieldAt(0)).(string)
-  message = (t.GetFieldAt(1)).(string)
-  fmt.Printf("%s: %s \n", who, message)
-}
-```
-
-## 3.3 Accesing a remote space
-
-A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `NewRemoteSpace` constructor.
-
-In our example, Alice and her friends can implement clients that connect to the server running in `chathost` in Go with:
-
-```go
-chat := NewRemoteSpace("tcp://chathost:3115/room123")
-```
-
-after which the space `chat` can be treated as an ordinary tuple space. For example, messages can be sent with 
-
-```go
-chat.Put("Alice","Hi!")
-```
-
-Remote spaces are accessed similarly in libraries supporting repositories and gates.
-
-## 3.4 Space repositories
-Some pSpace implementations (including [jSpace](https://github.com/pSpaces/jSpace) and [dotSpace](https://github.com/pSpaces/dotSpace)) support mechanisms to organise and control how spaces are exposed to external applications. Spaces can be put together in a *space repository*. Each space in the repository must be univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms in the same repository:
+## 3.1 Space repositories
+Space repositories are used organise and control how spaces are exposed to external applications. Each space in a repository must be univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms in the same repository:
 
 ```java
 SpaceRepository chatRepository = new SpaceRepository();
-chatRepository.Add("room123",New SequentialSpace());
-chatRepository.Add("room456",New SequentialSpace());
+chatRepository.Add("room1",New SequentialSpace());
+chatRepository.Add("room2",New SequentialSpace());
 ```
 
-## 3.5 Gates
-The main purpose of using space repositories is to ease the exposure of spaces that need to have the same kind of external access. Each way to access all spaces within a repository is called a *gate*. A gate can be thought of as a communication port and it is identified by an URI of the form:
+## 3.2 Gates
+Space repositories ease the exposure of spaces that need to have the same kind of external access. This is done through *gates*. A gate can be thought of as a communication port and it is identified by an URI of the form:
 
 ```
 <protocol>://<address>:<id>/?<par1>&...&<parn>
@@ -76,16 +25,24 @@ Currently, most pSpace implementations provide support for `tcp` only but some i
 Following on our example, the server of chat rooms can open a gate for Alice and her friends with
 
 ```java
-chatRepository.AddGate("tcp://localhost:311415/?keep");
+chatRepository.addGate("tcp://localhost:31415/?keep");
 ```
 
-Then Alice and her friends con connect to it with
+## 3.3 Accesing a remote space
+
+A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `RemoteSpace` constructor. In our example Alice and her friends con connect to the chatoom `room1` it with
 
 ```java
-RemoteSpace chat = new RemoteSpace("tcp://chathost:311415/?keep")
+RemoteSpace chat = new RemoteSpace("tcp://chathost:31415/room1?keep")
 ```
 
-## 3.6 What can be send around?
+after which the space `chat` can be treated as an ordinary tuple space. For example, messages can be sent with 
+
+```go
+chat.put("Alice","Hi!")
+```
+
+## 3.4 What can be send around?
 
 There are limitations on the datatypes that can be used in the remote tuple space operations, partly due to the underlying serialisers used by the libraries. Currently the limitations are language dependent. Some examples are:
 
@@ -97,93 +54,148 @@ Some examples of common restrictions are:
 * datatypes should be known on both sides.
 * references and pointers cannot be sent, typically the pointed/reference data will be send.
 
-## 3.7 A coordination pattern: private spaces
+## 3.5 A simple chat application
 
-A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lounge` space to receive requests to enter specific chatrooms from the Alice and her friends and will reply to those requests with the URI of the space used to handle the corresponding chatroom.
+We can now put everthing that we have discussed so far in a simple chat application for Alice and her roommates. The server will just host a tuple space for all messages to be collected and it will take care of displaying the messages on a shared screen. 
 
-More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply contains the URI of the space they need to connect to start chatting:
+The code for Alice and her roommates would be be as follows
 
-```go
-lounge.Put("enter", name, roomID)
-t,_ := lounge.Get("roomURI", name, roomID, &uri)
-uri = (t.GetFieldAt(2)).(string)
-room := NewRemoteSpace(uri)
+```java
+RemoteSpace chat = new RemoteSpace("tcp://server:9001/chat?keep");
+
+while(true) {
+    String message = input.readLine();
+    chat.put(user_name, message);
+}			
 ```
 
-The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `show` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
+where `server` is the server name or ip address, which uses the port `9001`.
 
-```go
-for {
-  t, _ := lounge.Get("enter", &who, &roomID)
-  who = (t.GetFieldAt(1)).(string)
-  roomID = (t.GetFieldAt(2)).(string)
-  _, ok := rooms[roomID]
-  if ok {
-    roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
-  } else {
-    rooms[roomID] = chatPort
-    chatPort++
-    room := NewSpace(roomURI)
-    go show(&room, roomID)
-  }
-  lounge.Put("roomURI", who, roomID, roomURI)
+The server's code would be:
+
+```java
+// create repository
+SpaceRepository repository = new SpaceRepository();
+
+// Create a local space for the chat messages
+SequentialSpace chat = new SequentialSpace();
+
+// Add the space to the repository
+repository.add("chat", chat);
+
+// Open a gate
+repository.addGate("tcp://server:9001/?keep");
+
+// Keep reading chat messages and printing them 
+while (true) {
+    Object[] t = chat.get(new FormalField(String.class), new FormalField(String.class));
+    System.out.println(t[0] + ":" + t[1]);
 }
 ```
 
-## 3.8 A coordination pattern: remote procedure call
+## 3.6 A coordination pattern: private spaces
 
-Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why operations such as atomic updates or  conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
+A very useful coordination pattern in distributed programming is the creation of fresh contexts for private conversations. The typical example is the use of sessions in communication protocols. We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lobby` space to receive requests to enter specific chatrooms from Alice and her friends. The server reply to those requests with the URI of the space used to handle the corresponding chatroom. If the chatroom does not exist, a new space and a corresponding handler will be created for it.
 
-Suppose, for example, that Alice and her friends needs to compute functions such as `foo(1,2,3)` and `bar("a","b")` and want a server to do the job for them. They can send their RPC requests by first sending the function name and the arguments in separate tuples and then waiting for the result:
+More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply has format `("roomURI", name, roomID, roomURI)`, where `roomURI` is the URI of the space where the chatroom resides:
+
+```java
+// Connnect to the lobby
+RemoteSpace lobby = new RemoteSpace("tcp://server:9001/lobby?keep");
+// Send chatroom request
+lobby.put("enter", name, roomID);
+// Obtain response
+Object[] response = chat.get(new ActualField("roomURI"), new ActualField(name), new FormalField(String.class), new FormalField(String.class));
+String rooom_uri = response[3];
+// Connect to the chatroom
+RemoteSpace chatroom = new RemoteSpace(room_uri);
+```
+
+The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `roomHandler` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
+
+```go
+while (true) {
+    // Read chatroom request
+    Object[] request = lobby.get(new ActualField("enter"),new FormalField(String.class), new FormalField(String.class));
+    String who = (String) request[1];
+    String roomID = (String) request[2];
+    
+    // If the chatroom exists just prepare the response with the corresponding URI
+    Object[] the_room = rooms.queryp(new ActualField(roomID),new FormalField(String.class));
+    if (the_room != null) {
+    	roomURI = "tcp://127.0.0.1:9001/chat" + the_room[1] + "?keep";
+    } 
+    // If the chatroom does not exist, create the chatroom and launch a chatroom handler
+    else {
+        System.out.println("Creating room " + roomID + " for " + who + " ...");	
+        roomURI = "tcp://127.0.0.1:9001/chat" + roomC + "?keep";
+        new Thread(new roomHandler(roomID,"chat"+roomC,roomURI,repository)).start();
+        rooms.put(roomID,roomC);
+        roomC++;
+    }
+
+    // Sending response back to the chat client
+    lobby.put("roomURI", who, roomID, roomURI);
+}
+```
+
+## 3.7 A coordination pattern: remote procedure call
+
+Strong forms of code mobility based on sending actual code are currently not supported in pSpace libraries. This is one of the main reasons why operations such as atomic updates or conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
+
+Suppose, for example, that Alice and her friends need to compute functions such as `foo(1,2,3)` and `bar("a","b")` and want a server to do the job for them. They can send their RPC requests by first sending the function name and the arguments in separate tuples and then waiting for the result:
 
 Client
-```go
-server.Put("Alice1", "func", "foo")
-server.Put("Alice1", "args", 1, 2, 3)
-var u int
-t,_ := server.Get("Alice1", "result", &u)
+```java
+server.put("Alice", "func", "foo")
+server.put("Alice", "args", 1, 2, 3)
+Object[] response = server.get(new ActualField("Alice"), new ActualField("result"), new FormalField(Integer.class)
 ```
 
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
 
-```go
-for {
-  t,_ := mySpace.Get(&callID, "func", &f)
-  callID = (t.GetFieldAt(0)).(string)
-  f = (t.GetFieldAt(2)).(string)
-  switch f {
-  case "foo":
-    t,_ := mySpace.Get(callID, "args", &x, &y, &z)
-    result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(3)).(int), (t.GetFieldAt(4)).(int))
-    mySpace.Put(callID, "result", result)
-  case "bar":
-    t,_ := mySpace.Get(callID, "args", &a, &b)
-    result := bar((t.GetFieldAt(2)).(string), (t.GetFieldAt(3)).(string))
-    mySpace.Put(callID, "result", result)
-  default:
-    // ignore RPC for unknown functions
-    continue
-  }
+```java
+Object[] request;
+Object[] arguments;
+String callID;
+String f;
+			
+// Keep serving requests to enter chatrooms
+while (true) {
+    request = rpc.get(new FormalField(String.class), new ActualField("func"), new FormalField(String.class));
+    callID = (String) request[0];
+	f = (String) request[2];
+    switch (f) {
+    case "foo":
+        arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+	    rpc.put(callID, "result", foo((Integer) arguments[2], (Integer) arguments[3], (Integer) arguments[4]));
+	case "bar":
+		arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(String.class), new FormalField(String.class));
+		rpc.put(callID, "result", bar((String)arguments[2], (String)arguments[3]));
+	default:
+	// ignore RPC for unknown functions
+	continue;
 }
 ```
 
-Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticatd, e.g. by handling the RPCs asynchronously or dealing with calls to unknown functions differently.
+Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticated, e.g. by handling the RPCs asynchronously and in parallel.
 
 ## Summary
  
-We have seen the following operations to access remote spaces:
-- `NewRemoteSpace` (Go) or `RemoteSpace` (Java, C#): constructor to create a local reference to a remote space specified by an URI.
+We have seen the following operations to support distributed tuple spaces:
 - `Repository`: a collector of spaces.
 - `addSpace`: operation to add a space to a space repository.
 - `addGate`: operation to open a gate (external access) to a space repository.
+- `RemoteSpace`: constructor to create a local reference to a remote space specified by an URI.
 
 We have seen the following coordination patterns:
 - Private space creation.
+- Asynchronous/parallel request serving; 
 - Remote procedure calls.
 
 Complete examples for this chapter can be found here:
+* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat1), [remote procedure calls](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/rpc)
 * Go: [simple chat](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-0), [chat with private spaces for each room](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/chat-1), [remote procedure calls](https://github.com/pSpaces/goSpace-examples/tree/master/tutorial/rpc-0)
-* Java: [simple chat](https://github.com/pSpaces/jSpace-examples/tree/master/tutorial/chat-0)
 
 ## Reading suggestions
 * De Nicola, R., Ferrari, G. L., and Pugliese, R. (1998). KLAIM: A kernel language for agents interaction and mobility. IEEE Trans. Software Eng., 24(5):315–330
