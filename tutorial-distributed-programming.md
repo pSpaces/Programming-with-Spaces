@@ -54,20 +54,42 @@ Some examples of common restrictions are:
 * datatypes should be known on both sides.
 * references and pointers cannot be sent, typically the pointed/reference data will be send.
 
-## 3.5 A simple chat server
+## 3.5 A simple chat application
 
-Suppose that Alice and her friends want to create a simple chat server to communicate with each other. The server will just host a tuple space for all messages to be collected and it will take care of displaying the messages on a shared screen. The server can create such a space in Go with
+We can now put everthing that we have discussed so far in a simple chat application for Alice and her roommates. The server will just host a tuple space for all messages to be collected and it will take care of displaying the messages on a shared screen. 
 
-```go
-chat := NewSpace("tcp://localhost:31415/room123")
+The code for Alice and her roommates would be be as follows
+
+```java
+RemoteSpace chat = new RemoteSpace("tcp://server:9001/chat?keep");
+
+while(true) {
+    String message = input.readLine();
+    chat.put(user_name, message);
+}			
 ```
 
-Once created, the server can keep retrieving and printing messages with
+where `server` is the server name or ip address, which uses the port `9001`.
 
-```go
+The server's code would be:
+
+```java
+// create repository
+SpaceRepository repository = new SpaceRepository();
+
+// Create a local space for the chat messages
+SequentialSpace chat = new SequentialSpace();
+
+// Add the space to the repository
+repository.add("chat", chat);
+
+// Open a gate
+repository.addGate("tcp://server:9001/?keep");
+
+// Keep reading chat messages and printing them 
 while (true) {
-    Object[] message = chat.get(new FormalField(String.class), new FormalField(String.class));
-		System.out.println(message[0] + ":" + message[1]);
+    Object[] t = chat.get(new FormalField(String.class), new FormalField(String.class));
+    System.out.println(t[0] + ":" + t[1]);
 }
 ```
 
