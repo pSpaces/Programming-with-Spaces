@@ -141,21 +141,20 @@ while (true) {
 
 ## 3.7 A coordination pattern: remote procedure call
 
-Strong forms of code mobility based on sending actual code are currently not supported. This is one of the main reasons why operations such as atomic updates or  conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
+Strong forms of code mobility based on sending actual code are currently not supported in pSpace libraries. This is one of the main reasons why operations such as atomic updates or conditional pattern matching (i.e, pattern matching enriched with additional predicates as in SQL'a `WHERE` clauses) are not currently supported. However, softer forms of code mobility can obtained. An example are remote procedure calls (RPCs).
 
-Suppose, for example, that Alice and her friends needs to compute functions such as `foo(1,2,3)` and `bar("a","b")` and want a server to do the job for them. They can send their RPC requests by first sending the function name and the arguments in separate tuples and then waiting for the result:
+Suppose, for example, that Alice and her friends need to compute functions such as `foo(1,2,3)` and `bar("a","b")` and want a server to do the job for them. They can send their RPC requests by first sending the function name and the arguments in separate tuples and then waiting for the result:
 
 Client
-```go
-server.Put("Alice1", "func", "foo")
-server.Put("Alice1", "args", 1, 2, 3)
-var u int
-t,_ := server.Get("Alice1", "result", &u)
+```java
+server.put("Alice", "func", "foo")
+server.put("Alice", "args", 1, 2, 3)
+Object[] response = server.get(new ActualField("Alice"), new ActualField("result"), new FormalField(Integer.class)
 ```
 
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
 
-```go
+```java
 for {
   t,_ := mySpace.Get(&callID, "func", &f)
   callID = (t.GetFieldAt(0)).(string)
