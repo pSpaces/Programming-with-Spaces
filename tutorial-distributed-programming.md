@@ -95,35 +95,47 @@ while (true) {
 
 ## 3.6 A coordination pattern: private spaces
 
-A typical coordination pattern in distributed programming is the creation of fresh contexts for private conversations (e.g. sessions in communication protocols). We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lounge` space to receive requests to enter specific chatrooms from the Alice and her friends and will reply to those requests with the URI of the space used to handle the corresponding chatroom.
+A very useful coordination pattern in distributed programming is the creation of fresh contexts for private conversations. The typical example is the use of sessions in communication protocols. We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lobby` space to receive requests to enter specific chatrooms from Alice and her friends. The server reply to those requests with the URI of the space used to handle the corresponding chatroom. If the chatroom does not exist, a new space and a corresponding handler will be created for it.
 
 More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply contains the URI of the space they need to connect to start chatting:
 
-```go
-lounge.Put("enter", name, roomID)
-t,_ := lounge.Get("roomURI", name, roomID, &uri)
-uri = (t.GetFieldAt(2)).(string)
-room := NewRemoteSpace(uri)
+```java
+RemoteSpace lobby = new RemoteSpace("tcp://server:9001/lobby?keep");
+lobby.put("enter", name, roomID);
+Object[] response = chat.get(new ActualField("roomURI"), new ActualField(name), new FormalField(String.class), new FormalField(String.class));
+String rooom_uri = response[3];
+RemoteSpace chatroom = new RemoteSpace(room_uri);
 ```
 
-The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `show` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
+The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `roomHandler` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
 
 ```go
-for {
-  t, _ := lounge.Get("enter", &who, &roomID)
-  who = (t.GetFieldAt(1)).(string)
-  roomID = (t.GetFieldAt(2)).(string)
-  _, ok := rooms[roomID]
-  if ok {
-    roomURI = "tcp://" + host + ":" + strconv.Itoa(rooms[roomID]) + "/" + roomID
-  } else {
-    rooms[roomID] = chatPort
-    chatPort++
-    room := NewSpace(roomURI)
-    go show(&room, roomID)
-  }
-  lounge.Put("roomURI", who, roomID, roomURI)
-}
+while (true) {
+					// Read request
+					Object[] request = lobby.get(new ActualField("enter"),new FormalField(String.class), new FormalField(String.class));
+					String who = (String) request[1];
+					String roomID = (String) request[2];
+					System.out.println(who + " requesting to enter " + roomID + "...");					
+
+					// If room exists just prepare the response with the corresponding URI
+					Object[] the_room = rooms.queryp(new ActualField(roomID),new FormalField(String.class));
+					if (the_room != null) {
+						roomURI = "tcp://127.0.0.1:9001/chat" + the_room[1] + "?keep";
+					} 
+					// If the room does not exist, create the room and launch a room handler
+					else {
+						System.out.println("Creating room " + roomID + " for " + who + " ...");	
+						roomURI = "tcp://127.0.0.1:9001/chat" + roomC + "?keep";
+						System.out.println("Setting up chat space " + roomURI + "...");
+						new Thread(new roomHandler(roomID,"chat"+roomC,roomURI,repository)).start();
+						rooms.put(roomID,roomC);
+						roomC++;
+					}
+
+					// Sending response back to the chat client
+					System.out.println("Telling " + who + " to go for room " + roomID + " at " + roomURI + "...");
+					lobby.put("roomURI", who, roomID, roomURI);
+				}
 ```
 
 ## 3.7 A coordination pattern: remote procedure call
