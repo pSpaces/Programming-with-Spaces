@@ -97,13 +97,17 @@ while (true) {
 
 A very useful coordination pattern in distributed programming is the creation of fresh contexts for private conversations. The typical example is the use of sessions in communication protocols. We illustrate this pattern with our example of the chat server. The main idea is that the server will host a `lobby` space to receive requests to enter specific chatrooms from Alice and her friends. The server reply to those requests with the URI of the space used to handle the corresponding chatroom. If the chatroom does not exist, a new space and a corresponding handler will be created for it.
 
-More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply contains the URI of the space they need to connect to start chatting:
+More in detail, Alice and her friends can request to enter a room by placing a request `("enter", name, roomID)` specifying the identifier `roomID` of the room and then waiting for a reply from the server. The reply has format `("roomURI", name, roomID, roomURI)`, where `roomURI` is the URI of the space where the chatroom resides:
 
 ```java
+// Connnect to the lobby
 RemoteSpace lobby = new RemoteSpace("tcp://server:9001/lobby?keep");
+// Send chatroom request
 lobby.put("enter", name, roomID);
+// Obtain response
 Object[] response = chat.get(new ActualField("roomURI"), new ActualField(name), new FormalField(String.class), new FormalField(String.class));
 String rooom_uri = response[3];
+// Connect to the chatroom
 RemoteSpace chatroom = new RemoteSpace(room_uri);
 ```
 
@@ -111,31 +115,28 @@ The server keeps the list of existing room identifiers and their associated port
 
 ```go
 while (true) {
-					// Read request
-					Object[] request = lobby.get(new ActualField("enter"),new FormalField(String.class), new FormalField(String.class));
-					String who = (String) request[1];
-					String roomID = (String) request[2];
-					System.out.println(who + " requesting to enter " + roomID + "...");					
+    // Read chatroom request
+    Object[] request = lobby.get(new ActualField("enter"),new FormalField(String.class), new FormalField(String.class));
+    String who = (String) request[1];
+    String roomID = (String) request[2];
+    
+    // If the chatroom exists just prepare the response with the corresponding URI
+    Object[] the_room = rooms.queryp(new ActualField(roomID),new FormalField(String.class));
+    if (the_room != null) {
+    	roomURI = "tcp://127.0.0.1:9001/chat" + the_room[1] + "?keep";
+    } 
+    // If the chatroom does not exist, create the chatroom and launch a chatroom handler
+    else {
+        System.out.println("Creating room " + roomID + " for " + who + " ...");	
+        roomURI = "tcp://127.0.0.1:9001/chat" + roomC + "?keep";
+        new Thread(new roomHandler(roomID,"chat"+roomC,roomURI,repository)).start();
+        rooms.put(roomID,roomC);
+        roomC++;
+    }
 
-					// If room exists just prepare the response with the corresponding URI
-					Object[] the_room = rooms.queryp(new ActualField(roomID),new FormalField(String.class));
-					if (the_room != null) {
-						roomURI = "tcp://127.0.0.1:9001/chat" + the_room[1] + "?keep";
-					} 
-					// If the room does not exist, create the room and launch a room handler
-					else {
-						System.out.println("Creating room " + roomID + " for " + who + " ...");	
-						roomURI = "tcp://127.0.0.1:9001/chat" + roomC + "?keep";
-						System.out.println("Setting up chat space " + roomURI + "...");
-						new Thread(new roomHandler(roomID,"chat"+roomC,roomURI,repository)).start();
-						rooms.put(roomID,roomC);
-						roomC++;
-					}
-
-					// Sending response back to the chat client
-					System.out.println("Telling " + who + " to go for room " + roomID + " at " + roomURI + "...");
-					lobby.put("roomURI", who, roomID, roomURI);
-				}
+    // Sending response back to the chat client
+    lobby.put("roomURI", who, roomID, roomURI);
+}
 ```
 
 ## 3.7 A coordination pattern: remote procedure call
