@@ -155,38 +155,42 @@ Object[] response = server.get(new ActualField("Alice"), new ActualField("result
 The server process the RPCs of Alice and her friends by getting the function to be executed first and retrieving the arguments (of the right types) then. It would then invoke the function and send back the result to the callee:
 
 ```java
-for {
-  t,_ := mySpace.Get(&callID, "func", &f)
-  callID = (t.GetFieldAt(0)).(string)
-  f = (t.GetFieldAt(2)).(string)
-  switch f {
-  case "foo":
-    t,_ := mySpace.Get(callID, "args", &x, &y, &z)
-    result := foo((t.GetFieldAt(2)).(int), (t.GetFieldAt(3)).(int), (t.GetFieldAt(4)).(int))
-    mySpace.Put(callID, "result", result)
-  case "bar":
-    t,_ := mySpace.Get(callID, "args", &a, &b)
-    result := bar((t.GetFieldAt(2)).(string), (t.GetFieldAt(3)).(string))
-    mySpace.Put(callID, "result", result)
-  default:
-    // ignore RPC for unknown functions
-    continue
-  }
+Object[] request;
+Object[] arguments;
+String callID;
+String f;
+			
+// Keep serving requests to enter chatrooms
+while (true) {
+    request = rpc.get(new FormalField(String.class), new ActualField("func"), new FormalField(String.class));
+    callID = (String) request[0];
+	f = (String) request[2];
+    switch (f) {
+    case "foo":
+        arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+	    rpc.put(callID, "result", foo((Integer) arguments[2], (Integer) arguments[3], (Integer) arguments[4]));
+	case "bar":
+		arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(String.class), new FormalField(String.class));
+		rpc.put(callID, "result", bar((String)arguments[2], (String)arguments[3]));
+	default:
+	// ignore RPC for unknown functions
+	continue;
 }
 ```
 
-Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticatd, e.g. by handling the RPCs asynchronously or dealing with calls to unknown functions differently.
+Note that a mechanism is needed to uniquely identify the RPCs. In the above example we are using the first field of the tuples as identifier for the RPCs but one could also use private spaces as seen above. The server in the above example can of course be made more sophisticated, e.g. by handling the RPCs asynchronously and in parallel.
 
 ## Summary
  
-We have seen the following operations to access remote spaces:
-- `RemoteSpace`: constructor to create a local reference to a remote space specified by an URI.
+We have seen the following operations to support distributed tuple spaces:
 - `Repository`: a collector of spaces.
 - `addSpace`: operation to add a space to a space repository.
 - `addGate`: operation to open a gate (external access) to a space repository.
+- `RemoteSpace`: constructor to create a local reference to a remote space specified by an URI.
 
 We have seen the following coordination patterns:
 - Private space creation.
+- Asynchronous/parallel request serving; 
 - Remote procedure calls.
 
 Complete examples for this chapter can be found here:
