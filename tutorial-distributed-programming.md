@@ -1,18 +1,18 @@
 # 3. Distributed Programming with Tuple Spaces
 
-This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications.
+This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications. As a running example we consider chat application that Alice and her roommates can use exchange messages.
 
 ## 3.1 Space repositories
 Space repositories are used organise and control how spaces are exposed to external applications. Each space in a repository must be univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms in the same repository:
 
 ```java
 SpaceRepository chatRepository = new SpaceRepository();
-chatRepository.Add("room123",New SequentialSpace());
-chatRepository.Add("room456",New SequentialSpace());
+chatRepository.Add("room1",New SequentialSpace());
+chatRepository.Add("room2",New SequentialSpace());
 ```
 
 ## 3.2 Gates
-One of the purposes of using space repositories is to ease the exposure of spaces that need to have the same kind of external access. Each way to access all spaces within a repository is called a *gate*. A gate can be thought of as a communication port and it is identified by an URI of the form:
+Space repositories ease the exposure of spaces that need to have the same kind of external access. This is done through *gates*. A gate can be thought of as a communication port and it is identified by an URI of the form:
 
 ```
 <protocol>://<address>:<id>/?<par1>&...&<parn>
@@ -25,32 +25,22 @@ Currently, most pSpace implementations provide support for `tcp` only but some i
 Following on our example, the server of chat rooms can open a gate for Alice and her friends with
 
 ```java
-chatRepository.AddGate("tcp://localhost:31415/?keep");
-```
-
-Then Alice and her friends con connect to it with
-
-```java
-RemoteSpace chat = new RemoteSpace("tcp://chathost:31415/room123?keep")
+chatRepository.addGate("tcp://localhost:31415/?keep");
 ```
 
 ## 3.3 Accesing a remote space
 
-A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `NewRemoteSpace` constructor.
+A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `RemoteSpace` constructor. In our example Alice and her friends con connect to the chatoom `room1` it with
 
-In our example, Alice and her friends can implement clients that connect to the server running in `chathost` in Go with:
-
-```go
-chat := NewRemoteSpace("tcp://chathost:3115/room123")
+```java
+RemoteSpace chat = new RemoteSpace("tcp://chathost:31415/room1?keep")
 ```
 
 after which the space `chat` can be treated as an ordinary tuple space. For example, messages can be sent with 
 
 ```go
-chat.Put("Alice","Hi!")
+chat.put("Alice","Hi!")
 ```
-
-Remote spaces are accessed similarly in libraries supporting repositories and gates.
 
 ## 3.4 What can be send around?
 
@@ -64,7 +54,7 @@ Some examples of common restrictions are:
 * datatypes should be known on both sides.
 * references and pointers cannot be sent, typically the pointed/reference data will be send.
 
-## 3.5 A simple message board
+## 3.5 A simple chat server
 
 Suppose that Alice and her friends want to create a simple chat server to communicate with each other. The server will just host a tuple space for all messages to be collected and it will take care of displaying the messages on a shared screen. The server can create such a space in Go with
 
@@ -75,13 +65,9 @@ chat := NewSpace("tcp://localhost:31415/room123")
 Once created, the server can keep retrieving and printing messages with
 
 ```go
-var who string
-var message string
-for {
-  t, _ := chat.Get(&who, &message)
-  who = (t.GetFieldAt(0)).(string)
-  message = (t.GetFieldAt(1)).(string)
-  fmt.Printf("%s: %s \n", who, message)
+while (true) {
+    Object[] message = chat.get(new FormalField(String.class), new FormalField(String.class));
+		System.out.println(message[0] + ":" + message[1]);
 }
 ```
 
