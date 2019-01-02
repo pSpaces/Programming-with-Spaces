@@ -6,7 +6,7 @@ This chapter provides a gentle introduction to concurrent programming using spac
 
 All programing languages with pSpace libraries provide support for concurrent programming based on some sort of concurrent activities.
 
-Go provides lightweight threads called goroutines that can be used to spawn parallel activities. Suppose that `f` is an ordinary Go function. A parallel activity `f(x,y)` can be spawned with 
+Go provides lightweight threads called goroutines that can be used to spawn parallel activities. Suppose that `f` is an ordinary Go function. A parallel activity `f(x,y)` can be spawned with
 
 ```go
 go f(x,y)
@@ -16,7 +16,7 @@ Concurrency is a bit more cumbersome in thread-based languages like Java. For in
 ```java
 public class F implements Runnable {
 	public F(int x, int y) {...}
-   
+
 	public void run() { // do what f(x,y) is supposed to do }
 }
 ```
@@ -27,7 +27,7 @@ to implement the runnable thread and then invoke it with
 (new Thread(new F(x,y)).start();
 ```
 
-The creation of a Thread in C# is similar: 
+The creation of a Thread in C# is similar:
 
 ```c#
 (new System.Threading.Thread(new System.Threading.ThreadStart(F(x,y)))).Start();
@@ -144,7 +144,31 @@ if (t != null) {
 
 A unique advantage of introducing the `query` operation it eases performant implementations of concurrent queries.
 
-## 2.5 Another coordination pattern: global locks 
+## 2.5 Summary of space operations
+
+At this point we have seen the main operations to interact with a space:
+- `put(t)` adds a tuple `t` to a space.
+- `get(T)` blocks until a tuple is found in the space which matches the template `T`. It then returns the matched tuple and removes it from the space.
+- `getp(T)` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `getAll(T)` is a non-blocking operation that returns all tuples matching the template `T` and removes them from the space.
+- `query(T)` is the non-destructive version of `get`. The operation blocks until a tuple is found in the space which matches the template `T`. It then returns the matched `tuple` and removes it from the space.
+- `queryp(T)` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
+- `queryAll(T)` is the non-destructive version of `getAll`.
+
+All the above operations may fail (e.g. due to communication errors or denied access) and may return a value stating indicating success or failure.
+
+## 2.6 Space classes and retrieval order
+
+The above description of the operations intentionally underspecifies the behaviour of simple retrieval operations (`get`, `getp`, `query` and `queryp`). The following classes of spaces implement a concrete retrieval strategy:
+- `SequentialSpace`: retrieval operations return the oldest matching tuple.
+- `QueueSpace`: retrieval operations return the oldest tuple, if it matches the specified template.
+- `StackSpace`: retrieval operations must return the newest tuple, if it matches the specified template.
+- `PileSpace`: retrieval operations must return the newest matching tuple.
+- `RandomSpace`: retrival operations return any matching tuple, chosen according to a random choice with uniform distribution (equally likelihood of getting any tuple).
+
+Such strategies are implemented in jSpace and other pSpace libraries.
+
+## 2.7 Another coordination pattern: global locks
 Standard synchronisation mechanisms can be implemented using tuple spaces. Global locks can be used to grant exclusive access to the tuple space and to provide atomicity of complex operations on the tuple space. A lock on a tuple space `s` can be easily implemented as follows.
 
 First, the lock is represented by a tuple ```("lock")``` that is initally placed in the tuple space `s` with
@@ -177,7 +201,7 @@ fridge.put("butter",butter[1]+1)
 fridge.put("lock")
 ```
 
-## 2.6 Another coordination pattern: multiple-readers/single-writer locks 
+## 2.8 Another coordination pattern: multiple-readers/single-writer locks
 
 Simple locks limit concurrency and may impact the performance of the tuple space. *Multiple-readers/single-writer* locks mitigate this by allowing for multiple readers to work concurrently on the tuple space, while requiring exclusive access on writers. With this coordination pattern we ensure that either none, at most one writer (and no readers), or multiple readers (but no writer) are accessing the tuple space. This coordination pattern can be implemented using a standard solution based on a counter for the number of readers (represented as a tuple `("readers",n)` and two locks: `lock` (a global lock) and `reader_lock` (to lock the counter).
 
@@ -212,14 +236,14 @@ s.Put("reader_lock")
 s.Get("reader_lock")
 readers = s.get(new ActualField("readers"),new FormalField(Integer.class));
 s.Put("readers",readers[1]-1)
-if readers[1] == 1 { 
+if readers[1] == 1 {
   // If I am the last one, realease the global lock
   s.put("lock")
 }
 s.put("reader_lock")
 ```
 
-## 2.7 Another coordination pattern: barriers
+## 2.9 Another coordination pattern: barriers
 Another example is a one-time barrier for N processes, which can be implemented using a tuple counting the number of processes that still need to reach the barrier. The barrier can be intialised with
 
 ```java
@@ -236,10 +260,12 @@ s.query(new ActualField("barrier"), new ActualField(0));
 ```
 
 ## Summary
- 
+
 We have seen the following operations on spaces:
 - `query`: blocks until a tuple is found which matches a given template. It then returns the matched tuple.
 - `get`: like `query` but also removes the found tuple.
+
+We have seen a set of space classes, each implementing a different retrieval strategy (Sequential, Queue, Stack, Pile, Random).
 
 We have seen the following coordination patterns:
 - Producer/consumer: use a tuples space as a bag of tasks. Producers put tuples representing tasks; consumers get tuples representing tasks.
