@@ -2,7 +2,7 @@
 
 This chapter is a gentle introduction to programming with spaces. The chapter will focus on a particular kind of space, namely a tuple space, and will focus on sequential programming using a tuple space as an ordinary collection data structure (such as lists, sets, stacks and so on). The chapter is illustrated with a scenario where a couple of roommates (Alice, Bob, Charlie,) use a tuple space `fridge` to coordinate their activities.
 
-The tutorial is mainly based on the `Java` and `Go` libraries, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here. 
+The tutorial is mainly based on the `Java` and `Go` libraries, but we also use examples in other languages. The [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) summarises the main features of the libraries and can be used as a quick reference to adapt the examples we present here.
 
 ## 1.1 Tuples are finite lists
 A tuple is a finite list of elements that can be used to represent a data item or a message. Tuples can represent coordinates in a map
@@ -102,11 +102,11 @@ fridge := NewSpace("fridge")
 
 The `fridge` space is now ready contain tuple spaces of arbitrary types.
 
-Tuple spaces are collection data structures and, as such, they provide operations to inspect and manipulate them. All implementations of spaces support operations to put (i.e. add) tuples, get (i.e. remove), and query (i.e. search) tuples in a space. The [core API](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md#core-space-api) describes such operations. This tutorial introduces them one by one. 
+Tuple spaces are collection data structures and, as such, they provide operations to inspect and manipulate them. All implementations of spaces support operations to put (i.e. add) tuples, get (i.e. remove), and query (i.e. search) tuples in a space. The [core API](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md#core-space-api) describes such operations. This tutorial introduces them one by one.
 
 ## 1.5 Adding tuples with `Put`
 
-The operation to add tuples is named ```Put```. More precisely the operation 
+The operation to add tuples is named ```Put```. More precisely the operation
 
 ```java
 space.put(tuple)
@@ -143,7 +143,7 @@ The operation to remove tuples is named ```getp``` and has a similar behavour as
 space.getp(tuple)
 ```
 
-looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space. 
+looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space.
 
 We can use for example
 
@@ -151,7 +151,7 @@ We can use for example
 obj := fridge.getp("clean kitchen")
 ```
 
-if we are willing to remove the note that says that we need to clean the kitchen. 
+if we are willing to remove the note that says that we need to clean the kitchen.
 
 ## 1.8 Tuples are content-addressable with pattern matching
 
@@ -196,7 +196,7 @@ Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class(
 
 as we did in the first example of this section.
 
-## 1.9 Updating tuples 
+## 1.9 Updating tuples
 
 Note that contrary to some collection datatypes in mainstream languages, the operation `put` adds a fresh copy of the tuple. Once the tuple is in the space, its contents cannot be modified. This means that if the tuple contains values of complex data types with references or pointers, those are deeply copied. The only way to modify a tuple of a space is to remove it from the space and re-insert it
 
@@ -208,8 +208,8 @@ if (tuple =! nil) {
     fridge.put("milk",tuple.getElementAt(1)+1)
 }
 ```
- 
-## 1.10 Tuple retrieval is non-deterministic 
+
+## 1.10 Tuple retrieval is non-deterministic
 
 What should happen when we try to retrieve a tuple with a pattern `T` and there is actually more than one tuple matching the pattern? The specification of the interface for spaces is that any tuple may be retrieved. It is up to the concrete space datatype or class implementing the space interface to specify the concrete (deterministic or even randomised) behaviour.
 
@@ -228,11 +228,11 @@ Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.cl
 
 Which of the two tuples `("milk",2)` and `("butter",3)` Alice will retrieve actually depends on the implementation of the tuple space. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. In our example the `fridge` tuple space is of type `Sequential`, which behaves similarly to a FIFO queue so that the oldest matching tuple will be retrieved.
 
-A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the next chapters of the tutorial. 
+A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the [next chapter](https://github.com/pSpaces/Programming-with-Spaces/blob/master/tutorial-concurrent-programming.md#26-space-classes-and-retrieval-order) of the tutorial. 
 
 ## 1.11 Retrieving all matching tuples
 
-Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `queryAll` returns all tuples matching a template and `getAll` behaves similarly but removes the matched tuples. 
+Tuple spaces also support operations to find or remove all tuples matching some template. In particular, `queryAll` returns all tuples matching a template and `getAll` behaves similarly but removes the matched tuples.
 
 The following example shows how the grocery list can be retrieved from the `fridge` tuple space and printed afterwards:
 
@@ -249,12 +249,12 @@ for (Object[] grocery : groceryList) {
 We have seen the following data types
 - Tuples: finite lists of values.
 - Spaces: collections of tuples.
- 
+
 We have seen the following operations on spaces:
 - `put`: adds a tuple to a space.
 - `queryp`: searches for a tuple atching a template. It then returns the matched tuple (if any).
 - `getp`: like `queryp` but also removes the found tuple (if any).
-- `queryAll`: returns all tuples matching a template. 
+- `queryAll`: returns all tuples matching a template.
 - `getAll`: returns all tuples matching a template and removes them from the space.
 
 Complete examples for this chapter can be found here:
