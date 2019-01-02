@@ -2,7 +2,7 @@ This page provides the formal operational semantics for a light version of the p
 
 ## Syntax
 
-A pSpace concurrent program `S` is a pair `M |- P`, where `M` is a memory (i.e. a map of variables into values) and `P` is a multiset of concurrent processes. More precisely, the syntax for pSpace programs is 
+A pSpace concurrent program `S` is a pair `M |- P`, where `M` is a memory (i.e. a map of variables into values) and `P` is a multiset of concurrent processes. More precisely, the syntax for pSpace programs is
 
 ```
 S := M |- P
@@ -15,13 +15,14 @@ M := nil | x |-> u | M , M
 ```
 
 We use the usual notational conventions:
+* Memory `M[x|->u]` is like `M` after updating the value associated to `x` by `u` or adding `x |-> u` if `M[x]` is not defined;
 * `M[x]` is the value associated to `x`, if any;
-* Memory `M[x|->u]` is like `M` after updating the value associated to `x` by `u` or adding `x |-> u` if `M[x]` is not defined.
+* `M[e]` is the evaluation of `e` in `M` (evaluates all the variables in `e` and evaluates the expression).
 
 Tuple spaces reside in memory just as other values. A tuple space value is denoted by `TS` with the following syntax:
 
 ```
-TS ::= nil | t | TS * TS 
+TS ::= nil | t | TS * TS
 ```
 
 Concurrent processes are composed with the parallel composition operator `‖`. Such operator is associative, commutative and has the empty set `0` as identity:  
@@ -30,7 +31,7 @@ Concurrent processes are composed with the parallel composition operator `‖`. 
 P ::= 0 | P‖P | A;P | ...
 ```
 
-For simplicity, we usually drop the final `;0` from programs. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`. 
+For simplicity, we usually drop the final `;0` from programs. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions `A`.
 
 The actions of a process include creation of new processes, creation of new tuple spaces and assignments using tuple space operations.
 
@@ -44,8 +45,8 @@ A ::= new P
 Operations `O` correspond to the core API of pSpaces:
 
 ```
-O ::= put(t) 
-  | query(T) 
+O ::= put(t)
+  | query(T)
   | queryP(T)
   | queryAll(T)
   | get(T)
@@ -56,7 +57,7 @@ O ::= put(t)
 Tuples are denoted by non-empty lists of expressions `e`
 
 ```
-t ::= e | e,t 
+t ::= e | e,t
 ```
 
 Templates are denoted as non-empty lists of expressions `e` or types `τ`
@@ -85,7 +86,7 @@ and, very often of the shape:
 
 explaining how a program `A` can perform a computation step and evolve into `B` if the premises hold.
 
-The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...). 
+The inference rules provided below can be applied up-to the axioms of the symbols used (e.g. associativity of list concatenation `,` , associativity and commutativity of parallel process composition `‖`, ...).
 
 ## Operational semantics for actions
 
@@ -101,7 +102,7 @@ Creating a new local space is formalised by the following rule:
 ```
 ===================================================================
  M |- space := new Space() ; P1 ‖ P2 =>
- M[space |-> nil] |- P1 ‖ P2 
+ M[space |-> nil] |- P1 ‖ P2
 ```
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists).
@@ -109,14 +110,14 @@ The rule says that new spaces are created with an empty tuple list. The effect o
 The following rules describes the behaviour of executing an operation on a local space.
 
 ```
- TS1.O => TS2,t,e
+ M |- TS1.O => TS2,t,e
 ===================================================================
  (M , space |-> TS1) |- , x,y := space.O ; P1 ‖ P2 =>
  (M , space |-> TS2)[x|->t][y|->e] |- P1 ‖ P2
 ```
 
 ```
- TS1.O => TS2,t,e
+ M |- TS1.O => TS2,t,e
 ===================================================================
  (M , space |-> TS1) |- space.O ; P1 ‖ P2 =>
  (M , space |-> TS2) |- P1 ‖ P2
@@ -127,59 +128,76 @@ Note that the premise of the above rule requires a reaction of the space to the 
 
 ## Operational semantics of the core API
 
+For the operational semantics we need to formalise the notion of pattern matching. We do so with a boolean predicate `matches(t,T,M)` that denotes whether a tuple `t` matches the template `T` under the memory `M`. The predicate is formalised as follows:
+
+```
+matches(e,e',M) = (M[e] == M[e'])
+
+matches(e,τ,M) = type(e) == τ
+
+matches((e,t),(e',T),M) = true if matches(e,e',M) and matches(t,T,M)
+matches((e,t),(e',T),M) = false, otherwise
+
+matches((e,t),(τ,T),M) = true if matches(e,e',M) and matches(t,T,M)
+matches((e,t),(τ,T),M) = false, otherwise
+
+matches(t,T,M) = false, otherwise
+```
+
+In words, the tuple and the template must have the same length and must match field-wise.
+When the template field is an actual field, the fields match when they have the same value. When the template field is a formal field (a type), the fields match when the type of the expression in the field of the tuple coincides with the type in the template field. We assume that the type of an expression `e` can be inferred with a function `type(e)`. Note that the last equation takes care of those cases where the length of the tuple and the template do not coincide.
+
 Recall that tuple lists `TS` are to be understood up to associativity of `*`, and identity of `nil`. Note that the result of an operation may alter the tuple structure `TS`, and that they produce a tuple and an error code (either `ok` or `ko`)
 
 The behaviour of operation `put` is described by the following rule:
 
 ```
- TS.put(t) => (t*TS),t,ok
-``` 
+ M |- TS.put(t) => (M[t]*TS),M[t],ok
+```
 
-The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `t`.
+The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `M[t]`.
 
 The behaviour of `query` is governed by the following rule:
- 
+
 ```
- t matches T and no tuple in TS' matches T
+ matches(t,T,M) and for all t' in TS' not matches(t',T,M)
 ===================================================================
- TS*t*TS'.query(T) => TS*t*TS',t,ok
+ M |- TS*t*TS'.query(T) => TS*t*TS',t,ok
  ```
 
-The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. 
+The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly.
 
 ```
- t matches T and no tuple in TS' matches T
+ matches(t,T,M) and for all t' in TS' not matches(t',T,M)
 ===================================================================
- TS*t*TS'.queryP(T) => TS*t*TS',t,ok
-	
- no tuple in TS matches T
+ M |- TS*t*TS'.queryP(T) => TS*t*TS',t,ok
+
+ for all t in TS' not matches(t,T,M)
 ===================================================================
- TS.queryP(T) => TS,null,ko
+ M |- TS.queryP(T) => TS,null,ko
 ```
 
 The rest of the operations are defined similarly:
 
 ```
- t matches T and no tuple in TS' matches T
+ matches(t,T,M) and for all t' in TS' not matches(t',T,M)
 ===================================================================
- TS*t*TS'.get(T) => TS*TS',t,ok
+ M |- TS*t*TS'.get(T) => TS*TS',t,ok
 
- t matches T and no tuple in TS' matches T
+ matches(t,T,M) and for all t' in TS' not matches(t',T,M)
 ===================================================================
- TS*t*TS'.getP(T) => TS*TS',t,ok
-	
- no tuple in TS matches T
+ M |- TS*t*TS'.getP(T) => TS*TS',t,ok
+
+ for all t in TS not matches(t,T,M)
 ===================================================================
- TS.getP(T) => TS,null,ko
- 
- TS' = {t in TS such that t matches T}
+ M |- TS.getP(T) => TS,null,ko
+
+ TS' = {t in TS such that matches(t,T,M)}
 ===================================================================
- TS.queryAll(T) => TS,TS',ok
- 
- TS' = {t in TS such that t matches T}
+ M |- TS.queryAll(T) => TS,TS',ok
+
+ TS' = {t in TS such that matches(t,T,M)}
 ===================================================================
- TS.getAll(T) => TS\TS',TS',ok
- 
+ M |- TS.getAll(T) => TS\TS',TS',ok
+
 ```
-
-
