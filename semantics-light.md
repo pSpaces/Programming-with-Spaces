@@ -107,41 +107,42 @@ Creating a new local space is formalised by the following rule:
 
 The rule says that new spaces are created with an empty tuple list. The effect of the assignment is to create a new variable `space` (or overwrite `space` if it already exists).
 
-The following rules describes the behaviour of executing an operation on a local space.
+The following rules describes the behaviour of executing an operation `O` on a local space.
 
 ```
- M |- TS1.O => TS2,t,e
+ TS1.M[O] => TS2,t,e
 ===================================================================
  (M , space |-> TS1) |- , x,y := space.O ; P1 ‖ P2 =>
  (M , space |-> TS2)[x|->t][y|->e] |- P1 ‖ P2
 ```
 
 ```
- M |- TS1.O => TS2,t,e
+ TS1.M[O] => TS2,t,e
 ===================================================================
  (M , space |-> TS1) |- space.O ; P1 ‖ P2 =>
  (M , space |-> TS2) |- P1 ‖ P2
 ```
 
-Note that the premise of the above rule requires a reaction of the space to the operation. The tuple space may not react and thus may block the process (by not allowing to fire the rule). The reactions of tuple spaces are described as operational rules below. The effect of the assignment on variables `x` and `y` is the usual one (i.e. update/overwrite the variables).
-
+Note that the premise of the above rule requires a reaction of the space to the operation. The tuple space may not react and thus may block the process (by not allowing to fire the rule). The reactions of tuple spaces are described as operational rules below. The effect of the assignment on variables `x` and `y` is the usual one (i.e. update/overwrite the variables). Note also that we evaluate the operation (i.e. any expression occurring in the operation is evaluated into a value).
 
 ## Operational semantics of the core API
 
-For the operational semantics we need to formalise the notion of pattern matching. We do so with a boolean predicate `matches(t,T,M)` that denotes whether a tuple `t` matches the template `T` under the memory `M`. The predicate is formalised as follows:
+For the operational semantics we need to formalise the notion of pattern matching. We do so with a boolean predicate `matches(t,T)` that denotes whether an evaluated tuple `t` matches the evaluated template `T` under the memory `M`. An evaluated tuple `t` is a tuple where all expressions have been evaluated, i.e. `t = M[t]`. An evaluated templated is defined similarly: all fields are either values or types.
+
+The predicate is formalised as follows:
 
 ```
-matches(e,e',M) = (M[e] == M[e'])
+matches(v,v') = (v == v')
 
-matches(e,τ,M) = type(e) == τ
+matches(v,τ) = type(v) == τ
 
-matches((e,t),(e',T),M) = true if matches(e,e',M) and matches(t,T,M)
-matches((e,t),(e',T),M) = false, otherwise
+matches((v,t),(v',T)) = true if matches(v,v') and matches(t,T)
+matches((v,t),(v',T)) = false, otherwise
 
-matches((e,t),(τ,T),M) = true if matches(e,e',M) and matches(t,T,M)
-matches((e,t),(τ,T),M) = false, otherwise
+matches((v,t),(v',T)) = true if matches(v,v') and matches(t,T)
+matches((v,t),(τ,T)) = false, otherwise
 
-matches(t,T,M) = false, otherwise
+matches(t,T) = false, otherwise
 ```
 
 In words, the tuple and the template must have the same length and must match field-wise.
@@ -152,52 +153,51 @@ Recall that tuple lists `TS` are to be understood up to associativity of `*`, an
 The behaviour of operation `put` is described by the following rule:
 
 ```
- M |- TS.put(t) => (M[t]*TS),M[t],ok
+ M |- TS.put(t) => (t*TS),t,ok
 ```
 
-The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `M[t]`.
+The rule essentially says that the `put` operation updates the list of the tuple space with the new tuple `t`.
 
 The behaviour of `query` is governed by the following rule:
 
 ```
  matches(t,T,M) and for all t' in TS' not matches(t',T,M)
 ===================================================================
- M |- TS*t*TS'.query(T) => TS*t*TS',t,ok
+ TS*t*TS'.query(T) => TS*t*TS',t,ok
  ```
 
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly.
 
 ```
- matches(t,T,M) and for all t' in TS' not matches(t',T,M)
+ matches(t,T) and for all t' in TS' not matches(t',T)
 ===================================================================
- M |- TS*t*TS'.queryP(T) => TS*t*TS',t,ok
+ TS*t*TS'.queryP(T) => TS*t*TS',t,ok
 
- for all t in TS' not matches(t,T,M)
+ for all t in TS' not matches(t,T)
 ===================================================================
- M |- TS.queryP(T) => TS,null,ko
+ TS.queryP(T) => TS,null,ko
 ```
 
 The rest of the operations are defined similarly:
 
 ```
- matches(t,T,M) and for all t' in TS' not matches(t',T,M)
+ matches(t,T) and for all t' in TS' not matches(t',T)
 ===================================================================
- M |- TS*t*TS'.get(T) => TS*TS',t,ok
+ TS*t*TS'.get(T) => TS*TS',t,ok
 
- matches(t,T,M) and for all t' in TS' not matches(t',T,M)
+ matches(t,T) and for all t' in TS' not matches(t',T)
 ===================================================================
- M |- TS*t*TS'.getP(T) => TS*TS',t,ok
+ TS*t*TS'.getP(T) => TS*TS',t,ok
 
- for all t in TS not matches(t,T,M)
+ for all t in TS not matches(t,T)
 ===================================================================
- M |- TS.getP(T) => TS,null,ko
+ TS.getP(T) => TS,null,ko
 
- TS' = {t in TS such that matches(t,T,M)}
+ TS' = {t in TS such that matches(t,T)}
 ===================================================================
- M |- TS.queryAll(T) => TS,TS',ok
+ TS.queryAll(T) => TS,TS',ok
 
- TS' = {t in TS such that matches(t,T,M)}
+ TS' = {t in TS such that matches(t,T)}
 ===================================================================
- M |- TS.getAll(T) => TS\TS',TS',ok
-
+ TS.getAll(T) => TS\TS',TS',ok
 ```

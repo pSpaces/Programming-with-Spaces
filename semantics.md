@@ -10,7 +10,7 @@ S ::= 0 | S‖S | App(host,M,P)
 
 Memory `M` is represented as a mapping of variables into values. Among those values we remark spaces and repositories. A local space space `Space(kind,bound,TS)` includes a class of space `kind` (one of `Sequential`, `Queue`, `Stack`, `Pile` and `Random` and `NonDet`), a `bound` on their size (a positive natural number or ∞) and a tuple structure `TS`. A remote space `RemoteSpace(gate/spaceId)` is defined by a `gate` and a space identifier `spaceId`. A repository `Repository(ss,gg)` is defined by a mapping `ss` of space identifiers into actual space variables and a set `gg` of gates.
 
-Concurrent processes are composed with `‖` too. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions. 
+Concurrent processes are composed with `‖` too. We do not specify control flow constructs and other language ingredients and focus instead on tuple space actions.
 
 ```
 P ::= 0 | C‖C | A;P | ...
@@ -33,8 +33,8 @@ A ::= new P
 Operations `O` correspond to the core API
 
 ```
-O ::= put(t) 
-  | query(T) 
+O ::= put(t)
+  | query(T)
   | queryP(T)
   | queryAll(T)
   | get(T)
@@ -45,13 +45,13 @@ O ::= put(t)
 A tuple structure `TS` is basically a list of all tuples, composed with the associative operation `*` (with `nil` being the identity operation)
 
 ```
-TS ::= nil | t | TS * TS 
+TS ::= nil | t | TS * TS
 ```
 
 Tuples are denoted by non-empty lists of expressions `e`
 
 ```
-t ::= e | e,t 
+t ::= e | e,t
 ```
 
 Templates are denoted as non-empty lists of expressions `e` or types `τ`
@@ -62,7 +62,7 @@ T ::= e | τ | e,T | τ,T
 
 # Operational semantics
 
-The operational semantics is defined by the below set of inference rules. The inference rules provided below can be applied under any context (i.e. under any sub-term) up-to the axioms of the symbols used (e.g. associativity of `*`). 
+The operational semantics is defined by the below set of inference rules. The inference rules provided below can be applied under any context (i.e. under any sub-term) up-to the axioms of the symbols used (e.g. associativity of `*`).
 
 ## Operational semantics for actions
 
@@ -77,7 +77,7 @@ Creating a new local space
 The following rule describes the behaviour of executing an operation on a local space. Note that the premise of the rule requires a reaction of the space to the operation. Such reactions are described as operational rules below. Note that a space may not react (and thus block the process).  
 
 ```
- S1.O => S2,t,e
+ S1.M[O] => S2,t,e
 ===================================================================
  App(host, (M , space |-> S1), x,y := space.O ; P1 ‖ P2) =>
  App(host, (M , space |-> S2)[x|->t][y|->e] , P1 ‖ P2)
@@ -86,13 +86,15 @@ The following rule describes the behaviour of executing an operation on a local 
 The following rule describes the behaviour of executing an operation on a remote space.
 
 ```
-   host(gate) = host2        M2[ss[spaceId]].O -> S,t,e
+   host(gate) = host2        M2[ss[spaceId]].M1[O] -> S,t,e
 ===================================================================
    App(host1, (M1 , space |-> RemoteSpace(gate/spaceId)), x,y := space.O ; P1 ‖ P2 )
  ‖ App(host2, (M2, rep |-> Repository(ss,(gate,gg)) , P3)  =>
    App(host1, (M1 , space |-> RemoteSpace(gate/spaceId))[x|->t][y|->e], P1 ‖ P2 )
- ‖ App(host2, (M2, rep |-> Repository(ss,(gate,gg)) , P3) 
+ ‖ App(host2, (M2, rep |-> Repository(ss,(gate,gg)) , P3)
 ```
+
+Note that any expression in the operation is first evaluated with memory `M1`. 
 
 Connecting to a remote space is formalised by  
 
@@ -102,10 +104,10 @@ Connecting to a remote space is formalised by
    App(host1, M, space := new RemoteSpace(gate/spaceId); )
  ‖ App(host2, (M2, rep |-> Repository(ss),(gate,gg)) , P3)  =>
    App(host1, M[space|->RemoteSpace(gate/spaceId) P1 ‖ P2)
- ‖ App(host2, (M2, rep |-> Repository(ss),(gate,gg)) , P3) 
+ ‖ App(host2, (M2, rep |-> Repository(ss),(gate,gg)) , P3)
 ```
 
-Creating a space repository is formalised by 
+Creating a space repository is formalised by
 
 ```
 ===================================================================
@@ -146,6 +148,27 @@ Spawning a process just creates a new concurrent activity:
 
 ## Operational semantics of the core API
 
+For the operational semantics we need to formalise the notion of pattern matching. We do so with a boolean predicate `matches(t,T)` that denotes whether an evaluated tuple `t` matches the evaluated template `T` under the memory `M`. An evaluated tuple `t` is a tuple where all expressions have been evaluated, i.e. `t = M[t]`. An evaluated templated is defined similarly: all fields are either values or types.
+
+The predicate is formalised as follows:
+
+```
+matches(v,v') = (v == v')
+
+matches(v,τ) = type(v) == τ
+
+matches((v,t),(v',T)) = true if matches(v,v') and matches(t,T)
+matches((v,t),(v',T)) = false, otherwise
+
+matches((v,t),(v',T)) = true if matches(v,v') and matches(t,T)
+matches((v,t),(τ,T)) = false, otherwise
+
+matches(t,T) = false, otherwise
+```
+
+In words, the tuple and the template must have the same length and must match field-wise.
+When the template field is an actual field, the fields match when they have the same value. When the template field is a formal field (a type), the fields match when the type of the expression in the field of the tuple coincides with the type in the template field. We assume that the type of an expression `e` can be inferred with a function `type(e)`. Note that the last equation takes care of those cases where the length of the tuple and the template do not coincide.
+
 In the following rules tuple structures TS are to be understood up to associativity of `*`, and identity of `nil` (i.e. as a list). Note that the result of an operation may alter the tuple structure, and produce a tuple and an error code (either `ok` or `ko`)
 
 The behaviour of `put` is common to all spaces
@@ -154,32 +177,32 @@ The behaviour of `put` is common to all spaces
  |TS| <= b
 ===================================================================
  Space(k,b,TS).put(t) => Space(k,b,t*TS),t,ok
-``` 
+```
 
 The behaviour of `query` depends on the class of space:
- 
-```
- t matches T and no tuple in TS' matches T
-===================================================================
-Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
 
- t matches T 
+```
+ matches(t,T) and for all t' in TS' not matches(t',T)
+===================================================================
+ Space(Sequential,b,TS*t*TS').query(T) => Space(Sequential,b,TS*t*TS'),t,ok
+
+ matches(t,T)
 ===================================================================
  Space(Queue,b,TS*t).query(T) => Space(Queue,b,TS*t),t,ok
-	if 
- t matches T 
+	if
+ matches(t,T)
 ===================================================================
  Space(Stack,b,t*TS).query(T) => Space(Stack,b,t*TS),t,ok
 
- t matches T and no tuple in TS matches T
+ matches(t,T) and for all t' in TS not matches(t',T)
 ===================================================================
  Space(Pile,b,TS*t*TS').query(T) => Space(Pile,b,TS*t*TS'),t,ko
 
- t is chosen randomly in { t in TS such that t matches T}
+ t is chosen randomly in { t in TS such that matches(t,T)}
 ===================================================================
-Space(Random,b,TS).query(T) => Space(Random,b,TS),t,ok
-	
- t matches T
+ Space(Random,b,TS).query(T) => Space(Random,b,TS),t,ok
+
+ matches(t,T)
 ===================================================================
  Space(NonDet,b,TS*t*TS').query(T) => Space(NonDet,b,TS*t*TS'),t,ok
 ```
@@ -187,11 +210,11 @@ Space(Random,b,TS).query(T) => Space(Random,b,TS),t,ok
 The behaviour of `queryP` is similar but ensures progress and returns error codes accordingly. We just provide the rules for sequential spaces, the rest of the rules are defined similarly.
 
 ```
- t matches T and no tuple in TS' matches T
+ matches(t,T) and for all t' in TS' not matches(t',T)
 ===================================================================
  Space(Sequential,b,TS*t*TS').queryP(T) => Space(Sequential,b,TS*t*TS'),t,ok
-	
- no tuple in TS matches T
+
+ for all t' in TS not matches(t',T)
 ===================================================================
  Space(Sequential,b,TS).queryP(T) => Space(Sequential,b,TS),null,ko
 ```
