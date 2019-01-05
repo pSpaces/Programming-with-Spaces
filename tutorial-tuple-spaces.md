@@ -106,7 +106,7 @@ Tuple spaces are collection data structures and, as such, they provide operation
 
 ## 1.5 Adding tuples with `put`
 
-The operation to add tuples is named ```Put```. More precisely the operation
+The operation to add tuples is named ```put```. More precisely the operation
 
 ```java
 space.put(tuple)
