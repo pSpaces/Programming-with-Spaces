@@ -104,7 +104,7 @@ The `fridge` space is now ready contain tuple spaces of arbitrary types.
 
 Tuple spaces are collection data structures and, as such, they provide operations to inspect and manipulate them. All implementations of spaces support operations to put (i.e. add) tuples, get (i.e. remove), and query (i.e. search) tuples in a space. The [core API](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md#core-space-api) describes such operations. This tutorial introduces them one by one.
 
-## 1.5 Adding tuples with `Put`
+## 1.5 Adding tuples with `put`
 
 The operation to add tuples is named ```Put```. More precisely the operation
 
@@ -114,7 +114,7 @@ space.put(tuple)
 
 adds the tuple ```tuple``` to the tuple space ```space```.
 
-## 1.6 Searching tuples with `QueryP`
+## 1.6 Searching tuples with `queryp`
 
 The operation to search for tuples tuples is called ```queryp```. In detail,
 
@@ -127,19 +127,19 @@ looks for a tuple like ```tuple``` in the tuple space ```space``` and returns th
 In Java, for example, we can write
 
 ```java
-Object obj = fridge.queryp(new ActualField("clean kitchen"));
-if (obj != null) {
+Object[] tuple = fridge.queryp(new ActualField("clean kitchen"));
+if (tuple != null) {
     System.out.println("We need to clean the kitchen");
 }
 ```
 
 to check whether there is a tuple saying that we need to clean the kitchen. In the example, the returned tuple (if any) is stored in `obj`. The absence of a tuple is represented with a null value.
 
-## 1.7 Removing tuples with `GetP`
+## 1.7 Removing tuples with `getp`
 
 The operation to remove tuples is named ```getp``` and has a similar behavour as `queryp`, namely
 
-```go
+```java
 space.getp(tuple)
 ```
 
@@ -147,8 +147,8 @@ looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the
 
 We can use for example
 
-```go
-obj := fridge.getp("clean kitchen")
+```java
+tuple = fridge.getp("clean kitchen")
 ```
 
 if we are willing to remove the note that says that we need to clean the kitchen.
@@ -160,9 +160,9 @@ The tuple retrieval operations we have presented are actually more powerful: we 
 In our example, pattern matching can be used to specify only the grocery item so to retrieve the current number of items for that item with
 
 ```java
-Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
-if (obj != null) {
-    int numberOfBottles = (int)obj[1];
+Object[] tuple = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
+if (tuple != null) {
+    int numberOfBottles = (int)tuple[1];
 }
 ```
 
@@ -223,12 +223,12 @@ As an example, consider the following situation. Assume that the current state o
 and that Alice wants to look for an item to buy with
 
 ```
-Object[] obj = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
+Object[] tuple = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
 ```
 
 Which of the two tuples `("milk",2)` and `("butter",3)` Alice will retrieve actually depends on the implementation of the tuple space. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. In our example the `fridge` tuple space is of type `Sequential`, which behaves similarly to a FIFO queue so that the oldest matching tuple will be retrieved.
 
-A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the [next chapter](https://github.com/pSpaces/Programming-with-Spaces/blob/master/tutorial-concurrent-programming.md#26-space-classes-and-retrieval-order) of the tutorial. 
+A list of the tuple space classes supported in each language can be found in the [naming table](https://github.com/pSpaces/Programming-with-Spaces/blob/master/naming.md) and a description of those classes can be found in the [guide for developers](https://github.com/pSpaces/Programming-with-Spaces/blob/master/guide.md). We will come back to in the [next chapter](https://github.com/pSpaces/Programming-with-Spaces/blob/master/tutorial-concurrent-programming.md#26-space-classes-and-retrieval-order) of the tutorial.
 
 ## 1.11 Retrieving all matching tuples
 
