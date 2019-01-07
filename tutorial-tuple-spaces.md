@@ -223,7 +223,7 @@ As an example, consider the following situation. Assume that the current state o
 and that Alice wants to look for an item to buy with
 
 ```
-Object[] tuple = fridge.queryp(new ActualField("milk"), new FormalField(Integer.class));
+Object[] tuple = fridge.queryp(new FormalField(String.class), new FormalField(Integer.class));
 ```
 
 Which of the two tuples `("milk",2)` and `("butter",3)` Alice will retrieve actually depends on the implementation of the tuple space. Most pSpaces implementations provide tuple spaces with different deterministic behaviours (FIFO-like, LIFO-like, etc.). There is also support for randomised behaviours. In our example the `fridge` tuple space is of type `Sequential`, which behaves similarly to a FIFO queue so that the oldest matching tuple will be retrieved.
