@@ -15,12 +15,12 @@ This page summarises some of the key programming primitives of pSpaces and their
 | - | - | - | - | - | - | - |
 | ==================== | ========================= | ======================================================================== | ================================= | ========================= | ==================================================  | ========================= |
 | add tuple | `s.put("a",1)` | s.put("a",1) | `s.Put("a",1)` | `s.Put("a",1)` | `s.put(["a",1])` |  |
-| search tuple | `t,e := s.queryP("a",&x)` | `Object[] t = s.queryp(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.QueryP("a",typeof(int));` | `t,e := s.QueryP("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
-| wait for tuple) | `t,e := s.query("a",&x)` | `Object[] t = s.query(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Query("a",typeof(int));` | `t,e := s.Query("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
-| search all tuples | `queryAll` | `List<Object[]> tl = s.queryAll(new ActualField("a"),new FormalField(Integer.class())` | `ITuple[] t = s.QueryAll("a",typeof(int));` | `tl,e := s.QueryAll("a",&x)` | `let t = s.queryAll(["a",FormalTemplateField(Int.self)])` |  |
-| wait for tuple and remove | `get` | `Object[] t = s.get(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.Get("a",typeof(int));` | `t,e := s.Get("a",&x)` | `let t = s.get(["a",FormalTemplateField(Int.self)])` |  |
-| remove tuple | `getP` | `Object[] t = s.getP(new ActualField("a"),new FormalField(Integer.class())` | `ITuple t = s.GetP("a",typeof(int));` | `t,e := s.GetP("a",&x)` | `let t = s.getp(["a",FormalTemplateField(Int.self)])` |  |
-| remove all tuples | `getAll` | `List<Object[]> tl = s.getAll(new ActualField("a"),new FormalField(Integer.class())` | `ITuple[] t = s.GetAll("a",typeof(int));` | `tl,e := s.GetAll("a",&x)` | `let t = s.getAll(["a",FormalTemplateField(Int.self)])` |  |
+| search tuple | `t,e := s.queryP("a",&x)` | `Object[] t = s.queryp(new ActualField("a"),new FormalField(Integer.class)` | `ITuple t = s.QueryP("a",typeof(int));` | `t,e := s.QueryP("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
+| wait for tuple) | `t,e := s.query("a",&x)` | `Object[] t = s.query(new ActualField("a"),new FormalField(Integer.class)` | `ITuple t = s.Query("a",typeof(int));` | `t,e := s.Query("a",&x)` | `let t = s.query(["a",FormalTemplateField(Int.self)])` |  |
+| search all tuples | `queryAll` | `List<Object[]> tl = s.queryAll(new ActualField("a"),new FormalField(Integer.class)` | `ITuple[] t = s.QueryAll("a",typeof(int));` | `tl,e := s.QueryAll("a",&x)` | `let t = s.queryAll(["a",FormalTemplateField(Int.self)])` |  |
+| wait for tuple and remove | `get` | `Object[] t = s.get(new ActualField("a"),new FormalField(Integer.class)` | `ITuple t = s.Get("a",typeof(int));` | `t,e := s.Get("a",&x)` | `let t = s.get(["a",FormalTemplateField(Int.self)])` |  |
+| remove tuple | `getP` | `Object[] t = s.getP(new ActualField("a"),new FormalField(Integer.class)` | `ITuple t = s.GetP("a",typeof(int));` | `t,e := s.GetP("a",&x)` | `let t = s.getp(["a",FormalTemplateField(Int.self)])` |  |
+| remove all tuples | `getAll` | `List<Object[]> tl = s.getAll(new ActualField("a"),new FormalField(Integer.class)` | `ITuple[] t = s.GetAll("a",typeof(int));` | `tl,e := s.GetAll("a",&x)` | `let t = s.getAll(["a",FormalTemplateField(Int.self)])` |  |
 
 ## Spaces and repositories
 
