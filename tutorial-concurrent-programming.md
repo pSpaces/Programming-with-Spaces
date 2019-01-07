@@ -151,7 +151,7 @@ At this point we have seen the main operations to interact with a space:
 - `get(T)` blocks until a tuple is found in the space which matches the template `T`. It then returns the matched tuple and removes it from the space.
 - `getp(T)` is the non-blocking version of `get`. In addition to the matching tuple, it returns whether the operation was successful or not.
 - `getAll(T)` is a non-blocking operation that returns all tuples matching the template `T` and removes them from the space.
-- `query(T)` is the non-destructive version of `get`. The operation blocks until a tuple is found in the space which matches the template `T`. It then returns the matched `tuple` and removes it from the space.
+- `query(T)` is the non-destructive version of `get`. The operation blocks until a tuple is found in the space which matches the template `T`. It then returns the matched `tuple`.
 - `queryp(T)` is the non-blocking version of query. In addition to the matching tuple, it returns whether the operation was successful or not.
 - `queryAll(T)` is the non-destructive version of `getAll`.
 
