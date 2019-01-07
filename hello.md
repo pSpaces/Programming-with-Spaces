@@ -1,6 +1,6 @@
 Let us program our first "hello world!" example.
 
-You will need to have one of the frameworks up and running. If not already done, go to the main page of [pSpaces](../), choose a framework and follow the instructions to install it. 
+You will need to have one of the frameworks up and running. If not already done, go to the main page of [pSpaces](https://github.com/pSpaces), choose a framework and follow the instructions to install it. 
 
 We will now create a simple program that illustrates the most basic features of spaces in different languages. The complete code of the example in each of the languages can be found here:
 - [Hello World in Go](https://github.com/pSpaces/goSpace-examples/blob/master/hello/local/main.go)
