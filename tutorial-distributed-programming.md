@@ -3,7 +3,7 @@
 This chapter provides a gentle introduction to distributed computing using pSpaces. In the [previous chapter](tutorial-concurrent-programming.md) we explained how spaces can be used to support concurrent programming, where several processes on the same machine communicate and cooperate using one or several shared tuple spaces. In distributed systems, processes and data repositories are spread among several devices possibly far away from each other. This chapter explains how to make spaces accessible from remote applications. As a running example we consider chat application that Alice and her roommates can use exchange messages.
 
 ## 3.1 Space repositories
-Space repositories are used organise and control how spaces are exposed to external applications. Each space in a repository must be univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms in the same repository:
+Space repositories are used to organise and control how spaces are exposed to external applications. Each space in a repository must be univocally identified by a name. The following Java code can be used to create a repository and add two chat rooms in the same repository:
 
 ```java
 SpaceRepository chatRepository = new SpaceRepository();
@@ -30,7 +30,7 @@ chatRepository.addGate("tcp://localhost:31415/?keep");
 
 ## 3.3 Accesing a remote space
 
-A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `RemoteSpace` constructor. In our example Alice and her friends con connect to the chatoom `room1` it with
+A remote tuple space, possibly residing on another device, accepts the same operations as a local tuple space. The only difference is that we need to create the space slightly differently, namely with the `RemoteSpace` constructor. In our example Alice and her friends con connect to the chatroom `room1` with
 
 ```java
 RemoteSpace chat = new RemoteSpace("tcp://chathost:31415/room1?keep")
@@ -106,12 +106,12 @@ RemoteSpace lobby = new RemoteSpace("tcp://server:9001/lobby?keep");
 lobby.put("enter", name, roomID);
 // Obtain response
 Object[] response = chat.get(new ActualField("roomURI"), new ActualField(name), new FormalField(String.class), new FormalField(String.class));
-String rooom_uri = response[3];
+String room_uri = response[3];
 // Connect to the chatroom
 RemoteSpace chatroom = new RemoteSpace(room_uri);
 ```
 
-The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `roomHandler` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat rooom:
+The server keeps the list of existing room identifiers and their associated port numbers. If a client requests to enter an existing room then the server builds the URI based on port number associated to the room. Otherwise, a new space is created at a fresh URI and a process `roomHandler` is spawned to handle the chat room. In both cases, the server replies with the URI of the space that is used to handle the requested chat room:
 
 ```go
 while (true) {
@@ -166,8 +166,8 @@ while (true) {
     callID = (String) request[0];
 	f = (String) request[2];
     switch (f) {
-    case "foo":
-        arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
+    	case "foo":
+        	arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class));
 	    rpc.put(callID, "result", foo((Integer) arguments[2], (Integer) arguments[3], (Integer) arguments[4]));
 	case "bar":
 		arguments = rpc.get(new ActualField(callID), new ActualField("args"), new FormalField(String.class), new FormalField(String.class));
