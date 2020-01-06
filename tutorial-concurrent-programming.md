@@ -57,7 +57,7 @@ Most operations on tuple spaces have blocking and non-blocking variants. Non-blo
 In our example, Alice can avoid getting stuck and decide what to do next in either case (some ```milk``` tuple, no ```milk``` tuple) with
 
 ```java
-Object[] item = fridge.get(new ActualField("milk"), new FormalField(Integer.class));
+Object[] item = fridge.getp(new ActualField("milk"), new FormalField(Integer.class));
 if (item == nil) {
   // go shopping
 } else {
