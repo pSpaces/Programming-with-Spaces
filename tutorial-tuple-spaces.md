@@ -179,7 +179,7 @@ Some of the libraries provide ad-hoc datatypes for templates. For instance, jSpa
 The template of the above example would be constructed in Java with
 
 ```java
-Template template = new Template(new ActualField("milk"),new FormalField(Integer.class())
+Template template = new Template(new ActualField("milk"),new FormalField(Integer.class))
 ```
 
 and retrieving the number of bottles would then be done as follows:
@@ -191,7 +191,7 @@ Tuple tuple = fridge.getp(template)
 or more compactly
 
 ```java
-Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class))
 ```
 
 as we did in the first example of this section.
@@ -203,7 +203,7 @@ Note that contrary to some collection datatypes in mainstream languages, the ope
 For example, if Alice can increase the number of bottles to be bought with
 
 ```java
-Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class())
+Tuple tuple = fridge.getp(new ActualField("milk"),new FormalField(Integer.class))
 if (tuple =! nil) {
     fridge.put("milk",tuple.getElementAt(1)+1)
 }
