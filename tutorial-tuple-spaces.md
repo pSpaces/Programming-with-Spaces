@@ -260,6 +260,7 @@ We have seen the following operations on spaces:
 Complete examples for this chapter can be found here:
 * [example in Java](https://github.com/pSpaces/jSpace-examples/blob/master/tutorial/fridge-0/Fridge_0.java)
 * [example in Go](https://github.com/pSpaces/goSpace-examples/blob/master/tutorial/fridge-0/main.go)
+* [example in C#](https://github.com/pSpaces/dotSpace-Examples/blob/master/tutorial/Fridge_0.cs)
 
 ## What next?
 
