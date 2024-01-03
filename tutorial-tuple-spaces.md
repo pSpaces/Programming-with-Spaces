@@ -24,9 +24,9 @@ or groceries missing in the fridge
 and so on.
 
 ## 1.2 Tuples in pSpace
-Many programming languages provide types or mechanisms for tuples or value lists. The pSpace implementations provide ad-hoc datatypes for tuples but sometimes admit the use native features from the language.
+Many programming languages provide types or mechanisms for tuples or value lists. The pSpace implementations provide ad-hoc datatypes for tuples but they also admit the use native features from the host language.
 
-For example, the Java Library provides a class `Tuple`, which can be used to create a tuple `("milk",1)` as follows
+For example, the Java Library uses internally a class `Tuple`, which can be used to create a tuple `("milk",1)` as follows
 
 ```java
 Tuple tuple = new Tuple("milk", 1);
@@ -40,7 +40,7 @@ var tuple Tuple = CreateTuple("milk", 1)
 
 Similar datatypes and interfaces can be found in the rest of the libraries (e.g. the `ITuple` interface in C#).
 
-As an alternative to ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `Tuple` and `CreateTuple` are not always necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
+Ad-hoc tuple datatypes and interfaces some of the libraries allow to use built-in tuple-like datatypes and features such as parameter lists. This means that tuple constructors such as `Tuple` and `CreateTuple` are not actually necessary as tuples can be implicitly created from lists of values. For example, in Java, one can use object arrays and in Go one can use slices, as we shall see later.
 
 Tuple fields are accessed position-wise, very much like acccessing arrays. In Java the `i-1`-th field is accessed with
 
@@ -109,20 +109,20 @@ Tuple spaces are collection data structures and, as such, they provide operation
 The operation to add tuples is named ```put```. More precisely the operation
 
 ```java
-space.put(tuple)
+space.put(x,y,z)
 ```
 
-adds the tuple ```tuple``` to the tuple space ```space```.
+adds the tuple ```(x,y,z)``` to the tuple space ```space```.
 
 ## 1.6 Searching tuples with `queryp`
 
 The operation to search for tuples tuples is called ```queryp```. In detail,
 
 ```go
-space.queryp(tuple)
+space.queryp(x,y,z)
 ```
 
-looks for a tuple like ```tuple``` in the tuple space ```space``` and returns the found tuple (if any).
+looks for a tuple like ```(x,y,z)``` in the tuple space ```space``` and returns the found tuple (if any).
 
 In Java, for example, we can write
 
@@ -140,15 +140,15 @@ to check whether there is a tuple saying that we need to clean the kitchen. In t
 The operation to remove tuples is named ```getp``` and has a similar behavour as `queryp`, namely
 
 ```java
-space.getp(tuple)
+space.getp(x,y,z)
 ```
 
-looks for a tuple like ```tuple``` in the tuple space ```space```. If found, the tuple is returned and removed from the space.
+looks for a tuple like ```(x,y,z)``` in the tuple space ```space```. If found, the tuple is returned and removed from the space.
 
 We can use for example
 
 ```java
-tuple = fridge.getp("clean kitchen")
+tuple = fridge.getp(new ActualField("clean kitchen"));
 ```
 
 if we are willing to remove the note that says that we need to clean the kitchen.
