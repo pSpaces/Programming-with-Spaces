@@ -42,7 +42,7 @@ after which the space `chat` can be treated as an ordinary tuple space. For exam
 chat.put("Alice","Hi!")
 ```
 
-## 3.4 What can be send around?
+## 3.4 What can be sent around?
 
 There are limitations on the datatypes that can be used in the remote tuple space operations, partly due to the underlying serialisers used by the libraries. Currently the limitations are language dependent. Some examples are:
 
